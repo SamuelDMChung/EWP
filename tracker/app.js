@@ -10,6 +10,9 @@ import { loadTrackerCloud, saveTrackerProject, setTrackerProjectStatus, deleteTr
   const SAVED_FILTERS_KEY = 'ewp_project_tracker_v04_saved_filters';
 
   const PROJECT_SYNC_SIGNAL = 'ewp_shared_projects_changed';
+  const BOARD_VIEW_KEY = 'ewp_tracker_board_density_v13'; // UI preference only; no project data
+  let boardDensity = 'compact';
+  try { if (localStorage.getItem(BOARD_VIEW_KEY) === 'detailed') boardDensity = 'detailed'; } catch {}
   function announceProjectChange() {
     // Inform another open portal tab immediately. Supabase remains authoritative.
     try { localStorage.setItem(PROJECT_SYNC_SIGNAL, String(Date.now())); } catch {}
@@ -586,7 +589,30 @@ import { loadTrackerCloud, saveTrackerProject, setTrackerProjectStatus, deleteTr
     return COORDINATION_STATUSES.includes(status) ? 'coordination' : status;
   }
 
+  function setBoardDensity(mode) {
+    boardDensity = mode === 'detailed' ? 'detailed' : 'compact';
+    const board = document.getElementById('board');
+    board.classList.toggle('board-compact', boardDensity === 'compact');
+    board.classList.toggle('board-detailed', boardDensity === 'detailed');
+    document.querySelectorAll('[data-board-density]').forEach(button => {
+      const selected = button.dataset.boardDensity === boardDensity;
+      button.classList.toggle('is-active', selected);
+      button.setAttribute('aria-pressed', String(selected));
+    });
+    try { localStorage.setItem(BOARD_VIEW_KEY, boardDensity); } catch {}
+  }
+
+  function updateCoordinationFilterButtons() {
+    document.querySelectorAll('[data-coordination-status]').forEach(button => {
+      const status = button.dataset.coordinationStatus;
+      const selected = activeFilters.status.length === 1 && activeFilters.status[0] === status;
+      button.classList.toggle('is-active', selected);
+      button.setAttribute('aria-pressed', String(selected));
+    });
+  }
+
   function renderBoard() {
+    updateCoordinationFilterButtons();
     Object.values(lists).forEach(list => { list.innerHTML = ''; });
     const visibleEntries = getFilteredWorkItems();
     const sorted = [...visibleEntries].sort((a, b) => {
@@ -657,6 +683,38 @@ import { loadTrackerCloud, saveTrackerProject, setTrackerProjectStatus, deleteTr
     card.querySelector('.assignee').textContent = uniqueSorted((project.workItems || []).map(item => item.assignee)).join(', ') || '—';
     card.querySelector('.sales').textContent = project.sales || '—';
     const currentStatus = projectStatus(project);
+    const isOffPlate = boardColumn(currentStatus) === 'coordination' || currentStatus === 'completed';
+    card.classList.toggle('card-off-plate', isOffPlate);
+    card.querySelector('.compact-project-number').textContent = project.projectNumber || '—';
+    card.querySelector('.compact-project-type').textContent = displayProjectType(project);
+    card.querySelector('.compact-project-address').textContent = project.address || 'No address';
+    card.querySelector('.compact-customer').textContent = project.customer || '—';
+    card.querySelector('.compact-sales').textContent = project.sales || '—';
+    card.querySelector('.compact-assignee').textContent = `Assigned: ${uniqueSorted((project.workItems || []).map(item => item.assignee)).join(', ') || '—'}`;
+    card.querySelector('.compact-due').textContent = `Due: ${formatDate(effectiveDueDate(project, workItem))}`;
+    if (isWorkItemOverdue(project, workItem)) card.querySelector('.compact-due').classList.add('overdue');
+    const compactStatusPill = card.querySelector('.compact-status-pill');
+    compactStatusPill.textContent = statusLabel(currentStatus);
+    compactStatusPill.classList.add(`status-${currentStatus}`);
+    const compactCoordinationSelect = card.querySelector('.compact-coordination-select');
+    if (COORDINATION_STATUSES.includes(currentStatus)) {
+      compactStatusPill.classList.add('hidden');
+      compactCoordinationSelect.classList.remove('hidden');
+      compactCoordinationSelect.classList.add(`status-${currentStatus}`);
+      compactCoordinationSelect.value = currentStatus;
+      for (const eventName of ['click','pointerdown','mousedown','dragstart']) {
+        compactCoordinationSelect.addEventListener(eventName, event => event.stopPropagation());
+      }
+      compactCoordinationSelect.addEventListener('change', event => {
+        event.stopPropagation();
+        moveProject(project.id, compactCoordinationSelect.value);
+      });
+    }
+    const compactForecastLink = card.querySelector('.compact-forecast-link');
+    compactForecastLink.href = forecastLink.href;
+    compactForecastLink.setAttribute('aria-label', `Open ${project.projectNumber || 'project'} in EWP Forecast`);
+    compactForecastLink.addEventListener('click', event => event.stopPropagation());
+    compactForecastLink.addEventListener('dragstart', event => event.stopPropagation());
     const statusPill = card.querySelector('.card-project-status');
     statusPill.textContent = statusLabel(currentStatus);
     statusPill.classList.add(`status-${currentStatus}`);
@@ -1590,6 +1648,21 @@ import { loadTrackerCloud, saveTrackerProject, setTrackerProjectStatus, deleteTr
     closeFilterMenus();
   });
   document.getElementById('clearAllFilters').addEventListener('click', clearAllFilters);
+
+  // The three Coordination pills are shortcuts to the EXISTING Status filter;
+  // they share saved-filter chips, counts, and Clear rather than creating a second filter state.
+  document.querySelectorAll('[data-coordination-status]').forEach(button => {
+    button.addEventListener('click', () => {
+      const status = button.dataset.coordinationStatus;
+      activeFilters.status = activeFilters.status.length === 1 && activeFilters.status[0] === status ? [] : [status];
+      markFilterAsCustom();
+      renderFilterDrivenViews();
+    });
+  });
+  document.querySelectorAll('[data-board-density]').forEach(button => {
+    button.addEventListener('click', () => setBoardDensity(button.dataset.boardDensity));
+  });
+  setBoardDensity(boardDensity);
 
   document.querySelectorAll('.multi-select-filter').forEach(container => {
     container.querySelector('.multi-filter-trigger').addEventListener('click', event => {

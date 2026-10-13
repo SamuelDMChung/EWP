@@ -1,3 +1,15 @@
+# EWP Management Portal — V1.3 (complete project)
+
+Next version: **V1.4**. Root `PORTAL_HANDOFF.md` is the authoritative migration and development record. V1.3 is based on the V1.2 complete build and preserves Supabase, the full Forecast workflow, the original project-number allocator, and Follow-up.
+
+**New in V1.3:** a clearly labeled Tracker Settings button, **Compact / Detailed** Board view switch (initial default Compact; selected view remembered in that browser), concise cards with direct Forecast links and Coordination status selection, off-plate hiding of drawing due-date/assignee in both Board views, and color-coded Coordination header pills wired to the existing Status filter. Brand styling, four Board columns and all underlying workflows remain intact. All three page mastheads show `Version V1.3 · Developed by Samuel Chung`.
+
+**SQL for V1.3: none.** If migrating directly from a version earlier than V1.2, run the included `v1_2_project_status_migration.sql` **once before deployment**. If V1.2 is already functioning on your Supabase database, do not rerun it. Never rerun older full setup scripts during a routine version update. Back up first.
+
+Deploy: extract the complete ZIP to the existing GitHub Pages repository root and push. Test Compact/Detailed switching, Coordination pill filtering, full card editing and direct Forecast links, Follow-up, project statuses, and Forecast imports against your production data. Automated offline tests used mock projects; live Supabase verification remains pending.
+
+---
+
 # EWP Management Portal — V1.2
 
 Complete GitHub Pages/Supabase application. Two workspaces: Project Tracking and EWP Forecast.

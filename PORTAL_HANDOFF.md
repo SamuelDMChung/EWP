@@ -1,3 +1,44 @@
+# EWP Management Portal — Canonical V1.3 Handoff
+
+**Latest complete source release:** `EWP_Management_Portal_V1_3_FULL.zip` (October 13, 2026)  
+**Parent baseline:** V1.2 full, retaining V1.0 Phase 3 → V1.1 → V1.2 lineage.  
+**Next version:** V1.4.  
+**Database migrations for V1.3:** **NONE**. V1.3 is Tracker Board UI-only plus release masthead/cache version updates on all three routes. **The V1.2 one-time `v1_2_project_status_migration.sql` is still required if your deployment has not already run it**; do NOT rerun if already applied. The original V1.2 migration file is included unchanged for reference.  
+**Live production verification:** still pending; V1.3 was exercised with synthetic sample data in an isolated headless browser, NOT with your company's actual Supabase records.
+
+## V1.3 changes
+
+1. **Visible Settings:** `tracker/index.html` replaces the tiny top-right gear with a labeled Griff-olive-bordered **⚙ Settings** button in the same header. It continues opening the existing Tracker Settings view; no settings/data changes.
+2. **Compact/Detailed Board switch:** A two-button control beside `+ Add Project`, **Compact selected initially**, switches only Board card presentation (not filters, List or Follow-up). Stores a user's chosen display preference in browser `localStorage` key `ewp_tracker_board_density_v13` (never writes project data). If storage is blocked, defaults to Compact on every reload. This is the **only new local storage use**; shared projects remain entirely in Supabase.
+3. **Compact cards:** Show one project #, type, one-line address/name, customer + sales name, and a single status pill. Queue/In Progress additionally show short assignee and due date. Dedicated compact ↗ EWP Forecast link remains available, and clicking the rest of the card still opens full project details. Drag and drop continues. Compact Coordination status is an actual color-coded native select that lets the user change Pending/In Review/Delivering directly with one interaction; no second status pill/dropdown duplication.
+4. **Detailed cards:** Retain V1.2's existing task name, phase, badges, Forecast button and status controls; the V1.3 Compact/Detailed switch hides/shows layouts without affecting server records or task metadata.
+5. **Off-plate card metadata:** Both Compact and Detailed **Coordination** (all three statuses) and **Completed** cards hide historical due date and drawing assignee; these values are **not erased** and remain available when editing or when moved back to Queue/In Progress. Sales, client, address, type and project status remain visible.
+6. **Clickable Coordination header pills:** Pending (amber), In Review (blue), Delivering (green) become toggling filter buttons. They **reuse the existing main Board/List status filter state** (`activeFilters.status`) and its chips/counter/Save Filter/Clear; selecting one replaces the current status selection with that single value (other filter dimensions stay intact). Clicking the selected pill again removes the status restriction. Consequently, while a Coordination pill is selected, other Board columns may show no matches; this is intentional global Status-filter behavior, **not** a separate hidden Coordination-only filter. Existing saved filters are NOT modified by clicking a shortcut; the active filter is treated as custom. Follow-up continues to use its own independent filters.
+7. **Unified version text:** Portal, Tracker, Forecast and Portal footer now say `Version V1.3 · Developed by Samuel Chung`; touched page resource query tags advance to `?v=1.3` to reduce stale cached UI. Forecast domain `.mjs` computation logic and shared auth code are **unchanged**.
+8. **No Test Mode** or new status tables/functions. The one overall project status and four-column drag workflow from V1.2, the repaired TC numbering system, and the Follow-up subject/body + first-name greeting remain unchanged.
+
+## V1.3 checks actually performed
+
+- Node syntax check passed for changed `tracker/app.js` and the other JS/MJS modules. HTML structure has no repeated IDs and the three mastheads share V1.3.
+- An isolated Chromium DOM+CSS test with mocked shared data and injected Tracker module dependencies passed: Compact initial mode; 7 cards with one per project; Compact ↔ Detailed view; off-plate cards hide due/assignee in both views; all three colored Coordination selects visible in Compact; clicking Pending pill filters the same project set/chips, clicking again clears; main status filter updates Coordination pill pressed state; Clear resets; clicking a card opens Edit Project; Settings opens; a compact Coordination status select updates mocked shared server state; Queue→Coordination drag defaults to In Review; Follow-up keeps its independent All-status default, first-name greeting, and separate subject/body; and 390px-wide header placement was checked. Preview screenshots were generated from **mock data only**. Direct navigation to `https://example.com` in the automated browser remained blocked by the execution environment; isolated DOM tests do not imply live integration success.
+- Original V1.2 database SQL files, Forecast parsing/material calculations, auth, realtime, and integration logic retained byte-for-byte; status handling/dragging API unchanged. The mock tests do not substitute for production end-to-end verification.
+
+## V1.3 deployment and regression checklist
+
+1. Back up your GitHub Pages repo and relevant Supabase data. Confirm V1.2 `v1_2_project_status_migration.sql` has previously succeeded; otherwise follow the V1.2 migration instructions **before deploying V1.3**.
+2. Extract the **entire V1.3 ZIP** into the existing GitHub Pages repository root, replacing the old files; commit and push, then hard refresh once.
+3. Open Tracker Board. Check **⚙ Settings**, its navigation, initial Compact view, Compact/Detailed toggle, view choice remembering after reload, card-click edit modal, and the separate ↗ Forecast deep links. Check compact legibility with long addresses/customer names and small screens.
+4. Inspect Queue/In Progress vs Coordination/Completed in **both** views: due/assignee appear only while on the EWP plate. Confirm they remain intact when editing or moving back.
+5. Click Pending, In Review, Delivering pills; check existing Status filter chip/counts, selected-pill state, toggle off, Clear, saved filters, other filters, and list view synchronization. Follow-up remains independently filtered.
+6. Drag projects Queue→In Progress→Coordination (defaults to In Review), manually select Pending or Delivering, drag back to Queue/In Progress, and optionally mark Completed; verify status persists in real Supabase after reload and is visible to a teammate. No task-level or per-level status introduced.
+7. Regression-test project editing/creation, TC sequence, settings, Follow-up greeting and copy actions, cross-tool metadata priority, navigation/auth, Forecast PDF import, Spruce partial deliveries, inventory, purchasing, and team sync. Do not mark V1.3 live-verified until this passes on real data.
+
+## Canonical architecture and historical notes
+
+The following earlier handoff sections remain authoritative wherever not superseded by V1.3. In particular, the Forecast processing rules, the existing V1.2 project-status RPC and non-destructive migration, Phase 3 shared authentication, and Project Tracking's ownership of shared project metadata all remain protected.
+
+---
+
 # EWP Management Portal — Canonical V1.2 Handoff
 
 **Latest complete source release:** `EWP_Management_Portal_V1_2_FULL.zip` (October 13, 2026).  

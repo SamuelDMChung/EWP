@@ -1,3 +1,9 @@
+# Project Tracking — V1.3 UI addendum
+
+The Project Tracking Board keeps four columns and one project-level status (Queue, In Progress, Coordination with Pending/In Review/Delivering, Completed). It now defaults to **Compact** cards; users can select Detailed and the browser remembers their presentation preference. Coordination/Completed hide historical drafting due dates and assignees on Board cards only. The three existing colored Coordination header pills are active shortcuts for the *existing main status filter*, which also drives saved-filter chips and List; there is no second filter state. Compact Coordination statuses are editable from their colored native select. Settings has a visible labeled button in the Tracker header. All other workflows are preserved. **No V1.3 SQL; the V1.2 project-status migration must already be present.** See root `PORTAL_HANDOFF.md`.
+
+---
+
 ## V1.2 update
 
 The Board and List now display **one card/row per project** with a shared `projects.tracker_status`; columns Queue, In Progress, Coordination (Pending/In Review/Delivering), Completed. Project work-item entries remain for task/assignee/due-date metadata but **do not provide separate workflow statuses**. Coordination receives new projects as In Review when dragged in, and can be manually set to Pending or Delivering. An Edit Project status selector is also provided. Original filtered/saved filter UI retained. Follow-up defaults to All statuses, copies subject/body separately, and greets salesperson by first name. New `v1_2_project_status_migration.sql` at repository root **must be run before deploying**. See canonical root PORTAL_HANDOFF.md.

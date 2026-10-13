@@ -1,3 +1,9 @@
+# V1.4 Tracker independent task cards
+
+For active projects, every `tracker_work_items` record is one Board card linked to the same project #. Task queue, in progress and done are independent, and Finished Tasks are shown inside the In Progress column. When all tasks finish the user manually moves the project to Coordination In Review, which combines into one project card again. Completed means the whole job delivered. Individual task statuses are stored via the existing `tracker_move_work_item` RPC. In edit/new task forms, an empty stored task due date inherits the project due date *visibly*, without saving duplicate dates. Use “Use project due date” to reset an override. Customer/sales separator has wider spacing. One-time deployment reconciliation of legacy all-queued tasks under In Progress projects: see root `v1_4_legacy_task_status_reconciliation.sql`. Full documentation and remaining Forecast TODOs: root `PORTAL_HANDOFF.md`. V1.3 features preserved otherwise.
+
+---
+
 # Project Tracking — V1.3 UI addendum
 
 The Project Tracking Board keeps four columns and one project-level status (Queue, In Progress, Coordination with Pending/In Review/Delivering, Completed). It now defaults to **Compact** cards; users can select Detailed and the browser remembers their presentation preference. Coordination/Completed hide historical drafting due dates and assignees on Board cards only. The three existing colored Coordination header pills are active shortcuts for the *existing main status filter*, which also drives saved-filter chips and List; there is no second filter state. Compact Coordination statuses are editable from their colored native select. Settings has a visible labeled button in the Tracker header. All other workflows are preserved. **No V1.3 SQL; the V1.2 project-status migration must already be present.** See root `PORTAL_HANDOFF.md`.

@@ -1,3 +1,15 @@
+# EWP Management Portal V1.4 — WEB only
+
+Continue web development from the V1.3 source; the Capacitor V1.3 iOS demo is not updated in this package.
+
+**Start with `PORTAL_HANDOFF.md`.** This V1.4 Tracker release separates linked work items into independently movable Queue, In Progress and Finished Tasks cards, adds Start/Done/Reopen controls, keeps one project card in Coordination/Completed, and makes task due-date pickers inherit the project due date visibly. Forecast/Supabase source remains present and its domain calculations are unchanged.
+
+**Deployment prerequisite:** On the existing company Supabase database, back up first and run `v1_4_legacy_task_status_reconciliation.sql` once before pushing V1.4 web files to GitHub Pages. This preserves the initial placement of V1.3 In Progress projects with old queued task rows. Do NOT run the original full Phase 2 migrations again. See the handoff for details and tests.
+
+No changes to Forecast's SFD/Multi calculations, dropdowns, PDF-less material entry or creation-to-Coordination sync are included in this specific task-card release; those discussed changes are queued separately.
+
+---
+
 # EWP Management Portal — V1.3 (complete project)
 
 Next version: **V1.4**. Root `PORTAL_HANDOFF.md` is the authoritative migration and development record. V1.3 is based on the V1.2 complete build and preserves Supabase, the full Forecast workflow, the original project-number allocator, and Follow-up.

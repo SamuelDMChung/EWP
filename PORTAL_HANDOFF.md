@@ -1,3 +1,49 @@
+# EWP Management Portal — Canonical V1.4 WEB Handoff
+
+**Latest full WEB package:** `EWP_Management_Portal_V1_4_WEB_FULL.zip` (October 13, 2026).  
+**Direct source baseline:** supplied `EWP_Management_Portal_V1_3_FULL(1).zip` (not the V1.3 Capacitor proof-of-concept).  
+**Next sequential version:** V1.5.  
+**Live verification:** pending; isolated mocked-browser scenarios passed, real company Supabase not accessible here.  
+**Scope:** Tracker task workflow / card UI / task due-date defaults; Forecast computations, parsers, auth, portal navigation, Follow-up mail templates and inventory algorithms are unchanged. iOS source is not generated in this WEB-only build.
+
+## V1.4 implemented: linked, independently movable task cards
+
+1. A multi-task project appears as **one independently movable card for each task** in the active Board's Queue and In Progress columns. Tasks keep their project ID and TC project #, client, sales, Forecast link and project details; a visible `↳ Task Name · Task 1/N` indicator links related cards. Card click opens the same single Project editor and highlights the clicked task.
+2. Task workflow statuses are persisted in the existing `tracker_work_items.status` (`queue`, `in_progress`, `done`) using **existing `tracker_move_work_item` RPC**; no new RPC is needed. Drag Queue ↔ In Progress or to **Finished Tasks**; quick buttons Start task / Mark done / Reopen task are provided so users need not drag. A task done while another is in progress/queue does **not** move the project into Coordination.
+3. Finished Tasks is a separate, explicitly task-level drop area within the **In Progress** column. It is NOT the main Completed project column, which continues to mean the *entire project physically delivered*. Finished cards are visible and reopenable until the project moves to Coordination.
+4. When every task is Done, a project-level action **Move to Coordination →** appears beneath the finished tasks. The user must click it (or explicitly drag the completed task to Coordination); the project never moves automatically. Once moved, one project-level Coordination card appears as **In Review**, including the preexisting Pending/In Review/Delivering quick status selector. After that, assignee and task due dates remain hidden on the compact/detailed off-plate card but are preserved in the editor and backend. Completed project cards also stay aggregated.
+5. Moving an off-plate, all-done project back to Queue/In Progress reopens **only one chosen task**: if there are several, user chooses its numbered work item via a prompt; the rest remain Done. Dragging a single unfinished active task onto Coordination warns that all work items must be completed first. Dragging an individual task directly onto the Project Completed column warns instead of confusing task completion with full delivery. Editing each task's status is also supported through the project editor; the overall Project Status field remains available for coordination/delivery management.
+6. Compact customer/sales separator now uses 7px padding each side. Both detailed and compact cards remain in the V1.3 density toggle, default Compact. Linked tasks have a small olive left border; finished cards have a green border. Board counts are **unique project IDs per column** (one linked project may count in Queue and In Progress simultaneously), while List and Follow-up remain one row/selected project per shared Project #. Board tasks and project-level aggregates use existing searchable filters and saved-filter controls.
+7. **Task Due Date inheritance:** New work items and existing work items with NULL/blank `due_date` display the current Project Due Date inside the date picker, not a blank field. Dates remain inherited dynamically as the Project Due Date changes; they are stored NULL and display the current project due date on Board/List. Any task's manually selected date becomes a durable independent override. `↺ Use project due date` resets a task to inheritance; existing explicit due-date overrides are retained.
+8. V1.3 canonical original handoff/history, full Forecast code/data/SQL, Griff assets, shared auth, Supabase config and Phase 2/V1.2 migrations remain included. There is **no new table, credential, backend project linkage or data duplication**.
+
+## Database deployment — IMPORTANT one-time compatibility step
+
+**Run `v1_4_legacy_task_status_reconciliation.sql` in the EXISTING Supabase SQL Editor once, BEFORE deploying V1.4 frontend.** Preview SQL in the file before running; take a database backup. This prevents legacy V1.3 In Progress projects whose per-task statuses were left entirely `queue` from appearing unexpectedly as all queued task cards. It updates those legacy task statuses to `in_progress` *only where all tasks are still queue and the project-level status is in_progress*. It does **not** modify Coordination/Completed projects, projects with already mixed task statuses, Forecast levels/materials, or any sales/customer/project metadata. The UPDATE is safe to rerun but intended once, and preserves existing task identities, assignments and dates. Prior V1.2 migration must already exist (as it did in V1.3). No other SQL required for this release.
+
+**Known limitation:** The existing `tracker_move_work_item` increments project version but does NOT rewrite the legacy `projects.tracker_status` for active task movements. The V1.4 Board and List derive Queue/In Progress display from work-item status; Coordination/Completed remain authoritative from `projects.tracker_status`. An external client reading only raw project `tracker_status` may see the old active-project status until a project editor save updates it; do not use that column alone as a task-progress source. Do not auto-advance Forecast material/delivery state based on task completion.
+
+## QA completed (not live integration)
+
+- `node --check` on changed Tracker script and all `.js`/`.mjs` modules.
+- Isolated Chromium DOM+CSS test with mocked Supabase modules: one project shown as one Queue and one In Progress card; linked project number and individual task titles; one off-plate Forecast-created Coordination aggregate; 7px separator; Edit dialog highlights task; inherited date visibly populated; project due date updates inherited task but not custom override; completion of one task leaves the other queued; drag-event completion of second task produces two Finished Tasks; only then shows manual Coordination action; action moves to In Review once and retains both work item records. No JavaScript page errors. Rendered screenshots for human visual inspection only. The real HTTP navigation to localhost was blocked by this environment, so DOM was exercised with directly injected module mocks, not through a public deployment.
+- Forecast's domain `.mjs` and parsing algorithms are untouched; no Supabase integration or migration SQL was executed on live database.
+
+## Deploy/test on company environment
+
+1. Back up the GitHub Pages repository and shared Supabase project data. Run/review `v1_4_legacy_task_status_reconciliation.sql` in Supabase SQL Editor once.
+2. Replace the repository root with the contents of the full V1.4 WEB ZIP; commit/push and hard-refresh. All three mastheads show V1.4, with no iOS rebuild required.
+3. Open an existing two-task project and verify one card in Queue and one in Progress after assigning distinct statuses. Check individual Start/Done/Reopen actions and drag targets. Confirm other work items and Forecast data remain unchanged.
+4. Verify completed tasks in the Finished Tasks shelf; with some tasks incomplete, moving to Coordination must be blocked. With all Done, click **Move to Coordination** and verify exactly one In Review card. Change to Pending and Delivering, move to Completed only when physically delivered, and test reopening just one task from Coordination.
+5. Edit project due date and verify NULL task due dates follow; verify custom task dates do not change; use Reset to Project Date on a custom task. Check Board/List/Follow-up filters, task assignments, TC numbering, Griff icon, Forecast import/delivery/inventory and two-user live sync.
+6. Do not mark company-side integration passed until the above are verified with the live shared database and a second user.
+
+## Earlier agreed Forecast requests: NOT in this task-focused recode
+
+The following previously discussed enhancements remain queued for a separate subsequent release; **do not assume V1.4 implements them**: Sales dropdown shared with Tracker settings, Project Type choices SFD/Multi/Others with equivalent scheduling/purchasing behavior, first-class Manual Entry of project levels/materials without PDF, Forecast-created new project automatically entering Coordination → Delivering, and existing Tracker project preserving its tracking status when Forecast material data is first imported (Option A). Existing V1.3 Forecast code remains unchanged for safety. User has not resolved whether dates should be mandatory for newly created Forecast levels.
+
+---
+
 # EWP Management Portal — Canonical V1.3 Handoff
 
 **Latest complete source release:** `EWP_Management_Portal_V1_3_FULL.zip` (October 13, 2026)  

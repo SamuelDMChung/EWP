@@ -1,6 +1,6 @@
 import { restoreSession, signInWithPassword, signOut, getCurrentSession, EWP_AUTH_STORAGE_KEY } from '../forecast/auth.mjs?v=1.0-p3';
 import { startTrackerRealtime, stopTrackerRealtime } from './realtime.mjs?v=1.0-p3';
-import { loadTrackerCloud, saveTrackerProject, setTrackerProjectStatus, deleteTrackerProject, getNextTrackerNumber, saveTrackerSettings, addTrackerFilter, removeTrackerFilter } from './cloud.mjs?v=1.0-p3';
+import { loadTrackerCloud, saveTrackerProject, setTrackerProjectStatus, moveTrackerWorkItem, deleteTrackerProject, getNextTrackerNumber, saveTrackerSettings, addTrackerFilter, removeTrackerFilter } from './cloud.mjs?v=1.0-p3';
 
 (() => {
   const PROJECTS_KEY = 'tc_project_tracker_v01_projects'; // legacy browser data; never used as authoritative data
@@ -228,13 +228,22 @@ import { loadTrackerCloud, saveTrackerProject, setTrackerProjectStatus, deleteTr
   }
 
   function projectStatus(project) {
+    const saved = project.projectStatus;
+    // Coordination and fully delivered are project-level, never derived from
+    // task completion. On-plate columns are derived from independent tasks.
+    if (COORDINATION_STATUSES.includes(saved) || saved === 'completed') return saved;
     const items = Array.isArray(project.workItems) ? project.workItems : [];
-    if (PROJECT_STATUSES.includes(project.projectStatus)) return project.projectStatus;
-    // Read-only fallback while the SQL migration is pending. Never mistake old
-    // drawing-task Done for a fully delivered project.
-    if (items.some(item => item.status === 'in_progress')) return 'in_progress';
-    if (items.length && items.every(item => item.status === 'done')) return 'in_review';
-    return 'queue';
+    if (items.some(item => item.status === 'in_progress' || item.status === 'done')) return 'in_progress';
+    if (items.length) return 'queue';
+    return saved === 'in_progress' ? 'in_progress' : 'queue';
+  }
+
+  function isOffPlate(project) {
+    return COORDINATION_STATUSES.includes(project.projectStatus) || project.projectStatus === 'completed';
+  }
+
+  function allTasksDone(project) {
+    return Boolean(project.workItems?.length) && project.workItems.every(item => item.status === 'done');
   }
 
   function effectiveDueDate(project, workItem) {
@@ -243,7 +252,7 @@ import { loadTrackerCloud, saveTrackerProject, setTrackerProjectStatus, deleteTr
 
   function isWorkItemOverdue(project, workItem) {
     const due = effectiveDueDate(project, workItem);
-    return projectStatus(project) !== 'completed' && due && due < todayISO();
+    return workItem.status !== 'done' && projectStatus(project) !== 'completed' && due && due < todayISO();
   }
 
   function allWorkItemEntries() {
@@ -343,7 +352,7 @@ import { loadTrackerCloud, saveTrackerProject, setTrackerProjectStatus, deleteTr
 
   function entryValue(entry, key) {
     const { project, workItem } = entry;
-    if (key === 'status') return projectStatus(project);
+    if (key === 'status') return entry.boardStatus || projectStatus(project);
     if (key === 'assignee') return workItem.assignee;
     if (key === 'task') return workItem.task;
     return project[key];
@@ -363,7 +372,7 @@ import { loadTrackerCloud, saveTrackerProject, setTrackerProjectStatus, deleteTr
         project.phase,
         displayProjectType(project),
         statusLabel(projectStatus(project)),
-        statusLabel(projectStatus(project)),
+        statusLabel(workItem.status),
         project.largeTji,
         project.aplRequired,
         project.dateSubmitted,
@@ -376,17 +385,29 @@ import { loadTrackerCloud, saveTrackerProject, setTrackerProjectStatus, deleteTr
     return Object.entries(activeFilters).every(([key, selected]) => {
       if (!selected.length) return true;
       const values = key === 'assignee' || key === 'task'
-        ? (project.workItems || []).map(item => String(item[key] || ''))
-        : [String(entryValue(entry, key) || '')];
+        ? (entry.boardStatus && !isOffPlate(project) ? [String(workItem[key] || '')] : (project.workItems || []).map(item => String(item[key] || '')))
+        : key === 'status' && !entry.boardStatus && !isOffPlate(project)
+          ? uniqueSorted([projectStatus(project), ...(project.workItems || []).map(item => item.status === 'done' ? 'in_progress' : item.status)])
+          : [String(entryValue(entry, key) || '')];
       return values.some(value => selected.some(option => String(option).toLowerCase() === value.toLowerCase()));
     });
   }
 
   function getFilteredWorkItems() {
-    // A project appears once on Board and List even when several legacy work
-    // items / assignees exist. The entire project shares one status.
+    // List and project-level filter counters retain one row per project.
     return projects.map(project => ({project,workItem:project.workItems?.[0] || normalizeWorkItem()}))
       .filter(workItemEntryMatchesFilters);
+  }
+
+  function getFilteredBoardEntries() {
+    return projects.flatMap(project => {
+      if (isOffPlate(project) || !project.workItems?.length) {
+        return [{project,workItem:project.workItems?.[0] || normalizeWorkItem(),boardStatus:projectStatus(project),aggregate:true}];
+      }
+      return project.workItems.map(workItem => ({
+        project,workItem,boardStatus:workItem.status === 'done' ? 'in_progress' : workItem.status,aggregate:false
+      }));
+    }).filter(workItemEntryMatchesFilters);
   }
 
   function markFilterAsCustom() {
@@ -512,7 +533,7 @@ import { loadTrackerCloud, saveTrackerProject, setTrackerProjectStatus, deleteTr
     renderList();
     renderFollowUp();
     renderFilterControls();
-    const visibleEntries = getFilteredWorkItems();
+    const visibleEntries = getFilteredBoardEntries();
     const totalEntries = projects.length;
     const visibleProjects = new Set(visibleEntries.map(entry => entry.project.id)).size;
     const result = document.getElementById('filterResultCount');
@@ -614,45 +635,78 @@ import { loadTrackerCloud, saveTrackerProject, setTrackerProjectStatus, deleteTr
   function renderBoard() {
     updateCoordinationFilterButtons();
     Object.values(lists).forEach(list => { list.innerHTML = ''; });
-    const visibleEntries = getFilteredWorkItems();
+    const finishedList = document.getElementById('finishedTaskList');
+    const finishedSection = document.getElementById('finishedTasksSection');
+    const readyList = document.getElementById('readyCoordinationList');
+    finishedList.innerHTML = '';
+    readyList.innerHTML = '';
+    const visibleEntries = getFilteredBoardEntries();
     const sorted = [...visibleEntries].sort((a, b) => {
-      if (projectStatus(a.project) === 'completed' && projectStatus(b.project) === 'completed')
+      if (a.boardStatus === 'completed' && b.boardStatus === 'completed')
         return (b.project.updatedAt || '').localeCompare(a.project.updatedAt || '');
-      return (a.project.dueDate || '9999-12-31').localeCompare(b.project.dueDate || '9999-12-31') ||
+      return (effectiveDueDate(a.project,a.workItem) || '9999-12-31').localeCompare(effectiveDueDate(b.project,b.workItem) || '9999-12-31') ||
         (a.project.createdAt || '').localeCompare(b.project.createdAt || '');
     });
-    sorted.forEach(({project,workItem}) => {
-      const list = lists[boardColumn(projectStatus(project))] || lists.queue;
-      list.appendChild(createWorkItemCard(project,workItem));
+    sorted.forEach(({project,workItem,boardStatus,aggregate}) => {
+      const destination = !aggregate && workItem.status === 'done'
+        ? finishedList : (lists[boardColumn(boardStatus)] || lists.queue);
+      destination.appendChild(createWorkItemCard(project,workItem,aggregate));
     });
+    const readyProjects = [...new Set(visibleEntries.filter(e => !e.aggregate && allTasksDone(e.project)).map(e => e.project.id))]
+      .map(id => projects.find(project => project.id === id)).filter(Boolean);
+    readyProjects.forEach(project => {
+      const panel = document.createElement('div');
+      panel.className = 'ready-coordination-card';
+      const label = document.createElement('div');
+      label.textContent = `${project.projectNumber} · ${project.workItems.length}/${project.workItems.length} tasks done`;
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'ready-coordination-button';
+      button.textContent = 'Move to Coordination →';
+      button.addEventListener('click', () => moveProject(project.id,'coordination'));
+      panel.append(label,button);
+      readyList.appendChild(panel);
+    });
+    // Keep Finished Tasks as a drop target even before the first task finishes.
+    finishedSection.classList.remove('hidden');
+    document.getElementById('finishedTaskCount').textContent = String(finishedList.children.length);
     Object.entries(lists).forEach(([status,list]) => {
       if (!list.children.length) {
         const empty = document.createElement('div');
         empty.className = 'empty-state';
-        empty.textContent = isFilterActive() ? `No matching projects in ${statusLabel(status)}.` : ({
-          queue:'New projects will appear here.',
-          in_progress:'Drag projects here when EWP work begins.',
-          coordination:'Drag finished layouts or quotes here. They enter In Review.',
+        empty.textContent = isFilterActive() ? `No matching projects or tasks in ${statusLabel(status)}.` : ({
+          queue:'New tasks will appear here.',
+          in_progress:'Drag a task here when work begins.',
+          coordination:'After all tasks are done, move the linked project here for In Review.',
           completed:'Fully delivered projects appear here.'
         })[status];
         list.appendChild(empty);
       }
     });
-    const counts = {queue:0,in_progress:0,coordination:0,completed:0};
-    visibleEntries.forEach(({project}) => counts[boardColumn(projectStatus(project))]++);
+    const projectIds = {queue:new Set(),in_progress:new Set(),coordination:new Set(),completed:new Set()};
+    visibleEntries.forEach(({project,boardStatus}) => projectIds[boardColumn(boardStatus)].add(project.id));
     for (const [status,id,badge] of [
       ['queue','queueCount','queueBadge'],['in_progress','progressCount','progressBadge'],
       ['coordination','coordinationCount','coordinationBadge'],['completed','doneCount','doneBadge']
     ]) {
-      document.getElementById(id).textContent = counts[status];
-      document.getElementById(badge).textContent = counts[status];
+      document.getElementById(id).textContent = String(projectIds[status].size);
+      document.getElementById(badge).textContent = String(projectIds[status].size);
     }
   }
 
-  function createWorkItemCard(project, workItem) {
+  function createWorkItemCard(project, workItem, aggregate = false) {
     const card = document.getElementById('projectCardTemplate').content.firstElementChild.cloneNode(true);
+    const currentStatus = aggregate ? projectStatus(project) : workItem.status;
+    const done = !aggregate && currentStatus === 'done';
+    const total = project.workItems?.length || 1;
+    const taskIndex = Math.max(0,(project.workItems || []).findIndex(item => item.id === workItem.id));
+    const taskLabel = aggregate
+      ? `${total} linked task${total === 1 ? '' : 's'} · ${(project.workItems || []).filter(i=>i.status==='done').length} done`
+      : (workItem.task || 'Unassigned task');
     card.dataset.projectId = project.id;
     card.dataset.workItemId = workItem.id;
+    card.classList.toggle('task-completed-card', done);
+    card.classList.toggle('task-split-card', !aggregate);
     card.querySelector('.project-number').textContent = project.projectNumber || '—';
     const forecastLink = card.querySelector('.forecast-project-link');
     forecastLink.href = `../forecast/?project=${encodeURIComponent(project.projectNumber || '')}`;
@@ -660,97 +714,95 @@ import { loadTrackerCloud, saveTrackerProject, setTrackerProjectStatus, deleteTr
     forecastLink.addEventListener('click', event => event.stopPropagation());
     forecastLink.addEventListener('dragstart', event => event.stopPropagation());
     card.querySelector('.project-address').textContent = project.address || 'No address';
-    card.querySelector('.project-task').textContent = uniqueSorted((project.workItems || []).map(item => item.task)).join(', ') || 'No task';
+    card.querySelector('.project-task').textContent = taskLabel;
     card.querySelector('.customer-name').textContent = project.customer || '—';
-
     const phase = card.querySelector('.phase-pill');
     phase.textContent = project.phase || '—';
     phase.classList.add(String(project.phase || '').toLowerCase());
     card.querySelector('.project-type').textContent = displayProjectType(project);
-
     const tji = card.querySelector('.tji-indicator');
     tji.textContent = project.largeTji === 'Yes' ? '>14" TJI: Yes' : '>14" TJI: No';
     if (project.largeTji === 'Yes') tji.classList.add('flag-yes');
-
     const apl = card.querySelector('.apl-indicator');
     apl.textContent = project.aplRequired === 'Yes' ? 'APL: Yes' : 'APL: No';
     if (project.aplRequired === 'Yes') apl.classList.add('flag-yes');
-
     const due = card.querySelector('.due-date');
-    due.textContent = formatDate(effectiveDueDate(project, workItem));
-    if (isWorkItemOverdue(project, workItem)) due.classList.add('overdue');
-
-    card.querySelector('.assignee').textContent = uniqueSorted((project.workItems || []).map(item => item.assignee)).join(', ') || '—';
+    due.textContent = formatDate(effectiveDueDate(project,workItem));
+    if (!done && isWorkItemOverdue(project,workItem)) due.classList.add('overdue');
+    card.querySelector('.assignee').textContent = aggregate ? uniqueSorted((project.workItems || []).map(item=>item.assignee)).join(', ') || '—' : workItem.assignee || '—';
     card.querySelector('.sales').textContent = project.sales || '—';
-    const currentStatus = projectStatus(project);
-    const isOffPlate = boardColumn(currentStatus) === 'coordination' || currentStatus === 'completed';
-    card.classList.toggle('card-off-plate', isOffPlate);
+    card.classList.toggle('card-off-plate', aggregate && isOffPlate(project));
     card.querySelector('.compact-project-number').textContent = project.projectNumber || '—';
     card.querySelector('.compact-project-type').textContent = displayProjectType(project);
     card.querySelector('.compact-project-address').textContent = project.address || 'No address';
     card.querySelector('.compact-customer').textContent = project.customer || '—';
     card.querySelector('.compact-sales').textContent = project.sales || '—';
-    card.querySelector('.compact-assignee').textContent = `Assigned: ${uniqueSorted((project.workItems || []).map(item => item.assignee)).join(', ') || '—'}`;
-    card.querySelector('.compact-due').textContent = `Due: ${formatDate(effectiveDueDate(project, workItem))}`;
-    if (isWorkItemOverdue(project, workItem)) card.querySelector('.compact-due').classList.add('overdue');
+    const compactLinkage = card.querySelector('.compact-task-linkage');
+    compactLinkage.classList.toggle('hidden',aggregate);
+    compactLinkage.textContent = `↳ ${taskLabel}${total>1 ? ` · Task ${taskIndex+1}/${total}` : ''}`;
+    card.querySelector('.compact-assignee').textContent = `Assigned: ${aggregate ? '—' : workItem.assignee || '—'}`;
+    card.querySelector('.compact-due').textContent = `Due: ${formatDate(effectiveDueDate(project,workItem))}`;
+    if (!done && isWorkItemOverdue(project,workItem)) card.querySelector('.compact-due').classList.add('overdue');
     const compactStatusPill = card.querySelector('.compact-status-pill');
     compactStatusPill.textContent = statusLabel(currentStatus);
     compactStatusPill.classList.add(`status-${currentStatus}`);
     const compactCoordinationSelect = card.querySelector('.compact-coordination-select');
-    if (COORDINATION_STATUSES.includes(currentStatus)) {
+    if (aggregate && COORDINATION_STATUSES.includes(currentStatus)) {
       compactStatusPill.classList.add('hidden');
       compactCoordinationSelect.classList.remove('hidden');
       compactCoordinationSelect.classList.add(`status-${currentStatus}`);
       compactCoordinationSelect.value = currentStatus;
-      for (const eventName of ['click','pointerdown','mousedown','dragstart']) {
+      for (const eventName of ['click','pointerdown','mousedown','dragstart'])
         compactCoordinationSelect.addEventListener(eventName, event => event.stopPropagation());
-      }
       compactCoordinationSelect.addEventListener('change', event => {
         event.stopPropagation();
-        moveProject(project.id, compactCoordinationSelect.value);
+        moveProject(project.id,compactCoordinationSelect.value);
       });
     }
     const compactForecastLink = card.querySelector('.compact-forecast-link');
     compactForecastLink.href = forecastLink.href;
-    compactForecastLink.setAttribute('aria-label', `Open ${project.projectNumber || 'project'} in EWP Forecast`);
+    compactForecastLink.setAttribute('aria-label',`Open ${project.projectNumber || 'project'} in EWP Forecast`);
     compactForecastLink.addEventListener('click', event => event.stopPropagation());
     compactForecastLink.addEventListener('dragstart', event => event.stopPropagation());
     const statusPill = card.querySelector('.card-project-status');
     statusPill.textContent = statusLabel(currentStatus);
     statusPill.classList.add(`status-${currentStatus}`);
     const statusControl = card.querySelector('.coordination-status-control');
-    if (COORDINATION_STATUSES.includes(currentStatus)) {
+    if (aggregate && COORDINATION_STATUSES.includes(currentStatus)) {
       statusControl.classList.remove('hidden');
       const selector = statusControl.querySelector('select');
       selector.value = currentStatus;
-      for (const eventName of ['click','pointerdown','mousedown','dragstart']) {
-        statusControl.addEventListener(eventName, event => event.stopPropagation());
-      }
-      selector.addEventListener('change', event => {
+      for (const eventName of ['click','pointerdown','mousedown','dragstart'])
+        statusControl.addEventListener(eventName,event=>event.stopPropagation());
+      selector.addEventListener('change',event=>{
         event.stopPropagation();
-        moveProject(project.id, selector.value);
+        moveProject(project.id,selector.value);
       });
     }
-
+    for (const control of card.querySelectorAll('.task-quick-action')) {
+      if (aggregate) { control.classList.add('hidden'); continue; }
+      const nextStatus = currentStatus === 'queue' ? 'in_progress' : currentStatus === 'in_progress' ? 'done' : 'in_progress';
+      control.textContent = currentStatus === 'queue' ? 'Start task' : currentStatus === 'in_progress' ? 'Mark done ✓' : 'Reopen task';
+      control.setAttribute('aria-label',`${control.textContent}: ${taskLabel}`);
+      for (const ev of ['click','pointerdown','mousedown','dragstart']) {
+        if (ev === 'click') control.addEventListener(ev,event=>{event.stopPropagation(); moveTask(project,workItem,nextStatus);});
+        else control.addEventListener(ev,event=>event.stopPropagation());
+      }
+    }
     card.addEventListener('dragstart', event => {
-      draggedWorkItem = { projectId: project.id };
+      draggedWorkItem = {projectId:project.id,workItemId:aggregate?null:workItem.id,aggregate};
       dragOccurred = true;
       card.classList.add('dragging');
       event.dataTransfer.effectAllowed = 'move';
-      event.dataTransfer.setData('text/plain', JSON.stringify(draggedWorkItem));
+      event.dataTransfer.setData('text/plain',JSON.stringify(draggedWorkItem));
     });
-
     card.addEventListener('dragend', () => {
       draggedWorkItem = null;
       card.classList.remove('dragging');
-      document.querySelectorAll('.dropzone').forEach(zone => zone.classList.remove('drag-over'));
-      setTimeout(() => { dragOccurred = false; }, 0);
+      document.querySelectorAll('.dropzone').forEach(zone=>zone.classList.remove('drag-over'));
+      setTimeout(()=>{dragOccurred=false;},0);
     });
-
-    card.addEventListener('click', () => {
-      if (!dragOccurred) openEditProject(project.id);
-    });
-
+    card.addEventListener('click', () => { if (!dragOccurred) openEditProject(project.id,aggregate?null:workItem.id); });
     return card;
   }
 
@@ -785,7 +837,7 @@ import { loadTrackerCloud, saveTrackerProject, setTrackerProjectStatus, deleteTr
         project.aplRequired || 'No',
         formatDate(project.dateSubmitted),
         formatDate(project.dueDate),
-        uniqueSorted((project.workItems||[]).map(item=>item.dueDate)).map(formatDate).join(', ') || 'Uses project due',
+        uniqueSorted((project.workItems||[]).map(item=>effectiveDueDate(project,item))).map(formatDate).join(', ') || '—',
         uniqueSorted((project.workItems||[]).map(item=>item.assignee)).join(', ') || '—'
       ];
 
@@ -826,7 +878,7 @@ import { loadTrackerCloud, saveTrackerProject, setTrackerProjectStatus, deleteTr
     document.querySelector('.project-table').classList.toggle('hidden', visibleEntries.length === 0);
   }
 
-  // V1.1 Follow-up: one row per project (not per work item), no new tables or mutations.
+  // Follow-up: one row per project (not per work item), no new tables or mutations.
   // The sales choice is exact and case-insensitive to avoid accidental partial matches.
   function followUpMatch(actual, expected) {
     return String(actual || '').trim().toLocaleLowerCase() === String(expected || '').trim().toLocaleLowerCase();
@@ -1116,10 +1168,23 @@ import { loadTrackerCloud, saveTrackerProject, setTrackerProjectStatus, deleteTr
     });
   }
 
+  function projectDueInput(mode) {
+    return document.getElementById(mode === 'new' ? 'dueDate' : 'editDueDate');
+  }
+
+  function refreshInheritedTaskDueDates(mode) {
+    const container = document.getElementById(mode === 'new' ? 'newWorkItemsContainer' : 'editWorkItemsContainer');
+    const inherited = projectDueInput(mode).value || '';
+    container.querySelectorAll('.work-item-editor[data-due-inherited="true"] .work-item-due').forEach(input => {
+      input.value = inherited;
+    });
+  }
+
   function createWorkItemEditor(item = {}, mode = 'edit') {
     const row = document.createElement('div');
     row.className = 'work-item-editor';
     row.dataset.workItemId = item.id || '';
+    row.dataset.dueInherited = item.dueDate ? 'false' : 'true';
 
     const top = document.createElement('div');
     top.className = 'work-item-editor-top';
@@ -1180,18 +1245,35 @@ import { loadTrackerCloud, saveTrackerProject, setTrackerProjectStatus, deleteTr
     assigneeLabel.appendChild(combo);
 
     const dueLabel = document.createElement('label');
-    dueLabel.innerHTML = '<span>Task Due Date <small>(optional)</small></span>';
+    dueLabel.innerHTML = '<span>Task Due Date <small>(defaults to project)</small></span>';
     const dueInput = document.createElement('input');
     dueInput.type = 'date';
     dueInput.className = 'work-item-due';
-    dueInput.value = item.dueDate || '';
-    dueLabel.appendChild(dueInput);
+    dueInput.value = item.dueDate || projectDueInput(mode).value || '';
+    dueInput.addEventListener('change', () => { row.dataset.dueInherited = 'false'; });
+    const dueDefault = document.createElement('button');
+    dueDefault.type = 'button';
+    dueDefault.className = 'work-item-use-default';
+    dueDefault.textContent = '↺ Use project due date';
+    dueDefault.title = 'Follow future changes to the project due date';
+    dueDefault.addEventListener('click', () => {
+      row.dataset.dueInherited = 'true';
+      dueInput.value = projectDueInput(mode).value || '';
+    });
+    dueLabel.append(dueInput,dueDefault);
 
-    const hidden = document.createElement('input');
-    hidden.type = 'hidden';
-    hidden.className = 'work-item-status';
-    hidden.value = normalizeStatus(item.status || 'queue');
-    grid.append(taskLabel, assigneeLabel, dueLabel, hidden);
+    const statusLabelEl = document.createElement('label');
+    statusLabelEl.innerHTML = '<span>Task Status</span>';
+    const statusSelect = document.createElement('select');
+    statusSelect.className = 'work-item-status';
+    for (const [value,label] of [['queue','Queue'],['in_progress','In Progress'],['done','Done (task only)']]) {
+      const opt = document.createElement('option');
+      opt.value = value;opt.textContent = label;
+      statusSelect.add(opt);
+    }
+    statusSelect.value = normalizeStatus(item.status || 'queue');
+    statusLabelEl.appendChild(statusSelect);
+    grid.append(taskLabel,assigneeLabel,dueLabel,statusLabelEl);
     row.append(top, grid);
     bindCombo(combo);
     renderComboMenu(combo, assigneeInput.value);
@@ -1228,7 +1310,8 @@ import { loadTrackerCloud, saveTrackerProject, setTrackerProjectStatus, deleteTr
     for (const row of rows) {
       const task = row.querySelector('.work-item-task-select')?.value || '';
       const assignee = row.querySelector('.work-item-assignee')?.value.trim() || '';
-      const dueDate = row.querySelector('.work-item-due')?.value || '';
+      // Keep NULL on inherited tasks so later project date changes propagate.
+      const dueDate = row.dataset.dueInherited === 'true' ? '' : row.querySelector('.work-item-due')?.value || '';
       const status = normalizeStatus(row.querySelector('.work-item-status')?.value || 'queue');
       if (!task) {
         errorEl.textContent = 'Every work item needs a Task.';
@@ -1359,17 +1442,52 @@ import { loadTrackerCloud, saveTrackerProject, setTrackerProjectStatus, deleteTr
     return true;
   }
 
-  async function moveProject(projectId, destinationStatus, expectedVersion = null) {
+  async function moveTask(project,workItem,destinationStatus) {
+    if (!cloudReady || isOffPlate(project)) return;
+    if (!['queue','in_progress','done'].includes(destinationStatus) || workItem.status === destinationStatus) return;
+    await withCloud(async () => {
+      await moveTrackerWorkItem(workItem.id,destinationStatus);
+      await syncCloud(`${project.projectNumber} · ${workItem.task} → ${statusLabel(destinationStatus)}`);
+      announceProjectChange();
+    });
+  }
+
+  async function moveProject(projectId,destinationStatus,expectedVersion=null) {
     if (!cloudReady) return;
-    const project=projects.find(item => item.id === projectId);
-    // Dropping within the same column must not silently reset a manually
-    // chosen Pending/Delivering coordination substatus back to In Review.
-    if (!project || boardColumn(projectStatus(project)) === destinationStatus) return;
-    const newStatus = destinationStatus === 'coordination' ? 'in_review' : destinationStatus;
-    if (!PROJECT_STATUSES.includes(newStatus)) return;
-    await withCloud(async()=>{
-      await setTrackerProjectStatus(project.id,newStatus,expectedVersion ?? project.version);
-      await syncCloud(`Project moved to ${statusLabel(newStatus)}`);
+    const project = projects.find(item => item.id === projectId);
+    if (!project) return;
+    const current = projectStatus(project);
+    const next = destinationStatus === 'coordination' ? 'in_review' : destinationStatus;
+    if (!PROJECT_STATUSES.includes(next) || (boardColumn(current) === destinationStatus && destinationStatus === 'coordination') || current === next) return;
+    if (destinationStatus === 'coordination' && !allTasksDone(project) && !isOffPlate(project)) {
+      alert('Finish all linked tasks first. Then use “Move to Coordination” to move the project into In Review.');
+      return;
+    }
+    if (next === 'completed' && !isOffPlate(project)) {
+      alert('Completed means the entire job has been delivered. Move the project through Coordination first.');
+      return;
+    }
+    // Reopen only the selected task when an off-plate project is pulled back
+    // onto the EWP plate. Keep all other completed tasks in their history.
+    let reopen = null;
+    if (isOffPlate(project) && ['queue','in_progress'].includes(next) &&
+        !(project.workItems || []).some(item => item.status !== 'done') && project.workItems?.length) {
+      if (project.workItems.length === 1) reopen = project.workItems[0];
+      else {
+        const choice = prompt(`Which task should be reopened for ${project.projectNumber}?\n${project.workItems.map((item,i)=>`${i+1}. ${item.task}`).join('\n')}\nEnter the task number (Cancel to keep the project as-is).`);
+        if (choice === null) return;
+        const idx = Number(choice);
+        if (!Number.isInteger(idx) || idx < 1 || idx > project.workItems.length) {
+          alert('Please choose a valid task number. No changes were made.');
+          return;
+        }
+        reopen = project.workItems[idx-1];
+      }
+    }
+    await withCloud(async () => {
+      await setTrackerProjectStatus(project.id,next,expectedVersion ?? project.version);
+      if (reopen) await moveTrackerWorkItem(reopen.id,next);
+      await syncCloud(`Project moved to ${statusLabel(next)}`);
       announceProjectChange();
     });
   }
@@ -1469,6 +1587,8 @@ import { loadTrackerCloud, saveTrackerProject, setTrackerProjectStatus, deleteTr
     event.target.value = event.target.value.replace(/\D/g, '').slice(0, 3);
   });
 
+  document.getElementById('dueDate').addEventListener('change', () => refreshInheritedTaskDueDates('new'));
+  document.getElementById('editDueDate').addEventListener('change', () => refreshInheritedTaskDueDates('edit'));
   document.getElementById('addNewWorkItem').addEventListener('click', () => {
     addWorkItemEditor('newWorkItemsContainer', { status: 'queue' }, 'new');
   });
@@ -1557,6 +1677,15 @@ import { loadTrackerCloud, saveTrackerProject, setTrackerProjectStatus, deleteTr
     if (!validateDates(submitted, due, error)) return;
     const workItems = collectWorkItems('editWorkItemsContainer', error, project);
     if (!workItems || !validateWorkItemDates(workItems, submitted, error)) return;
+    const selectedStatus = document.getElementById('editProjectStatus').value;
+    if (COORDINATION_STATUSES.includes(selectedStatus) && !isOffPlate(project) && workItems.some(item=>item.status!=='done')) {
+      error.textContent = 'All work items must be Done before moving the project to Coordination.';
+      return;
+    }
+    if (selectedStatus === 'completed' && !isOffPlate(project)) {
+      error.textContent = 'A project must enter Coordination before it can be marked fully delivered.';
+      return;
+    }
 
     await withCloud(async()=>{
       const payload={
@@ -1572,8 +1701,7 @@ import { loadTrackerCloud, saveTrackerProject, setTrackerProjectStatus, deleteTr
         dateSubmitted:submitted,dueDate:due
       };
       await saveTrackerProject(payload,workItems.map(item=>({...item,id:item.id||crypto.randomUUID()})),project.version);
-      const selectedStatus = document.getElementById('editProjectStatus').value;
-      if (selectedStatus !== projectStatus(project)) {
+      if (selectedStatus !== (project.projectStatus || projectStatus(project))) {
         // tracker_save_project increments version once. Apply a second, version-
         // checked status change rather than modifying the legacy Forecast RPC.
         await setTrackerProjectStatus(project.id, selectedStatus, project.version + 1);
@@ -1609,7 +1737,7 @@ import { loadTrackerCloud, saveTrackerProject, setTrackerProjectStatus, deleteTr
     });
   });
 
-  Object.values(lists).forEach(zone => {
+  [...Object.values(lists),document.getElementById('finishedTaskList')].forEach(zone => {
     zone.addEventListener('dragover', event => {
       event.preventDefault();
       event.dataTransfer.dropEffect = 'move';
@@ -1625,7 +1753,20 @@ import { loadTrackerCloud, saveTrackerProject, setTrackerProjectStatus, deleteTr
       if (!payload) {
         try { payload = JSON.parse(event.dataTransfer.getData('text/plain')); } catch { payload = null; }
       }
-      if (payload?.projectId) moveProject(payload.projectId, zone.dataset.status);
+      if (!payload?.projectId) return;
+      const project = projects.find(item => item.id === payload.projectId);
+      if (!project) return;
+      const destination = zone.dataset.status;
+      if (payload.aggregate) {
+        if (destination === 'done') return;
+        moveProject(project.id,destination);
+      } else {
+        const item = project.workItems.find(task => task.id === payload.workItemId);
+        if (!item) return;
+        if (['queue','in_progress','done'].includes(destination)) moveTask(project,item,destination);
+        else if (destination === 'coordination') moveProject(project.id,destination);
+        else alert('This is a task, not a fully delivered project. Mark the task Done first, then move the project through Coordination.');
+      }
     });
   });
 

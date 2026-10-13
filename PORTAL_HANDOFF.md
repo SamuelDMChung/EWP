@@ -1,3 +1,29 @@
+# EWP Management Portal — Canonical V1.5 WEB Handoff
+
+**Release:** `EWP_Management_Portal_V1_5_WEB_FULL.zip` (October 13, 2026).  
+**Baseline:** V1.4 WEB (preserved source/handoff below). **Next version: V1.6 WEB.**  
+**Scope:** Project Tracking web UX and task-to-Coordination workflow, NOT Forecast calculations / parsers / Supabase shared records / iOS.  
+**Required:** Back up Supabase, then run `v1_5_atomic_task_coordination.sql` exactly once BEFORE uploading the V1.5 web files. This replaces existing task-move RPC atomically and reconciles older all-Done active projects. It requires prior V1.2 project-status and V1.4 reconciliation migrations; do NOT rerun old setup SQL scripts.
+
+## V1.5 decisions implemented
+
+1. **Direct task drag into Coordination.** Task cards can move Queue ↔ In Progress and each independently into Coordination. The latter persists `tracker_work_items.status='done'` while other linked cards stay in their own column. Partial task cards in Coordination display task name / Task N of M / arrival progress, read-only `In Review`, and are draggable back to Queue or In Progress. The green Finished Tasks shelf, Move to Coordination action and Mark Done/Start/Reopen card buttons from V1.4 were removed.
+2. **Automatic visual merge.** When the **final** work item moves to Coordination, a single Supabase RPC transaction records task Done **and** atomically changes parent `projects.tracker_status` to `in_review`. Board then renders ONE combined Coordination card (not duplicated rows), preserving ALL original task records / assignees / dates / TC# / Forecast data. Subsequent Pending, In Review, Delivering, and Completed operate on that same project-level card; Completed still means fully delivered, never just that drafting ended.
+3. **Reopening.** Drag a partial Coordination task back out to resume that individual task. Drag a combined project card back to Queue/In Progress to choose which task to reopen; other completed work items remain Done and reappear separately in Coordination. No data merging or deletion.
+4. **New-project task form:** remove Task Status (new tasks always saved as queue) and `↺ Use project due date`. Task date automatically shows/inherits the project due date, saves NULL for inheritance, and follows future project-date changes; typing a task-specific date overrides it, and **clearing the custom date restores inheritance automatically**. Edit-project form retains Task Status for maintenance; a last-task edit to Done also promotes the overall project to In Review.
+5. **Filters/counts:** Coordination color/status quick filters include individually finished In Review work items, as well as combined project statuses. Each column badge counts unique project numbers in that column, not total tasks. Search/List/Follow-up retain one project-level record; customer-sales compact spacing retained.
+6. **No Forecast domain edits.** `forecast/app.mjs`, parsers, `.mjs` dependencies, styles and auth/backend keys unchanged; only visible masthead version and cache-busting refs changed on Forecast and Portal. Griff branding remains. iOS Capacitor stays frozen at demo V1.3.
+
+## V1.5 test and rollout
+
+- Automated tests: JS syntax; static references; mocked headless Chromium for Queue→In Progress→partial Coordination→automatic combined Coordination, reopen/split, due-date inheritance and new task statuses; static SQL review. **Real Supabase deployment/test cannot be performed in this environment.**
+- Back up the existing Supabase project and GitHub Pages files. If V1.4's `v1_4_legacy_task_status_reconciliation.sql` was not applied, run that first. Run `v1_5_atomic_task_coordination.sql` once in SQL Editor and check success.
+- Upload *all* contents of V1.5 ZIP to GitHub Pages repo root (not a nested versioned directory). Refresh browser, log in, create a TEST project with 2 work items; both start Queue. Drag one to In Progress and to Coordination; it should show ONE task (1/2) while the other remains on-plate. Drag second to Coordination; both collapse to ONE In Review project card. Drag combined card back to In Progress and select Task 2; verify Task 1 remains coordinated. Then test Coordination pills and Forecast link.
+- Do not use this build as proof of tested live Supabase. The SQL is needed for concurrency-safe last-task aggregation; deploying frontend without it can leave server project statuses stale.
+- **Not included in V1.5 (separately discussed):** shared Forecast Sales/Project Type choices, SFD and Others forecasting parity with Multi, PDF-less manual Forecast creation, Forecast-created Coordination → Delivering rule, and Option A (preserve existing Tracking status on first Forecast import). These remain next-phase candidate tasks, not silently implemented.
+
+---
+
 # EWP Management Portal — Canonical V1.4 WEB Handoff
 
 **Latest full WEB package:** `EWP_Management_Portal_V1_4_WEB_FULL.zip` (October 13, 2026).  

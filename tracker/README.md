@@ -1,3 +1,9 @@
+# Project Tracking V1.5 WEB — current behavior
+
+Move each individual work item directly to Coordination; when all linked tasks arrive, one combined project card appears in In Review. Move individual coordinated tasks back by drag; to reopen a combined project drag back and select a task. New-project tasks always Queue and inherit the project due date without a reset control. Run root `v1_5_atomic_task_coordination.sql` before deployment. Refer to root `PORTAL_HANDOFF.md`.
+
+---
+
 # V1.4 Tracker independent task cards
 
 For active projects, every `tracker_work_items` record is one Board card linked to the same project #. Task queue, in progress and done are independent, and Finished Tasks are shown inside the In Progress column. When all tasks finish the user manually moves the project to Coordination In Review, which combines into one project card again. Completed means the whole job delivered. Individual task statuses are stored via the existing `tracker_move_work_item` RPC. In edit/new task forms, an empty stored task due date inherits the project due date *visibly*, without saving duplicate dates. Use “Use project due date” to reset an override. Customer/sales separator has wider spacing. One-time deployment reconciliation of legacy all-queued tasks under In Progress projects: see root `v1_4_legacy_task_status_reconciliation.sql`. Full documentation and remaining Forecast TODOs: root `PORTAL_HANDOFF.md`. V1.3 features preserved otherwise.

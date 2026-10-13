@@ -1131,30 +1131,21 @@ input:focus,select:focus,textarea:focus{border-color:#747300;box-shadow:0 0 0 3p
 .compact-task-linkage.hidden { display: none; }
 .task-split-card { border-left: 3px solid #747300; }
 .task-completed-card { border-left-color: #208052; background: #fbfdfb; }
-.task-quick-action { margin-top: 7px; border: 1px solid #d5d3ad; background: #f7f6e7; color: #555300; cursor: pointer; border-radius: 6px; font-weight: 800; font-size: 11px; padding: 5px 8px; }
-.task-quick-action:hover { background: #eae8c7; }
-.task-quick-action:focus-visible { outline: 2px solid #747300; outline-offset: 2px; }
-.task-quick-action.hidden { display: none !important; }
-.board.board-compact .detailed-task-action, .board.board-detailed .compact-task-action { display: none; }
-.finished-tasks-section { margin-top: 14px; padding: 10px 8px 8px; background: #edf5ef; border: 1px dashed #b8d5c1; border-radius: 9px; }
-.finished-tasks-section.hidden { display: none; }
-.finished-tasks-heading { display: flex; justify-content: space-between; align-items: center; color: #21734b; font-size: 12px; }
-.finished-tasks-heading span { background: white; padding: 2px 7px; border-radius: 20px; }
-.finished-tasks-section p { color: #5d7568; font-size: 10px; margin: 5px 0 9px; }
-.finished-task-dropzone { min-height: 42px; padding: 3px 0; }
-.finished-task-dropzone:empty::before { content:'Drop a task here to mark it Done'; display:block; text-align:center; padding: 10px 3px; font-size:11px; color:#53735e; }
-.finished-tasks-drop-hint { color:#807967; font-size:10px; margin:7px 2px 0; }
-.finished-tasks-section:not(.hidden) + .finished-tasks-drop-hint { display: none; }
-.ready-coordination-list { display: grid; gap:6px; }
-.ready-coordination-card { background:#fff; padding:8px; border:1px solid #c7dbc8; border-radius:7px; font-size:11px; font-weight:800; color:#2b6442; }
-.ready-coordination-button { display:block; width:100%; border:0; border-radius:5px; background:#747300; color:white; font-size:11px; padding:7px 5px; font-weight:800; cursor:pointer; margin-top:6px; }
-.ready-coordination-button:hover { background:#5d5c00; }
-.work-item-use-default { display:block; font-size:11px; font-weight:750; color:#747300; background:none; border:none; padding:4px 0 0; text-align:left; cursor:pointer; }
-.work-item-use-default:hover { text-decoration:underline; }
-.work-item-editor[data-due-inherited="true"] .work-item-use-default { color:#208052; }
 .work-item-grid { grid-template-columns: minmax(155px,1fr) minmax(155px,1fr) minmax(150px,1fr) minmax(135px,0.85fr); }
 @media (max-width:900px) { .work-item-grid { grid-template-columns: repeat(2,minmax(0,1fr)); } }
 @media (max-width:560px) { .work-item-grid { grid-template-columns: minmax(0,1fr); } }
-/* Keep the independent-task completion shelf near active cards, not 555px below. */
+/* Keep active task cards in a compact drop target. */
 #progressList.dropzone { min-height: 110px; }
 #progressList.dropzone:has(.project-card) { min-height: 10px; }
+
+/* V1.5: task drag into Coordination is completion; merge on final arrival. */
+.new-work-item-grid { grid-template-columns: minmax(155px,1fr) minmax(155px,1fr) minmax(170px,1fr); }
+.task-in-coordination { border-left-color: #208052; background: #fbfdfb; }
+.board .project-card.task-in-coordination .compact-workload,
+.board .project-card.task-in-coordination .card-detail-due,
+.board .project-card.task-in-coordination .card-detail-assignee { display:none; }
+@media (max-width:900px) { .new-work-item-grid { grid-template-columns: repeat(2,minmax(0,1fr)); } }
+@media (max-width:560px) { .new-work-item-grid { grid-template-columns: minmax(0,1fr); } }
+
+.compact-task-arrival { margin: 3px 0 0; color:#27734c; font-size:10px; font-weight:750; }
+.compact-task-arrival.hidden { display:none; }

@@ -1,3 +1,19 @@
+# EWP Management Portal V1.5 WEB — Deployment Quick Start
+
+**Full web source** (Portal + Tracker + unchanged Forecast backend logic). V1.5 implements drag-to-Coordination work items and automatic combined project cards, with a simpler new-project task form.
+
+1. Back up your existing Supabase database and the V1.4 GitHub Pages repository.
+2. If you have not run the V1.4 compatibility SQL yet, run `v1_4_legacy_task_status_reconciliation.sql` once first.
+3. **REQUIRED:** Run `v1_5_atomic_task_coordination.sql` **once** in Supabase SQL Editor. Do NOT rerun `phase2_migration.sql`, `v1_2_project_status_migration.sql` or the Forecast schema creation scripts.
+4. Deploy the *contents* of this directory into the root of your existing GitHub Pages repository, preserving file paths.
+5. Hard-refresh, log in, and TEST two linked tasks moved independently to Coordination; verify automatic one-card In Review merge and returning one selected task to In Progress.
+
+**Database remains shared** with Forecast. No separate iOS release in V1.5. Live testing requires your Supabase account and is not claimed here.
+
+For full details, known constraints, rollback considerations and past development history, read `PORTAL_HANDOFF.md`.
+
+---
+
 # EWP Management Portal V1.4 — WEB only
 
 Continue web development from the V1.3 source; the Capacitor V1.3 iOS demo is not updated in this package.

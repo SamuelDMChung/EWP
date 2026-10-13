@@ -4,8 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>EWP Project Tracker — Shared Cloud</title>
-  <link rel="stylesheet" href="styles.css?v=1.4" />
-  <link rel="stylesheet" href="../portal-nav.css?v=1.4" />
+  <link rel="stylesheet" href="styles.css?v=1.5" />
+  <link rel="stylesheet" href="../portal-nav.css?v=1.5" />
 </head>
 <body>
   <nav class="ewp-portal-nav" aria-label="EWP Management Portal navigation">
@@ -37,7 +37,7 @@
     <div class="brand-wrap">
       <div class="brand-kicker">EWP PROJECT TRACKING</div>
       <h1>EWP Project Tracker</h1>
-      <div class="version-line">Version V1.4 · Developed by Samuel Chung</div>
+      <div class="version-line">Version V1.5 · Developed by Samuel Chung</div>
       <button id="settingsButton" class="settings-button" type="button" aria-label="Settings" title="Open project tracking settings"><span class="settings-button-icon" aria-hidden="true">⚙</span><span>Settings</span></button>
     </div>
   </header>
@@ -123,7 +123,7 @@
       <div class="section-heading board-heading">
         <div>
           <h2>Board</h2>
-          <p>Move individual tasks between Queue, In Progress and Finished Tasks. When all tasks are done, manually move the linked project to Coordination. Completed means fully delivered.</p>
+          <p>Drag each task from Queue or In Progress directly into Coordination. When the last linked task arrives, they combine into one In Review project card. Completed means fully delivered.</p>
         </div>
         <div class="board-heading-actions">
           <div class="board-view-switch" role="group" aria-label="Board card view">
@@ -157,13 +157,6 @@
             <span class="count-badge" id="progressBadge">0</span>
           </div>
           <div class="dropzone" id="progressList" data-status="in_progress"></div>
-          <div class="finished-tasks-section" id="finishedTasksSection">
-            <div class="finished-tasks-heading"><strong>✓ Finished Tasks</strong><span id="finishedTaskCount">0</span></div>
-            <p>Finished work items stay linked to their project; this is not a delivered job.</p>
-            <div class="dropzone finished-task-dropzone" id="finishedTaskList" data-status="done" aria-label="Drop task here to mark it done"></div>
-            <div id="readyCoordinationList" class="ready-coordination-list"></div>
-          </div>
-          <div class="finished-tasks-drop-hint">Drop a task in <b>Finished Tasks</b> to complete that task only.</div>
         </section>
 
         <section class="column" data-status="coordination">
@@ -189,7 +182,7 @@
       <div class="section-heading">
         <div>
           <h2>Project List</h2>
-          <p>One row per project, even if its individual tasks appear in different Board columns. Click a row to edit.</p>
+          <p>One row per project, even if its tasks are in different columns. Drag each completed task into Coordination; linked cards then combine automatically.</p>
         </div>
         <button class="btn btn-primary add-project-trigger">+ Add Project</button>
       </div>
@@ -524,7 +517,7 @@
           <div class="work-items-heading">
             <div>
               <h3>Work Items</h3>
-              <p>Tasks move independently through Queue, In Progress and Done. Their displayed due date inherits the project date unless overridden. Coordination/Completed remain project-level.</p>
+              <p>Drag each task from Queue to In Progress to Coordination. When the last arrives, one combined project card appears. Task dates inherit the project due date unless overridden.</p>
             </div>
             <button id="addEditWorkItem" class="btn btn-secondary" type="button">+ Add Task</button>
           </div>
@@ -544,7 +537,7 @@
   </dialog>
 
   <template id="projectCardTemplate">
-    <article class="project-card" draggable="true" title="Click to edit · Drag to change status">
+    <article class="project-card" draggable="true" title="Click to edit · Drag the task to its next column">
       <div class="compact-card">
         <div class="compact-card-top">
           <strong class="compact-project-number"></strong>
@@ -554,6 +547,7 @@
         <div class="compact-project-address"></div>
         <div class="compact-project-parties"><span class="compact-customer"></span><span class="compact-parties-separator" aria-hidden="true">·</span><span class="compact-sales"></span></div>
         <div class="compact-task-linkage"></div>
+        <div class="compact-task-arrival hidden"></div>
         <div class="compact-card-footer">
           <span class="status-pill compact-status-pill"></span>
           <select class="compact-coordination-select hidden" aria-label="Change Coordination status" title="Change Coordination status">
@@ -563,7 +557,6 @@
           </select>
         </div>
         <div class="compact-workload"><span class="compact-assignee"></span><span class="compact-due"></span></div>
-        <button type="button" class="task-quick-action compact-task-action"></button>
       </div>
       <div class="detailed-card">
         <h4 class="card-heading">
@@ -584,13 +577,12 @@
         <div class="card-detail card-detail-assignee"><span>Assignee</span><strong class="assignee"></strong></div>
         <div class="card-detail"><span>Sales</span><strong class="sales"></strong></div>
         <a class="forecast-project-link" href="../forecast/">Open in Forecast ↗</a>
-        <button type="button" class="task-quick-action detailed-task-action"></button>
       </div>
     </article>
   </template>
 
   </div>
-  <script type="module" src="app.js?v=1.4"></script>
-  <script type="module" src="../workspace-auth.mjs?v=1.4"></script>
+  <script type="module" src="app.js?v=1.5"></script>
+  <script type="module" src="../workspace-auth.mjs?v=1.5"></script>
 </body>
 </html>

@@ -4,8 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>EWP Project Tracker — Shared Cloud</title>
-  <link rel="stylesheet" href="styles.css?v=1.1" />
-  <link rel="stylesheet" href="../portal-nav.css?v=1.1" />
+  <link rel="stylesheet" href="styles.css?v=1.2" />
+  <link rel="stylesheet" href="../portal-nav.css?v=1.2" />
 </head>
 <body>
   <nav class="ewp-portal-nav" aria-label="EWP Management Portal navigation">
@@ -37,7 +37,7 @@
     <div class="brand-wrap">
       <div class="brand-kicker">EWP PROJECT TRACKING</div>
       <h1>EWP Project Tracker</h1>
-      <div class="version-line">Version V1.1 · Developed by Samuel Chung</div>
+      <div class="version-line">Version V1.2 · Developed by Samuel Chung</div>
       <button id="settingsButton" class="settings-gear" type="button" aria-label="Settings" title="Settings">⚙</button>
     </div>
   </header>
@@ -123,15 +123,16 @@
       <div class="section-heading board-heading">
         <div>
           <h2>Board</h2>
-          <p>Drag individual work items between Queue, In Progress, and Done. Projects can be split between multiple people without creating extra project numbers.</p>
+          <p>Move each project between Queue, In Progress, Coordination and Completed. Coordination projects are off the EWP plate.</p>
         </div>
         <button class="btn btn-primary add-project-trigger">+ Add Project</button>
       </div>
 
       <div class="summary-row" aria-label="Project summary">
-        <div class="summary-card"><span>Queued Work</span><strong id="queueCount">0</strong></div>
-        <div class="summary-card"><span>Active Work</span><strong id="progressCount">0</strong></div>
-        <div class="summary-card"><span>Completed Work</span><strong id="doneCount">0</strong></div>
+        <div class="summary-card"><span>Queue</span><strong id="queueCount">0</strong></div>
+        <div class="summary-card"><span>In Progress</span><strong id="progressCount">0</strong></div>
+        <div class="summary-card"><span>Coordination</span><strong id="coordinationCount">0</strong></div>
+        <div class="summary-card"><span>Completed</span><strong id="doneCount">0</strong></div>
         <div class="summary-card summary-wide"><span>Next Project Number</span><strong id="nextProjectNumber">—</strong></div>
       </div>
 
@@ -152,12 +153,21 @@
           <div class="dropzone" id="progressList" data-status="in_progress"></div>
         </section>
 
-        <section class="column" data-status="done">
+        <section class="column" data-status="coordination">
           <div class="column-header">
-            <div><p class="column-kicker">COMPLETED</p><h3>Done</h3></div>
+            <div><p class="column-kicker">OFF THE EWP PLATE</p><h3>Coordination</h3></div>
+            <span class="count-badge" id="coordinationBadge">0</span>
+          </div>
+          <div class="column-status-legend"><span class="status-pill status-pending">Pending</span><span class="status-pill status-in_review">In Review</span><span class="status-pill status-delivering">Delivering</span></div>
+          <div class="dropzone" id="coordinationList" data-status="coordination"></div>
+        </section>
+
+        <section class="column" data-status="completed">
+          <div class="column-header">
+            <div><p class="column-kicker">FULLY DELIVERED</p><h3>Completed</h3></div>
             <span class="count-badge" id="doneBadge">0</span>
           </div>
-          <div class="dropzone" id="doneList" data-status="done"></div>
+          <div class="dropzone" id="doneList" data-status="completed"></div>
         </section>
       </div>
     </section>
@@ -166,7 +176,7 @@
       <div class="section-heading">
         <div>
           <h2>Project List</h2>
-          <p>All work items in one sheet. A project can appear on multiple rows when work is split between people. Click any row to edit the project.</p>
+          <p>One row per project with its current status, tasks and assignments. Click a row to edit.</p>
         </div>
         <button class="btn btn-primary add-project-trigger">+ Add Project</button>
       </div>
@@ -178,7 +188,7 @@
               <tr>
                 <th>Project #</th>
                 <th>Address</th>
-                <th>Task</th>
+                <th>Tasks</th>
                 <th>Status</th>
                 <th>Customer</th>
                 <th>Sales</th>
@@ -189,7 +199,7 @@
                 <th>Submitted</th>
                 <th>Project Due</th>
                 <th>Task Due</th>
-                <th>Assignee</th>
+                <th>Assignees</th>
               </tr>
             </thead>
             <tbody id="projectTableBody"></tbody>
@@ -223,7 +233,7 @@
             <select id="followUpPhase"><option value="">All phases</option><option value="Awarded">Awarded</option><option value="Bidding">Bidding</option></select>
           </label>
           <label class="followup-field">Status
-            <select id="followUpStatus"><option value="open">Open (exclude Done)</option><option value="">All statuses</option><option value="queue">Queue</option><option value="in_progress">In Progress</option><option value="done">Done</option></select>
+            <select id="followUpStatus"><option value="">All statuses</option><option value="open">Open (exclude Completed)</option><option value="queue">Queue</option><option value="in_progress">In Progress</option><option value="pending">Pending</option><option value="in_review">In Review</option><option value="delivering">Delivering</option><option value="completed">Completed</option></select>
           </label>
           <label class="followup-field">Assignee
             <select id="followUpAssignee"><option value="">All assignees</option></select>
@@ -247,10 +257,12 @@
       </div>
       <div class="content-card followup-email-card">
         <div class="followup-email-heading">
-          <div><h3>Email Preview</h3><p>Editable before copying. Changing selected projects updates the template.</p></div>
-          <button id="followUpCopy" class="btn btn-primary" type="button" disabled>Copy Email</button>
+          <div><h3>Email Preview</h3><p>Subject and body are separate and editable. Each has its own copy button.</p></div>
         </div>
-        <textarea id="followUpEmail" rows="13" aria-label="Follow-up email" spellcheck="true" placeholder="Choose a salesperson and projects to generate your email."></textarea>
+        <div class="followup-subject-heading"><label for="followUpSubject">Subject</label><button id="followUpCopySubject" class="btn btn-primary" type="button" disabled>Copy Subject</button></div>
+        <input id="followUpSubject" type="text" autocomplete="off" value="Request for Project Status Updates" />
+        <div class="followup-body-heading"><label for="followUpEmail">Email Body</label><button id="followUpCopy" class="btn btn-primary" type="button" disabled>Copy Email</button></div>
+        <textarea id="followUpEmail" rows="13" aria-label="Follow-up email body" spellcheck="true" placeholder="Choose a salesperson and projects to generate your email."></textarea>
         <p class="followup-copy-status" id="followUpCopyStatus" role="status" aria-live="polite"></p>
       </div>
     </section>
@@ -259,7 +271,7 @@
       <div class="section-heading">
         <div>
           <h2>Add Project</h2>
-          <p>Create one project number, then add one or more independently assigned work items. New work items enter Queue automatically.</p>
+          <p>Create one project number, with optional work items for assignments. The whole project starts in Queue.</p>
         </div>
         <button id="cancelAddProjectTop" class="btn btn-secondary" type="button">Cancel</button>
       </div>
@@ -410,7 +422,7 @@
         <div>
           <div class="brand-kicker">SAVED FILTER</div>
           <h2>Save Current Filter</h2>
-          <p>Saved filters keep the rules, so future matching work items are included automatically.</p>
+          <p>Saved filters keep the rules, so future matching projects are included automatically.</p>
         </div>
         <button type="button" class="icon-btn" id="closeSaveFilterDialog" aria-label="Close">×</button>
       </div>
@@ -488,11 +500,18 @@
         <label><span>Date Submitted</span><input id="editDateSubmitted" type="date" required /></label>
         <label><span>Due Date</span><input id="editDueDate" type="date" required /></label>
 
+        <label class="full-field"><span>Project Status</span>
+          <select id="editProjectStatus" aria-label="Overall project status">
+            <option value="queue">Queue</option><option value="in_progress">In Progress</option>
+            <option value="pending">Pending (Coordination)</option><option value="in_review">In Review (Coordination)</option>
+            <option value="delivering">Delivering (Coordination)</option><option value="completed">Completed</option>
+          </select>
+        </label>
         <div class="full-field work-items-section edit-work-items-section">
           <div class="work-items-heading">
             <div>
               <h3>Work Items</h3>
-              <p>Each task has its own assignee, status, and optional due date. A blank task due date uses the project due date.</p>
+              <p>Tasks retain their own assignees and due dates, but the project has one unified status. A blank task due date uses the project due date.</p>
             </div>
             <button id="addEditWorkItem" class="btn btn-secondary" type="button">+ Add Task</button>
           </div>
@@ -520,6 +539,7 @@
         <strong class="customer-name"></strong>
         <span class="phase-pill"></span>
       </div>
+      <div class="project-status-row"><span class="status-pill card-project-status"></span><label class="coordination-status-control hidden" title="Change coordination status"><span class="visually-hidden">Coordination status</span><select class="coordination-status-select" aria-label="Coordination status"><option value="pending">Pending</option><option value="in_review">In Review</option><option value="delivering">Delivering</option></select></label></div>
       <div class="meta-row">
         <span class="project-type"></span>
         <span class="tji-indicator"></span>
@@ -534,7 +554,7 @@
   </template>
 
   </div>
-  <script type="module" src="app.js?v=1.1"></script>
-  <script type="module" src="../workspace-auth.mjs?v=1.1"></script>
+  <script type="module" src="app.js?v=1.2"></script>
+  <script type="module" src="../workspace-auth.mjs?v=1.2"></script>
 </body>
 </html>

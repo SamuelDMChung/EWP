@@ -70,3 +70,19 @@ body{background:var(--bg)}
 main{width:min(1170px,calc(100% - 44px));margin:0 auto;padding-top:26px}
 footer{padding:20px clamp(20px,4vw,56px) 24px}
 @media(max-width:740px){.masthead{padding:24px 20px 20px}main{width:calc(100% - 32px);padding-top:20px}}
+
+/* V1.2 — brand theme. Olive green comes from original Griff logo; dark olive
+   #747300 is used behind white text for readable button contrast. */
+:root{--navy:#3c3935;--ink:#3c3935;--muted:#655f57;--border:#ddd7cc;--bg:#f8f6f2;--blue:#747300}
+body{background:var(--bg);color:var(--ink)}
+.intro h1,.brandline,.portal-login h2,.card-title{color:#3c3935}
+.eyebrow,.card-eyebrow,.open-link,.workspace-arrow{color:#747300}
+.workspace-card{border-color:#ded8cd;box-shadow:0 8px 28px rgba(60,57,53,.055)}
+.workspace-card:hover,.workspace-card:focus-visible{border-color:#949300;box-shadow:0 12px 35px rgba(60,57,53,.12)}
+.card-icon-tracker,.card-icon-forecast{background:#f0efd5;color:#747300}
+.portal-primary-button{background:#747300;color:#fff}
+.portal-primary-button:hover{background:#636300}
+.portal-signed-in{border-color:#ddd7cc;color:#3c3935}
+.portal-signed-in strong,.portal-signed-in button{color:#595700}
+.portal-login-form input:focus{outline:3px solid #eceac5;border-color:#747300}
+.portal-version{color:#655f57}

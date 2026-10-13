@@ -1,3 +1,13 @@
+# EWP Management Portal — V1.2
+
+Complete GitHub Pages/Supabase application. Two workspaces: Project Tracking and EWP Forecast.
+
+**IMPORTANT: Run `v1_2_project_status_migration.sql` in your existing Supabase SQL Editor BEFORE deploying these files.** This is a new incremental, non-destructive one-time status migration; never rerun the historical full migrations. See `PORTAL_HANDOFF.md` for precise deployment order, architecture, protected functionality, features and tests.
+
+V1.2 includes Griff palette across three pages; four project Board columns with In Review default when dragged to Coordination; one unified project status; existing task/assignee metadata preserved; new statuses on Board/List/Follow-up filters; subject/body separate copying and first-name-only salesperson greetings; same shared auth and version mastheads.
+
+Full project ZIP: `EWP_Management_Portal_V1_2_FULL.zip`. Next build: V1.3. Production verification pending.
+
 # EWP Management Portal — V1.1 (Full Source)
 
 **Developed by Samuel Chung** · Canonical baseline: V1.0 Phase 3 · Next version V1.2.  

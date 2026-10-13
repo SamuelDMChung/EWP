@@ -1,3 +1,58 @@
+# EWP Management Portal — Canonical V1.2 Handoff
+
+**Latest complete source release:** `EWP_Management_Portal_V1_2_FULL.zip` (October 13, 2026).  
+**Parent/source baseline:** `EWP_Management_Portal_V1_1_FULL.zip`, itself derived from canonical V1.0 Phase 3.  
+**Next release:** V1.3 (then V1.4, etc.).  
+**Live production verification:** NOT YET PERFORMED. No real Supabase SQL was run in this environment, no production GitHub Pages was changed, and the browser automation environment blocked local/remote test navigation. Do not assume live acceptance.
+
+## CRITICAL: V1.2 requires one-time SQL before the frontend is deployed
+
+Run **`v1_2_project_status_migration.sql`** in the existing Supabase SQL Editor **BEFORE uploading V1.2 static files**. This migration is non-destructive. It:
+
+1. Adds `public.projects.tracker_status` (the **one unified status of an entire project**, including SFD and Multi; no per-level status).
+2. Safely reconciles old Queue/In Progress/Done work item states. **Old all-Done drawing tasks become In Review, never Completed**, because full delivery cannot be inferred from drafting completion. Check migrated statuses manually and mark truly delivered jobs Completed as appropriate.
+3. Adds status validation and a new version-checked, authenticated `public.tracker_set_project_status(uuid,text,integer)` RPC for drag/drop, the coordination selector and editing. Updates the existing project `version` and `updated_at` for team synchronization.
+4. DOES NOT touch any existing Forecast data, `tracker_work_items` metadata (assignments, task descriptions, due dates), projects' sales/customer fields, past delivery history, Project # sequence counters, existing RPC definitions, triggers, or RLS policies. It does not reset TC numbering.
+5. Is safe to rerun in the sense that it only backfills `tracker_status` where still NULL, preserves previously classified statuses, and guards the named CHECK constraint. Only run once in normal deployment.
+
+Do NOT rerun `phase2_migration.sql`, `phase3_realtime_optional.sql`, or `forecast/supabase_v0_26.sql` as part of the V1.2 upgrade. Back up the database and repository first.
+
+## V1.2 features and protected behavior
+
+1. **Brand palette from exact supplied Griff logo:** olive `#949300`, charcoal `#3c3935`, warm ivory `#eae4db`. The top navigation on all three routes is charcoal, primary actions use readable dark olive `#747300` with white text, olive accents/active filters replace most former blue, and backgrounds remain lightly ivory/white for legible dense tables. Semantic error/success/warning colors are preserved. Coordination status colors remain **Pending amber**, **In Review blue**, **Delivering green**.
+2. **Four Board columns:** Queue / In Progress / Coordination / Completed. The project moves as ONE card (even if multiple legacy tasks/assignees are stored); no task-level Board status and no per-level status for Multi.
+3. **One project status:** `queue`, `in_progress`, `pending`, `in_review`, `delivering`, `completed`. `pending`, `in_review`, and `delivering` all group into Coordination. In Progress = on EWP plate; Coordination = off EWP plate; Completed = entire job delivered.
+4. **Drag behavior:** From Queue or In Progress into Coordination defaults to **In Review**. From Coordination back to Queue/In Progress restores drafting workload. Moving a Coordination card within the same column does **not** overwrite a manually selected Pending/Delivering status. Any column can be moved to Completed; no delivery automation is assumed. The Coordination card's dropdown can explicitly set Pending, In Review or Delivering. The Edit Project form also has one **Project Status** select. Task assignment metadata remains editable but its legacy independent status selection is hidden and unchanged.
+5. **Board/List filtering:** Reuses the fully functional existing saved filter system, no extra quick filter bar. Status options include all six; one result per project. Task and assignee filters/search still examine all stored work item metadata, but projects never get duplicated in Board/List. Saved filters continue to work.
+6. **Follow-up:** Default status is **All statuses**, with Open (exclude Completed) and all six detailed status choices. Retains exact salesperson matching, type/phase/assignee/due/search filters and selected-project pruning. The subject `Request for Project Status Updates` is a separate editable field with **Copy Subject**; the body is separately editable with **Copy Email**. Greeting uses salesperson **first token only** (`James Harper` → `Hi James,`). App **never sends email**.
+7. **Versioning:** Visible masthead on Portal, Tracker, Forecast, plus root footer = `Version V1.2 · Developed by Samuel Chung`. HTML asset cache tags updated to `?v=1.2` on touched assets. Source internals of Forecast remain V0.27 and all original module/SQL history is preserved. Griff logo assets remain identical from V1.1.
+
+## V1.2 verification performed / limitations
+
+- `node --check` passed for the changed Tracker JS and every existing `.js`/`.mjs` module.
+- HTML parsing checks found no duplicate IDs in the three route documents. All three page mastheads have the shared V1.2 label.
+- Node VM unit tests passed: all six project states, three statuses grouped into Coordination, legacy Done fallback mapped to In Review, first-name greeting, separate subject/body, correct TC#/client/address formatting, and SFD/Multi template branching.
+- Exact V1.1 archive diff confirmed Forecast domain `.mjs` code, Forecast parsers, auth, Realtime modules, native SQL history, and untouched files were preserved byte-for-byte (excluding explicitly changed three HTML/CSS and Tracker interface modules).
+- Headless Chromium browser test attempts were blocked by environment with `ERR_BLOCKED_BY_ADMINISTRATOR` even on intercepted URL navigations; therefore **browser interactions and real Supabase migrations have NOT been tested**. Do not describe them as passed.
+
+## Deployment / manual acceptance checklist
+
+1. Make a database backup and back up current GitHub Pages project.
+2. **Run `v1_2_project_status_migration.sql` once in Supabase SQL Editor first.** Verify returned project statuses with the read-only verification queries in that file. Inspect historical old Done projects (now In Review), manually reclassify truly delivered projects as Completed later.
+3. Copy full **V1.2 ZIP contents into the existing GitHub Pages repository root**; keep folders/root as shipped and push. Hard refresh after GitHub Pages deployment.
+4. Sign in; verify Portal two buttons, navigation, version mastheads, logo and Griff colors on Portal, Tracker and Forecast.
+5. Tracker Board: one card per project, four columns, drop Queue→Coordination = In Review, change to Pending/Delivering with card dropdown, drag to In Progress and back, drag to Completed. Check simultaneous users refresh and version conflicts.
+6. Tracker List: one row per project even when multiple work items exist; test shared search, status saved filters and task/assignee filters.
+7. Follow-up: All statuses default, exact salesperson filter, filter each six statuses, select projects, edit/copy subject and body separately, confirm `Hi James,` for a `James Harper` salesperson and correct chosen project list. No emails sent.
+8. Regression-test project creation, editing, existing task metadata and due dates, Board/List saved filters, Project # allocator (including previous repaired TC26 counter), Forecast Javelin import/prefill, sales/customer authority, Spruce, partial deliveries, purchasing, inventory, Realtime and sign-out.
+9. Only mark V1.2 live-verified after successful company-side tests.
+
+## Core architecture and protected legacy handoffs
+
+All V1.1/V1.0 Phase 3 invariants and forecast-specific handoff below continue to apply unless explicitly superseded above. In particular, Project # remains the common linking key and Project Tracking retains priority for shared metadata conflicts. Project statuses are internal Tracker metadata and must **NOT** automatically infer Forecast level delivery state. The existing `forecast/EWP_FORECAST_HANDOFF.md` remains authoritative for Forecast behavior. No additional test mode was added.
+
+---
+
 # EWP Management Portal — Canonical V1.1 Handoff
 
 **Latest complete source ZIP:** `EWP_Management_Portal_V1_1_FULL.zip`  

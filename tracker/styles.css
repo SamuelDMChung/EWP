@@ -950,3 +950,68 @@ input:focus, select:focus { border-color: var(--primary); box-shadow: 0 0 0 3px 
 @media(max-width:1020px){.followup-filters{grid-template-columns:repeat(3,minmax(0,1fr))}.followup-search-field{grid-column:span 2}}
 @media(max-width:680px){.followup-filters{grid-template-columns:repeat(2,minmax(0,1fr))}.followup-search-field{grid-column:span 2}.followup-card,.followup-email-card{padding:15px}.followup-selection-bar{align-items:flex-start;flex-direction:column}}
 @media(max-width:390px){.followup-filters{grid-template-columns:1fr}.followup-search-field{grid-column:auto}}
+
+/* V1.2 — Griff corporate palette (original #949300, #3c3935, #eae4db). */
+:root{--bg:#f8f6f2;--panel:#fff;--text:#3c3935;--navy:#3c3935;--muted:#655f57;--line:#ddd7cc;
+  --primary:#747300;--primary-dark:#636300;--primary-soft:#f0efd5}
+.site-header,.main-nav{background:#fff}
+.brand-kicker,.summary-wide strong{color:#747300}
+.version-line{color:#655f57}
+.nav-tab.active{color:#595700;background:#f0efd5}
+.btn-primary{background:#747300;color:#fff}
+.btn-primary:hover{background:#636300}
+.nav-tab:hover{color:#747300;background:#f8f7ec}
+.btn-secondary{background:#f0eee8;color:#3c3935}
+.btn-secondary:hover{background:#eae4db}
+.dropzone.drag-over{background:#f2f1d9;outline-color:#949300}
+input:focus,select:focus,textarea:focus{border-color:#747300;box-shadow:0 0 0 3px rgba(148,147,0,.13)}
+.meta-row .flag-yes{color:#5b5900;border-color:#dedcb1;background:#f3f2d9}
+.combo-option:focus,.filter-check-row:hover,.followup-project-row:hover{background:#f7f6ea;color:#3c3935}
+.forecast-project-link{background:#f0efd5;color:#555300}
+.forecast-project-link:hover,.forecast-project-link:focus-visible{background:#e5e3b6;color:#444300}
+.tracker-forecast-inline{color:#747300}
+.tracker-cloud-top{background:#f0eee6;border-color:#ddd7cc;color:#3c3935}
+.followup-project-row:has(input:checked){background:#f6f5df}
+.followup-project-row input{accent-color:#747300}
+.followup-field select:focus-visible,.followup-field input:focus-visible,#followUpEmail:focus-visible,#followUpSubject:focus-visible{outline:3px solid #eeedcb;border-color:#747300}
+.followup-email-heading h3{color:#3c3935}
+/* 4 columns; on narrower screens allow horizontal scrolling without crushing cards. */
+.board{grid-template-columns:repeat(4,minmax(245px,1fr));gap:12px}
+.column{background:#f1efe9;border-color:#ded8cd;min-height:570px}
+.column::before{content:"";display:block;height:3px;border-radius:6px;background:#949300;margin:-5px -4px 13px}
+.column-header h3{color:#3c3935}
+.column-kicker{color:#6c665a}
+.summary-row{grid-template-columns:repeat(4,minmax(120px,1fr)) minmax(210px,1.3fr)}
+@media(max-width:1260px) and (min-width:1061px){.board{grid-template-columns:repeat(4,minmax(245px,1fr));overflow-x:auto;padding-bottom:8px}.summary-row{grid-template-columns:repeat(3,minmax(130px,1fr))}.summary-wide{grid-column:span 2}}
+@media(max-width:1050px){.board{grid-template-columns:repeat(2,minmax(240px,1fr))}.column{min-height:250px}.dropzone{min-height:160px}.summary-row{grid-template-columns:repeat(3,minmax(120px,1fr))}}
+@media(max-width:720px){.board,.summary-row{grid-template-columns:1fr}.summary-wide{grid-column:auto}}
+.column-status-legend{display:flex;flex-wrap:wrap;gap:4px;margin:0 0 10px}
+.status-pill{display:inline-flex;align-items:center;padding:4px 7px;border-radius:999px;font-size:10px;font-weight:850;line-height:1.1;border:1px solid transparent;white-space:nowrap}
+.status-queue{color:#595650;background:#e7e4dd;border-color:#d8d2c7}
+.status-in_progress{color:#555300;background:#eeedd0;border-color:#dddaa3}
+/* Preserve existing semantic distinctions of the three coordination states. */
+.status-pending{color:#8a6112;background:#fff7df;border-color:#efdfa6}
+.status-in_review{color:#1d4ed8;background:#eaf1ff;border-color:#c6d7fa}
+.status-delivering{color:#18794e;background:#e9f7ef;border-color:#bbe6ca}
+.status-completed{color:#476c38;background:#eef6e6;border-color:#caddc6}
+.project-status-row{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-top:9px}
+.project-status-row .status-pill{font-size:11px}
+.coordination-status-select{font-size:11px;padding:4px 6px;max-width:126px;min-height:26px;border:1px solid #cfcac0;border-radius:6px;background:white;color:#3c3935}
+.coordination-status-control{display:inline-flex;align-items:center}
+.visually-hidden{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.followup-subject-heading,.followup-body-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:16px 0 8px}
+.followup-subject-heading label,.followup-body-heading label{font-weight:800;font-size:13px;color:#3c3935}
+#followUpSubject{width:100%;min-height:43px;padding:10px 13px;border:1px solid #cfcac0;border-radius:9px;color:#3c3935;font-size:13px}
+#followUpEmail{color:#3c3935;border-color:#cfcac0}
+#followUpCopySubject:disabled{opacity:.55;cursor:not-allowed}
+
+/* V1.2 final pass: existing saved-filter and selection widgets follow brand green. */
+.btn-filter{background:#f2f0ea;border-color:#dcd5ca;color:#3c3935}
+.btn-filter:hover{background:#eae4db}
+.multi-select-filter.has-selection .multi-filter-trigger{border-color:#949300;background:#f7f7e5;color:#595700}
+.multi-select-filter.open .multi-filter-trigger{box-shadow:0 0 0 3px rgba(148,147,0,.12)}
+.active-filter-chip{border-color:#d4d3a9;background:#f3f2de;color:#585600}
+.active-filter-chip button{background:#e7e5b8;color:#555400}
+.project-table tbody tr:hover{background:#f9f8ee}
+.followup-project-tags span{background:#f2f0ea;color:#655f57}
+.tracker-cloud-top button{border-color:#c9c4b9;color:#3c3935}

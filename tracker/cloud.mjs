@@ -37,6 +37,9 @@ export async function loadTrackerCloud() {
 export function saveTrackerProject(project, workItems, expectedVersion=null) {
   return request('rpc/tracker_save_project',{method:'POST',body:{p_project:project,p_work_items:workItems,p_expected_version:expectedVersion}});
 }
+export function setTrackerProjectStatus(id,status,expectedVersion) {
+  return request('rpc/tracker_set_project_status',{method:'POST',body:{p_id:id,p_status:status,p_expected_version:expectedVersion}});
+}
 export function moveTrackerWorkItem(id,status) {
   return request('rpc/tracker_move_work_item',{method:'POST',body:{p_id:id,p_status:status}});
 }

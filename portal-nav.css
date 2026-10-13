@@ -73,3 +73,10 @@
   flex: 0 0 29px;
   background: #3c3935;
 }
+
+/* V1.2 — Griff palette: exact supplied logo #949300 / #3c3935 / #eae4db. */
+.ewp-portal-nav{background:#3c3935;color:#eae4db}
+.ewp-portal-nav__account,.ewp-portal-nav__link{color:#eae4db}
+.ewp-portal-nav__link[aria-current="page"]{background:#eae4db;color:#3c3935}
+.ewp-portal-nav__link:hover,.ewp-portal-nav__link:focus-visible{background:#565247;color:#fff}
+.ewp-portal-nav__mark{background:#3c3935}

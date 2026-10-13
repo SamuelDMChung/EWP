@@ -1,6 +1,6 @@
 import { restoreSession, signInWithPassword, signOut, getCurrentSession, EWP_AUTH_STORAGE_KEY } from '../forecast/auth.mjs?v=1.0-p3';
 import { startTrackerRealtime, stopTrackerRealtime } from './realtime.mjs?v=1.0-p3';
-import { loadTrackerCloud, saveTrackerProject, moveTrackerWorkItem, deleteTrackerProject, getNextTrackerNumber, saveTrackerSettings, addTrackerFilter, removeTrackerFilter } from './cloud.mjs?v=1.0-p3';
+import { loadTrackerCloud, saveTrackerProject, setTrackerProjectStatus, deleteTrackerProject, getNextTrackerNumber, saveTrackerSettings, addTrackerFilter, removeTrackerFilter } from './cloud.mjs?v=1.0-p3';
 
 (() => {
   const PROJECTS_KEY = 'tc_project_tracker_v01_projects'; // legacy browser data; never used as authoritative data
@@ -29,11 +29,15 @@ import { loadTrackerCloud, saveTrackerProject, moveTrackerWorkItem, deleteTracke
   let syncing = false;
   const followUpSelectedIds = new Set();
   let followUpEmailDirty = false;
+  let followUpSubjectDirty = false;
+  const COORDINATION_STATUSES = ['pending','in_review','delivering'];
+  const PROJECT_STATUSES = ['queue','in_progress',...COORDINATION_STATUSES,'completed'];
 
   const lists = {
     queue: document.getElementById('queueList'),
     in_progress: document.getElementById('progressList'),
-    done: document.getElementById('doneList')
+    coordination: document.getElementById('coordinationList'),
+    completed: document.getElementById('doneList')
   };
 
   const projectForm = document.getElementById('projectForm');
@@ -107,6 +111,7 @@ import { loadTrackerCloud, saveTrackerProject, moveTrackerWorkItem, deleteTracke
       id:row.id, version:Number(row.version||1), projectNumber:row.project_number||'',
       sales:row.sales||'',customer:row.customer||'',address:row.address_project_name||'',
       phase:row.tracker_phase||'Awarded', projectType:type,
+      projectStatus: PROJECT_STATUSES.includes(row.tracker_status) ? row.tracker_status : null,
       projectTypeOther:row.tracker_project_type_other||'',
       largeTji:row.tracker_large_tji||'No',aplRequired:row.tracker_apl_required||'No',
       dateSubmitted:row.tracker_date_submitted||'',dueDate:row.tracker_due_date||'',
@@ -216,14 +221,17 @@ import { loadTrackerCloud, saveTrackerProject, moveTrackerWorkItem, deleteTracke
   }
 
   function statusLabel(status) {
-    return status === 'in_progress' ? 'In Progress' : status === 'done' ? 'Done' : 'Queue';
+    return ({queue:'Queue',in_progress:'In Progress',pending:'Pending',in_review:'In Review',delivering:'Delivering',completed:'Completed',coordination:'Coordination',done:'Done'})[status] || 'Queue';
   }
 
   function projectStatus(project) {
     const items = Array.isArray(project.workItems) ? project.workItems : [];
-    if (!items.length || items.every(item => item.status === 'queue')) return 'queue';
-    if (items.every(item => item.status === 'done')) return 'done';
-    return 'in_progress';
+    if (PROJECT_STATUSES.includes(project.projectStatus)) return project.projectStatus;
+    // Read-only fallback while the SQL migration is pending. Never mistake old
+    // drawing-task Done for a fully delivered project.
+    if (items.some(item => item.status === 'in_progress')) return 'in_progress';
+    if (items.length && items.every(item => item.status === 'done')) return 'in_review';
+    return 'queue';
   }
 
   function effectiveDueDate(project, workItem) {
@@ -232,7 +240,7 @@ import { loadTrackerCloud, saveTrackerProject, moveTrackerWorkItem, deleteTracke
 
   function isWorkItemOverdue(project, workItem) {
     const due = effectiveDueDate(project, workItem);
-    return workItem.status !== 'done' && due && due < todayISO();
+    return projectStatus(project) !== 'completed' && due && due < todayISO();
   }
 
   function allWorkItemEntries() {
@@ -271,7 +279,10 @@ import { loadTrackerCloud, saveTrackerProject, moveTrackerWorkItem, deleteTracke
     if (key === 'status') return [
       { value: 'queue', label: 'Queue' },
       { value: 'in_progress', label: 'In Progress' },
-      { value: 'done', label: 'Done' }
+      { value: 'pending', label: 'Pending' },
+      { value: 'in_review', label: 'In Review' },
+      { value: 'delivering', label: 'Delivering' },
+      { value: 'completed', label: 'Completed' }
     ];
     if (key === 'aplRequired' || key === 'largeTji') return [
       { value: 'Yes', label: 'Yes' },
@@ -329,7 +340,7 @@ import { loadTrackerCloud, saveTrackerProject, moveTrackerWorkItem, deleteTracke
 
   function entryValue(entry, key) {
     const { project, workItem } = entry;
-    if (key === 'status') return workItem.status;
+    if (key === 'status') return projectStatus(project);
     if (key === 'assignee') return workItem.assignee;
     if (key === 'task') return workItem.task;
     return project[key];
@@ -344,11 +355,11 @@ import { loadTrackerCloud, saveTrackerProject, moveTrackerWorkItem, deleteTracke
         project.address,
         project.customer,
         project.sales,
-        workItem.assignee,
-        workItem.task,
+        ...(project.workItems || []).map(item => item.assignee),
+        ...(project.workItems || []).map(item => item.task),
         project.phase,
         displayProjectType(project),
-        statusLabel(workItem.status),
+        statusLabel(projectStatus(project)),
         statusLabel(projectStatus(project)),
         project.largeTji,
         project.aplRequired,
@@ -361,13 +372,18 @@ import { loadTrackerCloud, saveTrackerProject, moveTrackerWorkItem, deleteTracke
 
     return Object.entries(activeFilters).every(([key, selected]) => {
       if (!selected.length) return true;
-      const value = String(entryValue(entry, key) || '');
-      return selected.some(option => String(option).toLowerCase() === value.toLowerCase());
+      const values = key === 'assignee' || key === 'task'
+        ? (project.workItems || []).map(item => String(item[key] || ''))
+        : [String(entryValue(entry, key) || '')];
+      return values.some(value => selected.some(option => String(option).toLowerCase() === value.toLowerCase()));
     });
   }
 
   function getFilteredWorkItems() {
-    return allWorkItemEntries().filter(workItemEntryMatchesFilters);
+    // A project appears once on Board and List even when several legacy work
+    // items / assignees exist. The entire project shares one status.
+    return projects.map(project => ({project,workItem:project.workItems?.[0] || normalizeWorkItem()}))
+      .filter(workItemEntryMatchesFilters);
   }
 
   function markFilterAsCustom() {
@@ -494,13 +510,13 @@ import { loadTrackerCloud, saveTrackerProject, moveTrackerWorkItem, deleteTracke
     renderFollowUp();
     renderFilterControls();
     const visibleEntries = getFilteredWorkItems();
-    const totalEntries = allWorkItemEntries().length;
+    const totalEntries = projects.length;
     const visibleProjects = new Set(visibleEntries.map(entry => entry.project.id)).size;
     const result = document.getElementById('filterResultCount');
     if (isFilterActive()) {
-      result.textContent = `${visibleEntries.length} of ${totalEntries} work items · ${visibleProjects} project${visibleProjects === 1 ? '' : 's'}`;
+      result.textContent = `${visibleProjects} of ${totalEntries} projects`;
     } else {
-      result.textContent = `${totalEntries} work item${totalEntries === 1 ? '' : 's'} · ${projects.length} project${projects.length === 1 ? '' : 's'}`;
+      result.textContent = `${projects.length} project${projects.length === 1 ? '' : 's'}`;
     }
   }
 
@@ -566,48 +582,45 @@ import { loadTrackerCloud, saveTrackerProject, moveTrackerWorkItem, deleteTracke
     renderFilterDrivenViews();
   }
 
+  function boardColumn(status) {
+    return COORDINATION_STATUSES.includes(status) ? 'coordination' : status;
+  }
+
   function renderBoard() {
     Object.values(lists).forEach(list => { list.innerHTML = ''; });
     const visibleEntries = getFilteredWorkItems();
-
     const sorted = [...visibleEntries].sort((a, b) => {
-      if (a.workItem.status === 'done' && b.workItem.status === 'done') {
-        return (b.workItem.completedAt || '').localeCompare(a.workItem.completedAt || '');
-      }
-      return (effectiveDueDate(a.project, a.workItem) || '9999-12-31').localeCompare(effectiveDueDate(b.project, b.workItem) || '9999-12-31') ||
-        (a.workItem.createdAt || '').localeCompare(b.workItem.createdAt || '');
+      if (projectStatus(a.project) === 'completed' && projectStatus(b.project) === 'completed')
+        return (b.project.updatedAt || '').localeCompare(a.project.updatedAt || '');
+      return (a.project.dueDate || '9999-12-31').localeCompare(b.project.dueDate || '9999-12-31') ||
+        (a.project.createdAt || '').localeCompare(b.project.createdAt || '');
     });
-
-    sorted.forEach(entry => {
-      const list = lists[entry.workItem.status] || lists.queue;
-      list.appendChild(createWorkItemCard(entry.project, entry.workItem));
+    sorted.forEach(({project,workItem}) => {
+      const list = lists[boardColumn(projectStatus(project))] || lists.queue;
+      list.appendChild(createWorkItemCard(project,workItem));
     });
-
-    Object.entries(lists).forEach(([status, list]) => {
+    Object.entries(lists).forEach(([status,list]) => {
       if (!list.children.length) {
         const empty = document.createElement('div');
         empty.className = 'empty-state';
-        if (isFilterActive()) empty.textContent = `No matching work items in ${statusLabel(status)}.`;
-        else empty.textContent = status === 'queue'
-          ? 'New work items will appear here.'
-          : status === 'in_progress'
-            ? 'Drag a work item here when work starts.'
-            : 'Completed work items will appear here.';
+        empty.textContent = isFilterActive() ? `No matching projects in ${statusLabel(status)}.` : ({
+          queue:'New projects will appear here.',
+          in_progress:'Drag projects here when EWP work begins.',
+          coordination:'Drag finished layouts or quotes here. They enter In Review.',
+          completed:'Fully delivered projects appear here.'
+        })[status];
         list.appendChild(empty);
       }
     });
-
-    const counts = {
-      queue: visibleEntries.filter(entry => entry.workItem.status === 'queue').length,
-      in_progress: visibleEntries.filter(entry => entry.workItem.status === 'in_progress').length,
-      done: visibleEntries.filter(entry => entry.workItem.status === 'done').length
-    };
-    document.getElementById('queueCount').textContent = counts.queue;
-    document.getElementById('progressCount').textContent = counts.in_progress;
-    document.getElementById('doneCount').textContent = counts.done;
-    document.getElementById('queueBadge').textContent = counts.queue;
-    document.getElementById('progressBadge').textContent = counts.in_progress;
-    document.getElementById('doneBadge').textContent = counts.done;
+    const counts = {queue:0,in_progress:0,coordination:0,completed:0};
+    visibleEntries.forEach(({project}) => counts[boardColumn(projectStatus(project))]++);
+    for (const [status,id,badge] of [
+      ['queue','queueCount','queueBadge'],['in_progress','progressCount','progressBadge'],
+      ['coordination','coordinationCount','coordinationBadge'],['completed','doneCount','doneBadge']
+    ]) {
+      document.getElementById(id).textContent = counts[status];
+      document.getElementById(badge).textContent = counts[status];
+    }
   }
 
   function createWorkItemCard(project, workItem) {
@@ -621,7 +634,7 @@ import { loadTrackerCloud, saveTrackerProject, moveTrackerWorkItem, deleteTracke
     forecastLink.addEventListener('click', event => event.stopPropagation());
     forecastLink.addEventListener('dragstart', event => event.stopPropagation());
     card.querySelector('.project-address').textContent = project.address || 'No address';
-    card.querySelector('.project-task').textContent = workItem.task || 'No task';
+    card.querySelector('.project-task').textContent = uniqueSorted((project.workItems || []).map(item => item.task)).join(', ') || 'No task';
     card.querySelector('.customer-name').textContent = project.customer || '—';
 
     const phase = card.querySelector('.phase-pill');
@@ -641,11 +654,28 @@ import { loadTrackerCloud, saveTrackerProject, moveTrackerWorkItem, deleteTracke
     due.textContent = formatDate(effectiveDueDate(project, workItem));
     if (isWorkItemOverdue(project, workItem)) due.classList.add('overdue');
 
-    card.querySelector('.assignee').textContent = workItem.assignee || '—';
+    card.querySelector('.assignee').textContent = uniqueSorted((project.workItems || []).map(item => item.assignee)).join(', ') || '—';
     card.querySelector('.sales').textContent = project.sales || '—';
+    const currentStatus = projectStatus(project);
+    const statusPill = card.querySelector('.card-project-status');
+    statusPill.textContent = statusLabel(currentStatus);
+    statusPill.classList.add(`status-${currentStatus}`);
+    const statusControl = card.querySelector('.coordination-status-control');
+    if (COORDINATION_STATUSES.includes(currentStatus)) {
+      statusControl.classList.remove('hidden');
+      const selector = statusControl.querySelector('select');
+      selector.value = currentStatus;
+      for (const eventName of ['click','pointerdown','mousedown','dragstart']) {
+        statusControl.addEventListener(eventName, event => event.stopPropagation());
+      }
+      selector.addEventListener('change', event => {
+        event.stopPropagation();
+        moveProject(project.id, selector.value);
+      });
+    }
 
     card.addEventListener('dragstart', event => {
-      draggedWorkItem = { projectId: project.id, workItemId: workItem.id };
+      draggedWorkItem = { projectId: project.id };
       dragOccurred = true;
       card.classList.add('dragging');
       event.dataTransfer.effectAllowed = 'move';
@@ -660,7 +690,7 @@ import { loadTrackerCloud, saveTrackerProject, moveTrackerWorkItem, deleteTracke
     });
 
     card.addEventListener('click', () => {
-      if (!dragOccurred) openEditProject(project.id, workItem.id);
+      if (!dragOccurred) openEditProject(project.id);
     });
 
     return card;
@@ -681,14 +711,14 @@ import { loadTrackerCloud, saveTrackerProject, moveTrackerWorkItem, deleteTracke
     sorted.forEach(({ project, workItem }) => {
       const row = document.createElement('tr');
       row.className = 'project-table-row';
-      row.title = 'Click to edit project and work items';
+      row.title = 'Click to edit project';
       if (isWorkItemOverdue(project, workItem)) row.classList.add('row-overdue');
 
       const cells = [
         project.projectNumber || '—',
         project.address || '—',
-        workItem.task || '—',
-        statusLabel(workItem.status),
+        uniqueSorted((project.workItems||[]).map(item=>item.task)).join(', ') || '—',
+        statusLabel(projectStatus(project)),
         project.customer || '—',
         project.sales || '—',
         project.phase || '—',
@@ -697,8 +727,8 @@ import { loadTrackerCloud, saveTrackerProject, moveTrackerWorkItem, deleteTracke
         project.aplRequired || 'No',
         formatDate(project.dateSubmitted),
         formatDate(project.dueDate),
-        workItem.dueDate ? formatDate(workItem.dueDate) : 'Uses project due',
-        workItem.assignee || '—'
+        uniqueSorted((project.workItems||[]).map(item=>item.dueDate)).map(formatDate).join(', ') || 'Uses project due',
+        uniqueSorted((project.workItems||[]).map(item=>item.assignee)).join(', ') || '—'
       ];
 
       cells.forEach((value, index) => {
@@ -714,18 +744,24 @@ import { loadTrackerCloud, saveTrackerProject, moveTrackerWorkItem, deleteTracke
           link.addEventListener('click', event => event.stopPropagation());
           td.appendChild(link);
         }
-        if (index === 3) td.classList.add('table-status');
+        if (index === 3) {
+          td.classList.add('table-status');
+          const badge = document.createElement('span');
+          badge.className = `status-pill status-${projectStatus(project)}`;
+          badge.textContent = statusLabel(projectStatus(project));
+          td.replaceChildren(badge);
+        }
         if ((index === 11 || index === 12) && isWorkItemOverdue(project, workItem)) td.classList.add('overdue');
         row.appendChild(td);
       });
 
-      row.addEventListener('click', () => openEditProject(project.id, workItem.id));
+      row.addEventListener('click', () => openEditProject(project.id));
       body.appendChild(row);
     });
 
     if (!visibleEntries.length) {
-      empty.textContent = allWorkItemEntries().length && isFilterActive()
-        ? 'No work items match the current search and filters.'
+      empty.textContent = projects.length && isFilterActive()
+        ? 'No projects match the current search and filters.'
         : 'No projects yet.';
     }
     empty.classList.toggle('hidden', visibleEntries.length !== 0);
@@ -751,7 +787,7 @@ import { loadTrackerCloud, saveTrackerProject, moveTrackerWorkItem, deleteTracke
   function followUpProjectDeadlines(project) {
     // Completed work-item deadlines are not actionable for an overdue check.
     const dates = [project.dueDate,
-      ...(project.workItems || []).filter(item => item.status !== 'done').map(item => item.dueDate)
+      ...(project.workItems || []).map(item => item.dueDate)
     ].filter(value => /^\d{4}-\d{2}-\d{2}$/.test(value || ''));
     return [...new Set(dates)];
   }
@@ -775,14 +811,14 @@ import { loadTrackerCloud, saveTrackerProject, moveTrackerWorkItem, deleteTracke
       if (type && !followUpMatch(currentType, type)) return false;
       if (phase && !followUpMatch(project.phase, phase)) return false;
       const state = projectStatus(project);
-      if (status === 'open' && state === 'done') return false;
+      if (status === 'open' && state === 'completed') return false;
       if (status && status !== 'open' && status !== state) return false;
       if (assignee && !(project.workItems || []).some(item => followUpMatch(item.assignee, assignee))) return false;
       if (search && ![project.projectNumber, project.customer, project.address]
         .some(value => String(value || '').toLocaleLowerCase().includes(search))) return false;
       const deadlines = followUpProjectDeadlines(project);
       if (due === 'no-date' && deadlines.length) return false;
-      if (due === 'overdue' && (state === 'done' || !deadlines.some(date => date < today))) return false;
+      if (due === 'overdue' && (state === 'completed' || !deadlines.some(date => date < today))) return false;
       if (due === '30days' && !deadlines.some(date => date >= today && date <= maxDue)) return false;
       return true;
     }).sort((a, b) => String(a.projectNumber).localeCompare(String(b.projectNumber),undefined,{numeric:true}));
@@ -800,7 +836,8 @@ import { loadTrackerCloud, saveTrackerProject, moveTrackerWorkItem, deleteTracke
     const projectLines = selectedProjects.map(project =>
       `${project.projectNumber || '—'} | ${project.customer || '—'} | ${project.address || '—'}`
     ).join('\n');
-    return `Subject: Request for Project Status Updates\n\nHi ${sales},\n\n` +
+    const firstName = String(sales).trim().split(/\s+/)[0] || sales;
+    return `Hi ${firstName},\n\n` +
       `We are currently updating our ${queue} queue of projects drawn in Javelin for layouts.\n\n` +
       `Could you update us on the status of the following projects? Any information would be helpful, including upcoming delivery dates, orders you have written (and for which levels), or projects that are no longer moving ahead.\n\n` +
       `${projectLines}\n\nThank you!`;
@@ -809,8 +846,11 @@ import { loadTrackerCloud, saveTrackerProject, moveTrackerWorkItem, deleteTracke
   function renderFollowUpEmail() {
     const box = document.getElementById('followUpEmail');
     const copy = document.getElementById('followUpCopy');
+    const subject = document.getElementById('followUpSubject');
     if (!followUpEmailDirty) box.value = followUpEmailText();
+    if (!followUpSubjectDirty) subject.value = 'Request for Project Status Updates';
     copy.disabled = !followUpSelectedIds.size || !box.value.trim();
+    document.getElementById('followUpCopySubject').disabled = !followUpSelectedIds.size || !subject.value.trim();
     const visible = followUpVisibleProjects();
     document.getElementById('followUpSelectAll').disabled = !visible.length || visible.every(project => followUpSelectedIds.has(project.id));
     document.getElementById('followUpClear').disabled = followUpSelectedIds.size === 0;
@@ -829,7 +869,7 @@ import { loadTrackerCloud, saveTrackerProject, moveTrackerWorkItem, deleteTracke
     const previousSales = salesEl.value;
     followUpSelectOptions('followUpSales', [...(settings.sales || []), ...projects.map(project => project.sales)], 'Choose salesperson…');
     followUpSelectOptions('followUpAssignee', [...(settings.assignees || []), ...allWorkItemEntries().map(entry => entry.workItem.assignee)], 'All assignees');
-    if (previousSales !== salesEl.value) { followUpSelectedIds.clear(); followUpEmailDirty = false; }
+    if (previousSales !== salesEl.value) { followUpSelectedIds.clear(); followUpEmailDirty = false; followUpSubjectDirty = false; }
 
     const visible = followUpVisibleProjects();
     const visibleIds = new Set(visible.map(project => project.id));
@@ -887,20 +927,20 @@ import { loadTrackerCloud, saveTrackerProject, moveTrackerWorkItem, deleteTracke
     renderFollowUpEmail();
   }
 
-  async function copyFollowUpEmail() {
-    const textarea = document.getElementById('followUpEmail');
+  async function copyFollowUpField(id, label) {
+    const field = document.getElementById(id);
     const status = document.getElementById('followUpCopyStatus');
-    if (!followUpSelectedIds.size || !textarea.value.trim()) return;
+    if (!followUpSelectedIds.size || !field.value.trim()) return;
     try {
-      if (navigator.clipboard?.writeText) await navigator.clipboard.writeText(textarea.value);
+      if (navigator.clipboard?.writeText) await navigator.clipboard.writeText(field.value);
       else {
-        textarea.focus(); textarea.select();
+        field.focus(); field.select();
         if (!document.execCommand('copy')) throw new Error('Copy not supported');
       }
-      status.textContent = 'Email copied. Paste it into your email client and review before sending.';
-    } catch (error) {
-      textarea.focus(); textarea.select();
-      status.textContent = 'Automatic copy unavailable. Email text selected—use Ctrl+C or Cmd+C.';
+      status.textContent = `${label} copied. Paste it into your email client and review before sending.`;
+    } catch {
+      field.focus(); field.select();
+      status.textContent = `Automatic copy unavailable. ${label} selected—use Ctrl+C or Cmd+C.`;
     }
   }
 
@@ -1089,35 +1129,11 @@ import { loadTrackerCloud, saveTrackerProject, moveTrackerWorkItem, deleteTracke
     dueInput.value = item.dueDate || '';
     dueLabel.appendChild(dueInput);
 
-    const statusLabelEl = document.createElement('label');
-    statusLabelEl.innerHTML = '<span>Status</span>';
-    if (mode === 'new') {
-      const statusDisplay = document.createElement('div');
-      statusDisplay.className = 'fixed-status-field';
-      statusDisplay.textContent = 'Queue';
-      const hidden = document.createElement('input');
-      hidden.type = 'hidden';
-      hidden.className = 'work-item-status';
-      hidden.value = 'queue';
-      statusLabelEl.append(statusDisplay, hidden);
-    } else {
-      const statusSelect = document.createElement('select');
-      statusSelect.className = 'work-item-status';
-      [
-        ['queue', 'Queue'],
-        ['in_progress', 'In Progress'],
-        ['done', 'Done']
-      ].forEach(([value, text]) => {
-        const option = document.createElement('option');
-        option.value = value;
-        option.textContent = text;
-        if (normalizeStatus(item.status) === value) option.selected = true;
-        statusSelect.appendChild(option);
-      });
-      statusLabelEl.appendChild(statusSelect);
-    }
-
-    grid.append(taskLabel, assigneeLabel, dueLabel, statusLabelEl);
+    const hidden = document.createElement('input');
+    hidden.type = 'hidden';
+    hidden.className = 'work-item-status';
+    hidden.value = normalizeStatus(item.status || 'queue');
+    grid.append(taskLabel, assigneeLabel, dueLabel, hidden);
     row.append(top, grid);
     bindCombo(combo);
     renderComboMenu(combo, assigneeInput.value);
@@ -1285,14 +1301,18 @@ import { loadTrackerCloud, saveTrackerProject, moveTrackerWorkItem, deleteTracke
     return true;
   }
 
-  async function moveWorkItem(projectId, workItemId, newStatus) {
+  async function moveProject(projectId, destinationStatus, expectedVersion = null) {
     if (!cloudReady) return;
-    const project=projects.find(item=>item.id===projectId);
-    const item=project?.workItems?.find(item=>item.id===workItemId);
-    if (!item || item.status===newStatus) return;
+    const project=projects.find(item => item.id === projectId);
+    // Dropping within the same column must not silently reset a manually
+    // chosen Pending/Delivering coordination substatus back to In Review.
+    if (!project || boardColumn(projectStatus(project)) === destinationStatus) return;
+    const newStatus = destinationStatus === 'coordination' ? 'in_review' : destinationStatus;
+    if (!PROJECT_STATUSES.includes(newStatus)) return;
     await withCloud(async()=>{
-      await moveTrackerWorkItem(workItemId,newStatus);
-      await syncCloud('Work item status saved');
+      await setTrackerProjectStatus(project.id,newStatus,expectedVersion ?? project.version);
+      await syncCloud(`Project moved to ${statusLabel(newStatus)}`);
+      announceProjectChange();
     });
   }
 
@@ -1301,6 +1321,7 @@ import { loadTrackerCloud, saveTrackerProject, moveTrackerWorkItem, deleteTracke
     if (!project) return;
     editingProjectId = projectId;
     document.getElementById('editDialogTitle').textContent = `${project.projectNumber} · ${statusLabel(projectStatus(project))}`;
+    document.getElementById('editProjectStatus').value = projectStatus(project);
     const isTcNumber=/^TC\d{5}$/i.test(project.projectNumber);
     document.getElementById('editProjectPrefix').textContent = isTcNumber ? projectPrefix(project.projectNumber) : project.projectNumber;
     document.getElementById('editProjectSuffix').value = isTcNumber ? projectSuffix(project.projectNumber) : '';
@@ -1363,7 +1384,13 @@ import { loadTrackerCloud, saveTrackerProject, moveTrackerWorkItem, deleteTracke
     document.getElementById('followUpCopyStatus').textContent = '';
     renderFollowUpEmail();
   });
-  document.getElementById('followUpCopy').addEventListener('click', copyFollowUpEmail);
+  document.getElementById('followUpCopy').addEventListener('click', () => copyFollowUpField('followUpEmail','Email body'));
+  document.getElementById('followUpCopySubject').addEventListener('click', () => copyFollowUpField('followUpSubject','Subject'));
+  document.getElementById('followUpSubject').addEventListener('input', () => {
+    followUpSubjectDirty = true;
+    document.getElementById('followUpCopyStatus').textContent = '';
+    renderFollowUpEmail();
+  });
   document.querySelectorAll('.add-project-trigger').forEach(button => button.addEventListener('click', openAddProject));
   document.getElementById('settingsButton').addEventListener('click', () => switchView('settings'));
   document.getElementById('closeSettingsView').addEventListener('click', returnToPrimaryView);
@@ -1487,6 +1514,12 @@ import { loadTrackerCloud, saveTrackerProject, moveTrackerWorkItem, deleteTracke
         dateSubmitted:submitted,dueDate:due
       };
       await saveTrackerProject(payload,workItems.map(item=>({...item,id:item.id||crypto.randomUUID()})),project.version);
+      const selectedStatus = document.getElementById('editProjectStatus').value;
+      if (selectedStatus !== projectStatus(project)) {
+        // tracker_save_project increments version once. Apply a second, version-
+        // checked status change rather than modifying the legacy Forecast RPC.
+        await setTrackerProjectStatus(project.id, selectedStatus, project.version + 1);
+      }
       closeEditProject();
       await syncCloud('Project changes saved');
       announceProjectChange();
@@ -1534,7 +1567,7 @@ import { loadTrackerCloud, saveTrackerProject, moveTrackerWorkItem, deleteTracke
       if (!payload) {
         try { payload = JSON.parse(event.dataTransfer.getData('text/plain')); } catch { payload = null; }
       }
-      if (payload?.projectId && payload?.workItemId) moveWorkItem(payload.projectId, payload.workItemId, zone.dataset.status);
+      if (payload?.projectId) moveProject(payload.projectId, zone.dataset.status);
     });
   });
 

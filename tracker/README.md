@@ -1,3 +1,7 @@
+## V1.2 update
+
+The Board and List now display **one card/row per project** with a shared `projects.tracker_status`; columns Queue, In Progress, Coordination (Pending/In Review/Delivering), Completed. Project work-item entries remain for task/assignee/due-date metadata but **do not provide separate workflow statuses**. Coordination receives new projects as In Review when dragged in, and can be manually set to Pending or Delivering. An Edit Project status selector is also provided. Original filtered/saved filter UI retained. Follow-up defaults to All statuses, copies subject/body separately, and greets salesperson by first name. New `v1_2_project_status_migration.sql` at repository root **must be run before deploying**. See canonical root PORTAL_HANDOFF.md.
+
 # Project Tracking — V1.1 Follow-up addendum
 
 Follow-up is a third tab next to Board/List. It uses the existing shared `projects` and `tracker_work_items` data already loaded through `loadTrackerCloud()`; no additional SQL is needed. Select a salesperson, apply optional filters, select projects, edit the drafted email and Copy Email to your clipboard. Project numbers, clients and addresses are collected once per project, even when multiple work items exist. Defaults exclude Done projects but can be changed. No messages are sent, stored or logged, and no follow-up persistence is added. Existing Board/List saved filters remain separate and unchanged. See root `PORTAL_HANDOFF.md` for migration rules and company-side tests.

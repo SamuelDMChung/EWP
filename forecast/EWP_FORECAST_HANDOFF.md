@@ -1,3 +1,7 @@
+## Portal V1.2 branding note (October 13, 2026)
+
+The visible Forecast masthead has been updated to `Version V1.2 · Developed by Samuel Chung`, and visual CSS accents/palette follow Griff corporate colors. **All Forecast domain computation, PDF import/parser, Supabase data logic, delivery/Spruce, inventory, purchasing and auth source modules are unchanged from V1.1**. Portal V1.2 adds one Tracker-only project status column via `v1_2_project_status_migration.sql`, but Forecast computation and level status are unaffected. Full current canonical portal handoff is in the root `PORTAL_HANDOFF.md`.
+
 # EWP Material Forecast — Development Handoff
 
 **Canonical baseline:** V0.27  

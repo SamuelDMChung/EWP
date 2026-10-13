@@ -1494,3 +1494,24 @@ input[readonly], textarea[readonly], select:disabled { background: #f5f7fa; colo
 /* Phase 3: direct project-number navigation to Tracking. */
 .project-col .tracker-project-link{display:inline-flex;align-items:center;text-decoration:none;color:#2159a5;background:#eaf2ff;border-color:#c6d8f0;cursor:pointer}
 .project-col .tracker-project-link:hover{background:#dceafe}
+
+/* V1.2 — visual-only Griff brand refresh. Forecast calculations unchanged. */
+:root{--bg:#f8f6f2;--surface-alt:#fbfaf7;--text:#3c3935;--muted:#655f57;--border:#ddd7cc;--border-strong:#c8c0b4;
+  --accent:#747300;--accent-dark:#636300;--accent-soft:#f0efd5}
+.app-header,.tabs{background:#fff}
+.app-header h1,.toolbar h2,.card h2,.dialog h2{color:#3c3935}
+.eyebrow,.step{color:#747300}
+.tab.active{background:#f0efd5;color:#595700}
+.tab:hover{color:#747300}
+.button.primary{background:#747300;color:#fff}
+.button.primary:hover{background:#636300}
+input:focus,textarea:focus,select:focus{border-color:#747300;box-shadow:0 0 0 3px rgba(148,147,0,.12)}
+.matrix-scroll-viewport tbody tr:hover td,.matrix-scroll-viewport tbody tr:hover .material-col{background:#f6f5e9}
+.search-clear:hover{background:#f0efd5;color:#4f4d00}
+
+/* Match secondary Forecast navigation, row selection and linked project labels. */
+.primary-mini-button{border-color:#d8d6a2}
+.project-col .tracker-project-link{color:#585700;background:#f1f0d8;border-color:#d8d6aa}
+.project-col .tracker-project-link:hover{background:#e8e6bb}
+.date-source-badge.manual{background:#f0eee8;color:#655f57}
+.collapsed-summary-card{background:#fbfaf7}

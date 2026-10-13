@@ -4,12 +4,12 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>EWP Project Tracker — Shared Cloud</title>
-  <link rel="stylesheet" href="styles.css?v=1.0-p3" />
-  <link rel="stylesheet" href="../portal-nav.css?v=1.0-p3" />
+  <link rel="stylesheet" href="styles.css?v=1.1" />
+  <link rel="stylesheet" href="../portal-nav.css?v=1.1" />
 </head>
 <body>
   <nav class="ewp-portal-nav" aria-label="EWP Management Portal navigation">
-    <a class="ewp-portal-nav__brand" href="../"><span class="ewp-portal-nav__mark" aria-hidden="true">E</span>EWP Management</a>
+    <a class="ewp-portal-nav__brand" href="../"><img class="ewp-portal-nav__mark" src="../assets/griff-nav-icon.png" alt="" />EWP Management</a>
     <div class="ewp-portal-nav__links">
       <a class="ewp-portal-nav__link" href="../">Portal</a>
       <a class="ewp-portal-nav__link" href="../tracker/" aria-current="page">Project Tracking</a>
@@ -37,7 +37,7 @@
     <div class="brand-wrap">
       <div class="brand-kicker">EWP PROJECT TRACKING</div>
       <h1>EWP Project Tracker</h1>
-      <div class="version-line">Phase 3 · Shared Supabase · Developed by Samuel Chung @ Griff</div>
+      <div class="version-line">Version V1.1 · Developed by Samuel Chung</div>
       <button id="settingsButton" class="settings-gear" type="button" aria-label="Settings" title="Settings">⚙</button>
     </div>
   </header>
@@ -47,6 +47,7 @@
       <div class="nav-tabs-left">
         <button class="nav-tab active" data-view="board">Board</button>
         <button class="nav-tab" data-view="list">List</button>
+        <button class="nav-tab" data-view="followup">Follow-up</button>
       </div>
     </div>
   </nav>
@@ -195,6 +196,62 @@
           </table>
         </div>
         <div id="listEmptyState" class="list-empty hidden">No projects yet.</div>
+      </div>
+    </section>
+
+    <section id="view-followup" class="view" aria-labelledby="followUpTitle">
+      <div class="section-heading">
+        <div>
+          <h2 id="followUpTitle">Sales Follow-up</h2>
+          <p>Select a salesperson, narrow down their projects, and copy a status-update request for your email.</p>
+        </div>
+      </div>
+      <div class="content-card followup-card">
+        <div class="followup-filters">
+          <label class="followup-field followup-sales-field">Salesperson
+            <select id="followUpSales"><option value="">Choose salesperson…</option></select>
+          </label>
+          <label class="followup-field">Project Type
+            <select id="followUpType">
+              <option value="">All types</option>
+              <option value="SFD">SFD</option>
+              <option value="Multi">Multi / multiplex</option>
+              <option value="Others">Others</option>
+            </select>
+          </label>
+          <label class="followup-field">Phase
+            <select id="followUpPhase"><option value="">All phases</option><option value="Awarded">Awarded</option><option value="Bidding">Bidding</option></select>
+          </label>
+          <label class="followup-field">Status
+            <select id="followUpStatus"><option value="open">Open (exclude Done)</option><option value="">All statuses</option><option value="queue">Queue</option><option value="in_progress">In Progress</option><option value="done">Done</option></select>
+          </label>
+          <label class="followup-field">Assignee
+            <select id="followUpAssignee"><option value="">All assignees</option></select>
+          </label>
+          <label class="followup-field">Due Date
+            <select id="followUpDue"><option value="">Any date</option><option value="overdue">Overdue</option><option value="30days">Due in next 30 days</option><option value="no-date">No due date</option></select>
+          </label>
+          <label class="followup-field followup-search-field">Find project
+            <input id="followUpSearch" type="search" autocomplete="off" placeholder="Search TC#, client or address" />
+          </label>
+        </div>
+        <div class="followup-selection-bar">
+          <strong id="followUpResultCount">Choose a salesperson to see projects.</strong>
+          <div class="followup-selection-actions">
+            <button id="followUpSelectAll" class="btn btn-secondary" type="button">Select All Filtered</button>
+            <button id="followUpClear" class="btn btn-secondary" type="button">Clear Selection</button>
+          </div>
+        </div>
+        <div id="followUpProjectList" class="followup-project-list" aria-label="Projects to include in email"></div>
+        <p class="followup-selection-note" id="followUpSelectedCount" aria-live="polite">0 projects selected.</p>
+      </div>
+      <div class="content-card followup-email-card">
+        <div class="followup-email-heading">
+          <div><h3>Email Preview</h3><p>Editable before copying. Changing selected projects updates the template.</p></div>
+          <button id="followUpCopy" class="btn btn-primary" type="button" disabled>Copy Email</button>
+        </div>
+        <textarea id="followUpEmail" rows="13" aria-label="Follow-up email" spellcheck="true" placeholder="Choose a salesperson and projects to generate your email."></textarea>
+        <p class="followup-copy-status" id="followUpCopyStatus" role="status" aria-live="polite"></p>
       </div>
     </section>
 
@@ -477,7 +534,7 @@
   </template>
 
   </div>
-  <script type="module" src="app.js?v=1.0-p3"></script>
-  <script type="module" src="../workspace-auth.mjs?v=1.0-p3"></script>
+  <script type="module" src="app.js?v=1.1"></script>
+  <script type="module" src="../workspace-auth.mjs?v=1.1"></script>
 </body>
 </html>

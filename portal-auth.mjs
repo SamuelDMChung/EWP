@@ -18,6 +18,8 @@ function setSession(session) {
   $("portalAuthLoading").hidden = true;
   $("portalLogin").hidden = authenticated;
   $("portalWorkspace").hidden = !authenticated;
+  const navAccount = $("ewpNavAccount");
+  if (navAccount) navAccount.textContent = authenticated ? (session.user.email || "Signed in") : "";
   if (authenticated) {
     $("portalCurrentEmail").textContent = session.user.email || "Signed-in employee";
     const next = safeNext();

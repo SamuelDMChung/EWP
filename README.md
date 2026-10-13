@@ -1,3 +1,24 @@
+# EWP Management Portal — V1.1 (Full Source)
+
+**Developed by Samuel Chung** · Canonical baseline: V1.0 Phase 3 · Next version V1.2.  
+For full system constraints and migration history, **read `PORTAL_HANDOFF.md` first**.
+
+## What's new in V1.1
+
+- Two-button Portal homepage with unified shared nav; existing Supabase sign-in/sign-out retained.
+- User-supplied Griff logo used for the top-left icon on Portal, Tracker and Forecast.
+- Identical `Version V1.1 · Developed by Samuel Chung` mastheads across all three pages.
+- Project Tracking has a **Follow-up** tab: choose one Sales person; filter projects by type, phase, status, assignee, due date or search; select individual projects or all matches; edit and copy a project-status request email listing `TC# | Client | Address`. Does not send mail.
+- Defaults to open projects (not Done). Switching sales clears prior selection. Changing filters drops hidden selected projects. Board/List filters remain independent.
+- **No Supabase SQL changes required**. Do not rerun existing migrations or schema setup.
+- All original Forecast operational functions and existing Tracker project creation/assignment workflows remain in the ZIP.
+
+## Install / verification
+
+Copy the full extracted ZIP **contents** to your GitHub Pages repo root, commit/push, then open the portal URL and test using existing Supabase sign-in. The supplied `assets/` folder is required for the new navigation logo. Live-Supabase test remains pending; please verify before company-wide use.
+
+---
+
 # EWP Management Portal — V1.0 Phase 3 (Integrated Portal)
 
 **Developed by Samuel Chung @ Griff**

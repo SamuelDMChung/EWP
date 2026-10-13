@@ -27,6 +27,8 @@ import { loadTrackerCloud, saveTrackerProject, moveTrackerWorkItem, deleteTracke
   let currentPrimaryView = 'board';
   let cloudReady = false;
   let syncing = false;
+  const followUpSelectedIds = new Set();
+  let followUpEmailDirty = false;
 
   const lists = {
     queue: document.getElementById('queueList'),
@@ -489,6 +491,7 @@ import { loadTrackerCloud, saveTrackerProject, moveTrackerWorkItem, deleteTracke
   function renderFilterDrivenViews() {
     renderBoard();
     renderList();
+    renderFollowUp();
     renderFilterControls();
     const visibleEntries = getFilteredWorkItems();
     const totalEntries = allWorkItemEntries().length;
@@ -533,7 +536,7 @@ import { loadTrackerCloud, saveTrackerProject, moveTrackerWorkItem, deleteTracke
     document.querySelectorAll('.view').forEach(view => view.classList.remove('active'));
     document.getElementById(`view-${viewName}`)?.classList.add('active');
 
-    if (viewName === 'board' || viewName === 'list') currentPrimaryView = viewName;
+    if (viewName === 'board' || viewName === 'list' || viewName === 'followup') currentPrimaryView = viewName;
     document.querySelectorAll('.nav-tab').forEach(tab => {
       tab.classList.toggle('active', tab.dataset.view === currentPrimaryView);
     });
@@ -543,6 +546,7 @@ import { loadTrackerCloud, saveTrackerProject, moveTrackerWorkItem, deleteTracke
     closeAllCombos();
     closeFilterMenus();
     if (viewName === 'list') renderList();
+    if (viewName === 'followup') renderFollowUp();
   }
 
   function openAddProject() {
@@ -726,6 +730,178 @@ import { loadTrackerCloud, saveTrackerProject, moveTrackerWorkItem, deleteTracke
     }
     empty.classList.toggle('hidden', visibleEntries.length !== 0);
     document.querySelector('.project-table').classList.toggle('hidden', visibleEntries.length === 0);
+  }
+
+  // V1.1 Follow-up: one row per project (not per work item), no new tables or mutations.
+  // The sales choice is exact and case-insensitive to avoid accidental partial matches.
+  function followUpMatch(actual, expected) {
+    return String(actual || '').trim().toLocaleLowerCase() === String(expected || '').trim().toLocaleLowerCase();
+  }
+
+  function followUpSelectOptions(id, values, firstLabel) {
+    const element = document.getElementById(id);
+    const selected = element.value;
+    element.replaceChildren();
+    const blank = new Option(firstLabel, '');
+    element.add(blank);
+    uniqueSorted(values).forEach(value => element.add(new Option(value, value)));
+    element.value = [...element.options].some(option => option.value === selected) ? selected : '';
+  }
+
+  function followUpProjectDeadlines(project) {
+    // Completed work-item deadlines are not actionable for an overdue check.
+    const dates = [project.dueDate,
+      ...(project.workItems || []).filter(item => item.status !== 'done').map(item => item.dueDate)
+    ].filter(value => /^\d{4}-\d{2}-\d{2}$/.test(value || ''));
+    return [...new Set(dates)];
+  }
+
+  function followUpVisibleProjects() {
+    const sales = document.getElementById('followUpSales').value;
+    if (!sales) return [];
+    const type = document.getElementById('followUpType').value;
+    const phase = document.getElementById('followUpPhase').value;
+    const status = document.getElementById('followUpStatus').value;
+    const assignee = document.getElementById('followUpAssignee').value;
+    const due = document.getElementById('followUpDue').value;
+    const search = document.getElementById('followUpSearch').value.trim().toLocaleLowerCase();
+    const today = todayISO();
+    const within30 = new Date(`${today}T12:00:00`);
+    within30.setDate(within30.getDate() + 30);
+    const maxDue = `${within30.getFullYear()}-${String(within30.getMonth()+1).padStart(2,'0')}-${String(within30.getDate()).padStart(2,'0')}`;
+    return projects.filter(project => {
+      if (!followUpMatch(project.sales, sales)) return false;
+      const currentType = project.projectType === 'Other' ? 'Others' : project.projectType;
+      if (type && !followUpMatch(currentType, type)) return false;
+      if (phase && !followUpMatch(project.phase, phase)) return false;
+      const state = projectStatus(project);
+      if (status === 'open' && state === 'done') return false;
+      if (status && status !== 'open' && status !== state) return false;
+      if (assignee && !(project.workItems || []).some(item => followUpMatch(item.assignee, assignee))) return false;
+      if (search && ![project.projectNumber, project.customer, project.address]
+        .some(value => String(value || '').toLocaleLowerCase().includes(search))) return false;
+      const deadlines = followUpProjectDeadlines(project);
+      if (due === 'no-date' && deadlines.length) return false;
+      if (due === 'overdue' && (state === 'done' || !deadlines.some(date => date < today))) return false;
+      if (due === '30days' && !deadlines.some(date => date >= today && date <= maxDue)) return false;
+      return true;
+    }).sort((a, b) => String(a.projectNumber).localeCompare(String(b.projectNumber),undefined,{numeric:true}));
+  }
+
+  function followUpEmailText() {
+    const sales = document.getElementById('followUpSales').value;
+    const selectedProjects = followUpVisibleProjects().filter(project => followUpSelectedIds.has(project.id));
+    if (!sales || !selectedProjects.length) return '';
+    const types = new Set(selectedProjects.map(project => project.projectType));
+    const queue = types.size === 1 && types.has('SFD') ? 'SFD'
+      : types.size === 1 && types.has('Multi') ? 'multiplex'
+      : [...types].some(type => type === 'Others' || type === 'Other') ? 'EWP'
+      : 'SFD/multiplex';
+    const projectLines = selectedProjects.map(project =>
+      `${project.projectNumber || '—'} | ${project.customer || '—'} | ${project.address || '—'}`
+    ).join('\n');
+    return `Subject: Request for Project Status Updates\n\nHi ${sales},\n\n` +
+      `We are currently updating our ${queue} queue of projects drawn in Javelin for layouts.\n\n` +
+      `Could you update us on the status of the following projects? Any information would be helpful, including upcoming delivery dates, orders you have written (and for which levels), or projects that are no longer moving ahead.\n\n` +
+      `${projectLines}\n\nThank you!`;
+  }
+
+  function renderFollowUpEmail() {
+    const box = document.getElementById('followUpEmail');
+    const copy = document.getElementById('followUpCopy');
+    if (!followUpEmailDirty) box.value = followUpEmailText();
+    copy.disabled = !followUpSelectedIds.size || !box.value.trim();
+    const visible = followUpVisibleProjects();
+    document.getElementById('followUpSelectAll').disabled = !visible.length || visible.every(project => followUpSelectedIds.has(project.id));
+    document.getElementById('followUpClear').disabled = followUpSelectedIds.size === 0;
+    document.getElementById('followUpSelectedCount').textContent =
+      `${followUpSelectedIds.size} project${followUpSelectedIds.size === 1 ? '' : 's'} selected for email.`;
+  }
+
+  function followUpSelectionChanged() {
+    followUpEmailDirty = false; // never let an edited draft silently contain the wrong project list
+    document.getElementById('followUpCopyStatus').textContent = '';
+    renderFollowUpEmail();
+  }
+
+  function renderFollowUp() {
+    const salesEl = document.getElementById('followUpSales');
+    const previousSales = salesEl.value;
+    followUpSelectOptions('followUpSales', [...(settings.sales || []), ...projects.map(project => project.sales)], 'Choose salesperson…');
+    followUpSelectOptions('followUpAssignee', [...(settings.assignees || []), ...allWorkItemEntries().map(entry => entry.workItem.assignee)], 'All assignees');
+    if (previousSales !== salesEl.value) { followUpSelectedIds.clear(); followUpEmailDirty = false; }
+
+    const visible = followUpVisibleProjects();
+    const visibleIds = new Set(visible.map(project => project.id));
+    let selectionChanged = false;
+    for (const id of followUpSelectedIds) {
+      if (!visibleIds.has(id)) { followUpSelectedIds.delete(id); selectionChanged = true; }
+    }
+    if (selectionChanged) followUpEmailDirty = false;
+
+    const list = document.getElementById('followUpProjectList');
+    list.replaceChildren();
+    if (!salesEl.value || !visible.length) {
+      const msg = document.createElement('div');
+      msg.className = 'followup-empty';
+      msg.textContent = !salesEl.value ? 'Choose a salesperson to view their projects.' : 'No projects match these filters.';
+      list.appendChild(msg);
+    }
+    visible.forEach(project => {
+      const row = document.createElement('label');
+      row.className = 'followup-project-row';
+      const checkbox = document.createElement('input');
+      checkbox.type = 'checkbox';
+      checkbox.value = project.id;
+      checkbox.checked = followUpSelectedIds.has(project.id);
+      checkbox.setAttribute('aria-label', `Include ${project.projectNumber || project.address} in follow-up`);
+      checkbox.addEventListener('change', () => {
+        if (checkbox.checked) followUpSelectedIds.add(project.id);
+        else followUpSelectedIds.delete(project.id);
+        row.classList.toggle('selected', checkbox.checked);
+        followUpSelectionChanged();
+      });
+      const main = document.createElement('span');
+      main.className = 'followup-project-main';
+      const title = document.createElement('strong');
+      title.textContent = `${project.projectNumber || '—'} · ${project.customer || '—'}`;
+      const address = document.createElement('small');
+      address.textContent = project.address || 'No address';
+      const tags = document.createElement('span');
+      tags.className = 'followup-project-tags';
+      [displayProjectType(project), project.phase || '—', statusLabel(projectStatus(project)),
+        `Due ${formatDate(project.dueDate)}`].forEach(text => {
+        const tag = document.createElement('span');
+        tag.textContent = text;
+        tags.appendChild(tag);
+      });
+      main.append(title, address, tags);
+      row.append(checkbox, main);
+      list.appendChild(row);
+    });
+    document.getElementById('followUpResultCount').textContent = salesEl.value
+      ? `${visible.length} matching project${visible.length === 1 ? '' : 's'}`
+      : 'Choose a salesperson to see projects.';
+    document.getElementById('followUpSelectAll').disabled = !visible.length || visible.every(project => followUpSelectedIds.has(project.id));
+    document.getElementById('followUpClear').disabled = followUpSelectedIds.size === 0;
+    renderFollowUpEmail();
+  }
+
+  async function copyFollowUpEmail() {
+    const textarea = document.getElementById('followUpEmail');
+    const status = document.getElementById('followUpCopyStatus');
+    if (!followUpSelectedIds.size || !textarea.value.trim()) return;
+    try {
+      if (navigator.clipboard?.writeText) await navigator.clipboard.writeText(textarea.value);
+      else {
+        textarea.focus(); textarea.select();
+        if (!document.execCommand('copy')) throw new Error('Copy not supported');
+      }
+      status.textContent = 'Email copied. Paste it into your email client and review before sending.';
+    } catch (error) {
+      textarea.focus(); textarea.select();
+      status.textContent = 'Automatic copy unavailable. Email text selected—use Ctrl+C or Cmd+C.';
+    }
   }
 
   function getComboValues(combo) {
@@ -1168,6 +1344,26 @@ import { loadTrackerCloud, saveTrackerProject, moveTrackerWorkItem, deleteTracke
   document.querySelectorAll('.nav-tab').forEach(tab => {
     tab.addEventListener('click', () => switchView(tab.dataset.view));
   });
+  document.getElementById('followUpSales').addEventListener('change', () => {
+    followUpSelectedIds.clear(); followUpSelectionChanged(); renderFollowUp();
+  });
+  for (const id of ['followUpType','followUpPhase','followUpStatus','followUpAssignee','followUpDue']) {
+    document.getElementById(id).addEventListener('change', renderFollowUp);
+  }
+  document.getElementById('followUpSearch').addEventListener('input', renderFollowUp);
+  document.getElementById('followUpSelectAll').addEventListener('click', () => {
+    followUpVisibleProjects().forEach(project => followUpSelectedIds.add(project.id));
+    followUpSelectionChanged(); renderFollowUp();
+  });
+  document.getElementById('followUpClear').addEventListener('click', () => {
+    followUpSelectedIds.clear(); followUpSelectionChanged(); renderFollowUp();
+  });
+  document.getElementById('followUpEmail').addEventListener('input', () => {
+    followUpEmailDirty = true;
+    document.getElementById('followUpCopyStatus').textContent = '';
+    renderFollowUpEmail();
+  });
+  document.getElementById('followUpCopy').addEventListener('click', copyFollowUpEmail);
   document.querySelectorAll('.add-project-trigger').forEach(button => button.addEventListener('click', openAddProject));
   document.getElementById('settingsButton').addEventListener('click', () => switchView('settings'));
   document.getElementById('closeSettingsView').addEventListener('click', returnToPrimaryView);

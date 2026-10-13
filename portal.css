@@ -48,3 +48,25 @@ footer{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;border
 .portal-signed-in{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin:0 0 23px;padding:10px 14px;border:1px solid #cfdfed;background:#fff;border-radius:10px;font-size:12px;color:#52687c}
 .portal-signed-in strong{color:#183653}.portal-signed-in button{background:none;border:1px solid #bdcce0;border-radius:7px;padding:6px 11px;color:#254e84;font:inherit;font-weight:750;cursor:pointer}
 @media(max-width:740px){.portal-login{grid-template-columns:1fr;padding:20px;gap:15px}}
+
+/* V1.1: compact two-action portal and the shared three-page masthead treatment. */
+body{background:var(--bg)}
+.masthead{padding:32px 0 18px}
+.intro{margin:0;max-width:none}
+.intro h1{font-size:clamp(26px,3vw,38px);margin:4px 0 5px;letter-spacing:-.03em;line-height:1.2}
+.portal-version{color:var(--muted);font-size:14px;line-height:1.5}
+.portal-signed-in{margin-bottom:20px}
+.workspace-grid{gap:16px}
+.workspace-card{min-height:156px;padding:25px;display:flex;flex-direction:row;align-items:center;gap:18px;border-radius:13px}
+.card-icon{flex:0 0 58px;margin:0}
+.card-title{font-size:clamp(19px,2.4vw,27px);margin:0}
+.workspace-arrow{margin-left:auto;font-size:25px;color:#2059aa;font-weight:800}
+@media(max-width:740px){.masthead{padding:24px 0 12px}.workspace-card{min-height:106px;padding:17px}.card-icon{flex-basis:46px;width:46px;height:46px}.card-title{font-size:19px}}
+
+.intro .portal-version{font-size:14px}
+/* Keep the homepage masthead aligned with the Forecast and Tracker page mastheads. */
+.page{width:100%}
+.masthead{background:#fff;border-bottom:1px solid var(--border);padding:28px clamp(20px,4vw,56px) 22px}
+main{width:min(1170px,calc(100% - 44px));margin:0 auto;padding-top:26px}
+footer{padding:20px clamp(20px,4vw,56px) 24px}
+@media(max-width:740px){.masthead{padding:24px 20px 20px}main{width:calc(100% - 32px);padding-top:20px}}

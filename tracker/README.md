@@ -1,3 +1,9 @@
+# Project Tracking — V1.1 Follow-up addendum
+
+Follow-up is a third tab next to Board/List. It uses the existing shared `projects` and `tracker_work_items` data already loaded through `loadTrackerCloud()`; no additional SQL is needed. Select a salesperson, apply optional filters, select projects, edit the drafted email and Copy Email to your clipboard. Project numbers, clients and addresses are collected once per project, even when multiple work items exist. Defaults exclude Done projects but can be changed. No messages are sent, stored or logged, and no follow-up persistence is added. Existing Board/List saved filters remain separate and unchanged. See root `PORTAL_HANDOFF.md` for migration rules and company-side tests.
+
+---
+
 **Phase 2 update:** Project Tracking now saves projects, work items, settings and saved filters in Supabase. See the repository root `README.md` and `phase2_migration.sql` for setup before deployment.
 
 # EWP Project Tracker V0.5

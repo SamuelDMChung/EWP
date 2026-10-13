@@ -62,3 +62,14 @@
 
 .ewp-portal-nav__account{font-size:11px;color:#eaf2ff;overflow-wrap:anywhere;max-width:220px;opacity:.9}
 @media(max-width:740px){.ewp-portal-nav__account{font-size:10px;max-width:100%}}
+
+/* V1.1: shared Griff tile in the top-left navigation on all routes. */
+.ewp-portal-nav__mark {
+  display: block;
+  object-fit: contain;
+  width: 29px;
+  height: 29px;
+  border-radius: 6px;
+  flex: 0 0 29px;
+  background: #3c3935;
+}

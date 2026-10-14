@@ -1,3 +1,33 @@
+# EWP Management Portal V1.7 WEB — Full Source
+
+V1.7 is derived directly from the canonical V1.6 web source, with **unified Tracker/Forecast headers**, a **Light/Dark setting available in both workspace Settings**, and removal of all redundant Tracker board summary/count bubbles. No database changes or SQL migrations are needed if V1.6 is already deployed.
+
+**Deploy:** Copy all files in this directory to the *root* of the existing GitHub Pages website, overwriting old files. Include `theme.js` and `theme.css` in the root. Do not replace only the HTML pages: both CSS and shared theme script are required. Keep the Supabase project/auth unchanged.
+
+**Use:** Tracker → Settings → Appearance; Forecast → Settings → Appearance. Your choice follows navigation between these pages and the Portal on the same browser (stored locally, not in Supabase). Default is Light.
+
+**Preserved:** Work-item drag/split/merge, Coordination statuses, project number generation, Sales/project type sync, Forecast manual/PDF imports, material/level calculations, inventories, purchasing and previous SQL archive.
+
+See `PORTAL_HANDOFF.md` for the exact migration history, test results and protected systems.
+
+---
+
+# EWP Management Portal V1.6 WEB — Deployment Quick Start
+
+**Canonical source: WEB V1.6 (October 13, 2026).** Includes Portal, Project Tracking, Forecast, shared Supabase setup, Griff branding, original historic handoffs, and SQL archive. **Next: V1.7 WEB.** The V1.3 iOS demo is not updated.
+
+1. **Back up** your Supabase data and current GitHub Pages repository.
+2. Ensure V1.4 and V1.5 one-time migrations are already installed. If not, consult `PORTAL_HANDOFF.md` and archived scripts **in order**.
+3. **Run `v1_6_forecast_coordination_intake.sql` ONCE in your current Supabase SQL Editor BEFORE web deployment.** This prevents an irrelevant Assign task from being generated when Forecast creates a project already in Coordination→Delivering. It changes no existing data.
+4. Upload all web files into your existing GitHub Pages **repository root**, not a versioned subfolder. Remove obsolete root SQL files from the repository if you wish to mirror the clean V1.6 layout; full historical copies are retained under `sql/archive/`.
+5. Hard-refresh the portal. Test Sales choices vs Tracker Settings, SFD/Multi/Others, manual material entry, automatic Forecast→Delivering, preservation of status on Tracker-linked imports, and V1.5 task-card movement.
+
+**Important:** Production Supabase validation remains your responsibility; browser tests were mocked and do not prove live RLS/SQL execution. The original Forecast PDF parse/PO/Spruce workflows and shared auth are retained.
+
+For full architecture, explicit V1.6 changes, known edge cases and all historical decisions, read `PORTAL_HANDOFF.md`.
+
+---
+
 # EWP Management Portal V1.5 WEB — Deployment Quick Start
 
 **Full web source** (Portal + Tracker + unchanged Forecast backend logic). V1.5 implements drag-to-Coordination work items and automatic combined project cards, with a simpler new-project task form.

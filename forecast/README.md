@@ -1,3 +1,15 @@
+## Forecast V1.7 UI
+
+V1.7 shares Griff header and Light/Dark appearance with other portal pages via `../theme.css` and `../theme.js`. Forecast calculation, material import and database code is unchanged from V1.6. No V1.7 SQL. Full release information is in `../PORTAL_HANDOFF.md`.
+
+---
+
+## Combined Portal V1.6 (latest)
+
+The active version is V1.6 WEB. Forecast's historical internal V0.27 notes remain below for reference. Refer to `../PORTAL_HANDOFF.md` for current shared-portal behavior, migration and new PDF-free manual Forecast entry. Historical SQL is archived at `../sql/archive/supabase_v0_26.sql`.
+
+---
+
 # EWP Material Forecast — V0.27
 
 **Developed by Samuel Chung @ Griff**

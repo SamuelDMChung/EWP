@@ -1,3 +1,15 @@
+## Forecast V1.7 visual integration
+
+V1.7 shares Griff header and Light/Dark appearance with other portal pages via `../theme.css` and `../theme.js`. Forecast calculation, material import and database code is unchanged from V1.6. No V1.7 SQL. Full release information is in `../PORTAL_HANDOFF.md`.
+
+---
+
+# V1.6 shared portal update (supersedes applicable legacy Forecast rules)
+
+The canonical combined portal is now V1.6 WEB. See `../PORTAL_HANDOFF.md` for full details. All SFD/Multi/Others use identical dated Forecast/scheduling/purchasing logic. No SFD-only buffer; previously undated quantities remain urgent purchasing demand with warning until a date is entered. The Add Project screen supports original manual Forecast material entry without a PDF; existing Spruce-order Manual Entry remains separate. Sales and type choices synchronize with Project Tracking Settings/shared metadata. New Forecast projects create shared Coordination→Delivering projects; existing Tracker statuses never change just from first Forecast import. Historical Forecast SQL `supabase_v0_26.sql` has moved to `../sql/archive/`, unchanged. Legacy V0.27 historical behavior below applies only where it does not contradict this V1.6 section.
+
+---
+
 ## Portal V1.2 branding note (October 13, 2026)
 
 The visible Forecast masthead has been updated to `Version V1.2 · Developed by Samuel Chung`, and visual CSS accents/palette follow Griff corporate colors. **All Forecast domain computation, PDF import/parser, Supabase data logic, delivery/Spruce, inventory, purchasing and auth source modules are unchanged from V1.1**. Portal V1.2 adds one Tracker-only project status column via `v1_2_project_status_migration.sql`, but Forecast computation and level status are unaffected. Full current canonical portal handoff is in the root `PORTAL_HANDOFF.md`.

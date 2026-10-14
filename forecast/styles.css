@@ -1515,3 +1515,11 @@ input:focus,textarea:focus,select:focus{border-color:#747300;box-shadow:0 0 0 3p
 .project-col .tracker-project-link:hover{background:#e8e6bb}
 .date-source-badge.manual{background:#f0eee8;color:#655f57}
 .collapsed-summary-card{background:#fbfaf7}
+
+/* V1.6 — unified Forecast intake and visible legacy undated-demand warning */
+.forecast-method-switch{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin:12px 0}
+.forecast-method-switch .small-note{margin:0}
+.unscheduled-alert{border:1px solid #dac78f;background:#fff8e9;color:#4c4020;border-radius:12px;padding:15px 18px;display:flex;flex-direction:column;gap:9px;margin-bottom:16px}
+.unscheduled-alert > span{font-size:13px;line-height:1.5}
+.unscheduled-rows{display:flex;flex-direction:column;gap:6px}
+.unscheduled-row{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;padding:7px 0;border-top:1px solid #e9dab7;font-size:12px}

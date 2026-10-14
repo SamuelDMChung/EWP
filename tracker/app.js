@@ -30,6 +30,7 @@ import { loadTrackerCloud, saveTrackerProject, setTrackerProjectStatus, moveTrac
   let currentPrimaryView = 'board';
   let cloudReady = false;
   let syncing = false;
+  let realtimeConnected = false;
   const followUpSelectedIds = new Set();
   let followUpEmailDirty = false;
   let followUpSubjectDirty = false;
@@ -101,8 +102,10 @@ import { loadTrackerCloud, saveTrackerProject, setTrackerProjectStatus, moveTrac
   function cloudMessage(text, failed=false) {
     const el=document.getElementById('trackerCloudMessage');
     if (!el) return;
-    el.textContent=text;
-    el.classList.toggle('tracker-cloud-error',failed);
+    el.title=text;
+    el.textContent = failed ? 'Shared data connection issue' : (cloudReady ? `Shared data connected${realtimeConnected ? ' · live' : ''}` : 'Connecting to shared data…');
+    el.className = `cloud-pill ${failed ? 'error' : cloudReady ? 'connected' : 'connecting'}`;
+    el.setAttribute('aria-label', text);
   }
   function setCloudReady(value) {
     cloudReady=value;
@@ -607,7 +610,6 @@ import { loadTrackerCloud, saveTrackerProject, setTrackerProjectStatus, moveTrac
     renderSettingsPage();
     refreshWorkItemTaskSelects();
     refreshAllComboMenus();
-    document.getElementById('nextProjectNumber').textContent = nextProjectNumber();
     renderFilterDrivenViews();
   }
 
@@ -664,25 +666,16 @@ import { loadTrackerCloud, saveTrackerProject, setTrackerProjectStatus, moveTrac
         list.appendChild(empty);
       }
     });
-    const projectIds = {queue:new Set(),in_progress:new Set(),coordination:new Set(),completed:new Set()};
-    visibleEntries.forEach(({project,boardStatus}) => projectIds[boardColumn(boardStatus)].add(project.id));
-    for (const [status,id,badge] of [
-      ['queue','queueCount','queueBadge'],['in_progress','progressCount','progressBadge'],
-      ['coordination','coordinationCount','coordinationBadge'],['completed','doneCount','doneBadge']
-    ]) {
-      document.getElementById(id).textContent = String(projectIds[status].size);
-      document.getElementById(badge).textContent = String(projectIds[status].size);
-    }
   }
 
   function createWorkItemCard(project, workItem, aggregate = false) {
     const card = document.getElementById('projectCardTemplate').content.firstElementChild.cloneNode(true);
     const currentStatus = aggregate ? projectStatus(project) : (workItem.status === 'done' ? 'in_review' : workItem.status);
     const done = !aggregate && workItem.status === 'done';
-    const total = project.workItems?.length || 1;
+    const total = project.workItems?.length || 0;
     const taskIndex = Math.max(0,(project.workItems || []).findIndex(item => item.id === workItem.id));
     const taskLabel = aggregate
-      ? `${total} linked task${total === 1 ? '' : 's'} · ${(project.workItems || []).filter(i=>i.status==='done').length} done`
+      ? (total ? `${total} linked task${total === 1 ? '' : 's'} · ${(project.workItems || []).filter(i=>i.status==='done').length} done` : 'Forecast delivery · no layout task')
       : (workItem.task || 'Unassigned task');
     card.dataset.projectId = project.id;
     card.dataset.workItemId = workItem.id;
@@ -723,7 +716,7 @@ import { loadTrackerCloud, saveTrackerProject, setTrackerProjectStatus, moveTrac
     compactLinkage.classList.toggle('hidden',aggregate && total <= 1);
     const arrived = (project.workItems || []).filter(item => item.status === 'done').length;
     compactLinkage.textContent = aggregate
-      ? `${total} linked tasks combined`
+      ? (total ? `${total} linked tasks combined` : 'Forecast project · no layout tasks')
       : `↳ ${taskLabel}${total>1 ? ` · Task ${taskIndex+1}/${total}` : ''}`;
     const arrival = card.querySelector('.compact-task-arrival');
     arrival.classList.toggle('hidden', !done || total <= 1);
@@ -1454,6 +1447,10 @@ import { loadTrackerCloud, saveTrackerProject, setTrackerProjectStatus, moveTrac
       alert('Completed means the entire job has been delivered. Move the project through Coordination first.');
       return;
     }
+    if (isOffPlate(project) && !project.workItems?.length && ['queue','in_progress'].includes(next)) {
+      alert('This Forecast-created project has no layout tasks. Add a work item in Edit Project before moving it back to Queue or In Progress.');
+      return;
+    }
     // Reopen only the selected task when an off-plate project is pulled back
     // onto the EWP plate. Keep all other completed tasks in their history.
     let reopen = null;
@@ -1889,6 +1886,7 @@ import { loadTrackerCloud, saveTrackerProject, setTrackerProjectStatus, moveTrac
     err.textContent='';
     try {
       await signInWithPassword(document.getElementById('trackerLoginEmail').value,document.getElementById('trackerLoginPassword').value);
+      document.getElementById('trackerCurrentUserName').textContent = getCurrentSession()?.user?.email || 'Signed in';
       await syncCloud('Signed in · shared data loaded');
       document.getElementById('trackerLogin').classList.add('hidden');
       prepareNewProjectForm(true);
@@ -1930,10 +1928,14 @@ import { loadTrackerCloud, saveTrackerProject, setTrackerProjectStatus, moveTrac
   (async()=>{
     try {
       const session=await restoreSession();
+      document.getElementById('trackerCurrentUserName').textContent = session?.user?.email || 'Not signed in';
       if (!session?.user) { window.location.replace('../?next=tracker%2F'); return; }
       await syncCloud('Connected to shared Supabase');
       prepareNewProjectForm(true);
-      startTrackerRealtime(scheduleTrackerRefresh, () => {}).catch(error => console.warn('Tracker live sync unavailable',error));
+      startTrackerRealtime(scheduleTrackerRefresh, status => {
+        realtimeConnected = status === 'SUBSCRIBED';
+        if (cloudReady) cloudMessage(status === 'CHANNEL_ERROR' ? 'Shared data connected; live updates unavailable' : 'Shared data connected');
+      }).catch(error => console.warn('Tracker live sync unavailable',error));
     } catch(error) {
       // A transient cloud failure is not necessarily a sign-out; keep the page for retry.
       cloudMessage(`Could not load shared data: ${error.message}`,true);

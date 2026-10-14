@@ -1,7 +1,7 @@
 import { extractPdfLines, parseMaterialReportLines, normalizeSpaces } from "./parser.mjs";
 import { parsePurchaseWorkbook, normalizePoMaterialDescription } from "./purchase_parser.mjs";
 import { parseDeliveryMaterialReportLines } from "./delivery_parser.mjs";
-import { loadCloudRows, loadActivityRows, findSharedProjectByNumber, insertRows, updateRows, deleteRows, logActivity, rpc } from "./db.mjs?v=1.0-p3";
+import { loadCloudRows, loadActivityRows, findSharedProjectByNumber, insertRows, updateRows, deleteRows, logActivity, rpc } from "./db.mjs?v=1.6";
 import { restoreSession, signInWithPassword, signOut, getCurrentUser, getLastEmail } from "./auth.mjs?v=1.0-p3";
 import { startRealtime, stopRealtime, refreshRealtimeAuth } from "./realtime.mjs?v=1.0-p3";
 
@@ -38,6 +38,49 @@ let realtimeState = "starting";
 let projectLookupTimer = null;
 let projectLookupSerial = 0;
 let lastAutoMatchedProject = null;
+let trackerSalesOptions = [];
+
+// The database's legacy project_type column allows only multi/sfd. "Others" is
+// stored as multi for compatibility, with the precise user selection saved in
+// tracker_project_type (the authoritative shared classification).
+function projectTypeFromRow(row) {
+  if (row?.tracker_project_type === "Others" || row?.projectType === "others") return "others";
+  if (row?.tracker_project_type === "SFD") return "sfd";
+  if (row?.tracker_project_type === "Multi") return "multi";
+  return row?.project_type === "sfd" || row?.projectType === "sfd" ? "sfd" : "multi";
+}
+function databaseProjectType(type) { return type === "sfd" ? "sfd" : "multi"; }
+function trackerProjectType(type) { return type === "others" ? "Others" : type === "sfd" ? "SFD" : "Multi"; }
+function projectTypeLabel(type) { return type === "others" ? "Others" : type === "sfd" ? "SFD" : "Multi"; }
+
+function populateSalesChoices(rows) {
+  const configured = Array.isArray(rows?.trackerSettings?.sales) ? rows.trackerSettings.sales : [];
+  const fromRegistry = (rows?.projects || []).map(project => project.sales || "");
+  const values = [...configured, ...fromRegistry].map(value => normalizeSpaces(String(value || ""))).filter(Boolean);
+  trackerSalesOptions = [...new Map(values.map(value => [value.toLocaleLowerCase(),value])).values()]
+    .sort((a,b) => a.localeCompare(b, undefined, { sensitivity: "base" }));
+  for (const id of ["sales", "editSales"]) {
+    const select = $(id);
+    if (!select) continue;
+    const previous = select.value;
+    const choices = [...trackerSalesOptions];
+    if (previous && !choices.some(value => value.toLocaleLowerCase() === previous.toLocaleLowerCase())) choices.push(previous);
+    select.replaceChildren(new Option("Choose salesperson…", ""), ...choices.map(value => new Option(value, value)));
+    select.value = previous || "";
+  }
+}
+function selectSales(id, value) {
+  const el = $(id);
+  if (!el) return;
+  const cleaned = normalizeSpaces(value || "");
+  if (cleaned && ![...el.options].some(option => option.value === cleaned)) el.add(new Option(cleaned, cleaned));
+  el.value = cleaned;
+}
+function syncOtherTypeField(edit = false) {
+  const name = edit ? "editProjectType" : "projectType";
+  $(edit ? "editProjectTypeOtherWrap" : "projectTypeOtherWrap")?.classList.toggle("hidden", $(name)?.value !== "others");
+}
+
 
 const $ = id => document.getElementById(id);
 const uid = () => crypto.randomUUID();
@@ -172,7 +215,7 @@ function migrateLegacyState(parsed) {
       customer: project.customer || "",
       sales: project.sales || "",
       address: project.address || "",
-      projectType: project.projectType === "sfd" ? "sfd" : "multi",
+      projectType: ["sfd", "multi", "others"].includes(project.projectType) ? project.projectType : "multi",
       defaultEstimatedDeliveryDate: project.defaultEstimatedDeliveryDate || "",
       sourceFileName: project.sourceFileName || "",
       createdAt: project.createdAt || new Date().toISOString(),
@@ -243,7 +286,8 @@ function mapCloudRows(rows) {
       customer: row.customer || "",
       sales: row.sales || "",
       address: row.address_project_name || "",
-      projectType: row.project_type === "sfd" ? "sfd" : "multi",
+      projectType: projectTypeFromRow(row),
+      projectTypeOther: row.tracker_project_type_other || "",
       defaultEstimatedDeliveryDate: row.default_delivery_date || "",
       createdAt: row.created_at || "",
       updatedAt: row.updated_at || "",
@@ -421,6 +465,7 @@ async function syncFromCloud({ silent = false, rebindActive = false } = {}) {
 
   try {
     const rows = await loadCloudRows();
+    populateSalesChoices(rows);
     state = mapCloudRows(rows);
     lastSyncAt = new Date();
     if (realtimeState === "error") setCloudStatus("connecting", "Shared data connected · live sync unavailable");
@@ -841,7 +886,7 @@ function projectMetaHtml(project) {
   return `
     <div class="project-title${missingTitle ? " project-title-missing" : ""}">${escapeHtml(projectTitle(project))}</div>
     <div class="project-meta-line">${escapeHtml(projectId)} · Customer: ${escapeHtml(project.customer || "—")}</div>
-    <div class="project-meta-line">Sales: ${escapeHtml(project.sales || "—")} · ${project.projectType === "sfd" ? "SFD" : "Multi"}</div>`;
+    <div class="project-meta-line">Sales: ${escapeHtml(project.sales || "—")} · ${projectTypeLabel(project.projectType)}</div>`;
 }
 
 function progressHtml(percent, label) {
@@ -868,7 +913,8 @@ function setProjectLookupStatus(text, kind = "muted") {
 
 function setTrackerOwnedIntakeFields(managed) {
   for (const id of ["customer", "sales", "address"]) {
-    $(id).readOnly = Boolean(managed);
+    if (id === "sales") $(id).disabled = Boolean(managed);
+    else $(id).readOnly = Boolean(managed);
     $(id).title = managed ? "Shared project details are managed in Project Tracking." : "";
   }
   $("projectType").disabled = Boolean(managed);
@@ -892,17 +938,19 @@ function applyMatchedProjectToIntake(project, { trackerOnly = false } = {}) {
     const input = $(id);
     if (managed || (!input.value.trim() && value.trim())) {
       if (input.value !== value) changed = true;
-      input.value = value;
+      if (id === "sales") selectSales(id, value);
+      else input.value = value;
     }
   }
-  const typeFromTracker = project.tracker_project_type;
-  const mappedType = typeFromTracker === "SFD" ? "sfd" : typeFromTracker === "Multi" ? "multi" : (project.project_type || project.projectType);
-  if (mappedType === "sfd" || mappedType === "multi") {
+  const mappedType = projectTypeFromRow(project);
+  if (["sfd", "multi", "others"].includes(mappedType)) {
     if (managed || !$("projectType").value) {
       if ($("projectType").value !== mappedType) changed = true;
       $("projectType").value = mappedType;
     }
   }
+  $("projectTypeOther").value = project.tracker_project_type_other || "";
+  syncOtherTypeField();
   if (!$("revision").value && (project.revision || "")) $("revision").value = project.revision;
   setTrackerOwnedIntakeFields(managed);
   lastAutoMatchedProject = {
@@ -929,7 +977,7 @@ async function resolveIntakeSharedProject(number, { showUnmatched = true } = {})
   if (row) applyMatchedProjectToIntake(row);
   else if (showUnmatched) {
     setTrackerOwnedIntakeFields(false);
-    setProjectLookupStatus(`Project ${normalized} has not been registered yet. A new shared record will be created on import.`, "muted");
+    setProjectLookupStatus(`Project ${normalized} is new. Saving materials will create a shared Tracking project in Coordination → Delivering.`, "muted");
   }
   return row;
 }
@@ -962,7 +1010,7 @@ function queueProjectNumberLookup() {
       if (row) applyMatchedProjectToIntake(row);
       else {
         setTrackerOwnedIntakeFields(false);
-        setProjectLookupStatus("No existing project found. Importing a PDF will create this project.");
+        setProjectLookupStatus("No matching project found. Saving a PDF or manual forecast will create a shared project.");
       }
     } catch (error) {
       if (serial === projectLookupSerial) setProjectLookupStatus(`Project lookup failed: ${error.message}`, "error");
@@ -991,7 +1039,8 @@ async function handlePdf(file) {
       revision: parsed.revision || "",
       customer: registered?.customer || "",
       sales: registered?.sales || "",
-      projectType: registered?.tracker_project_type === "SFD" ? "sfd" : registered?.tracker_project_type === "Multi" ? "multi" : (registered?.project_type || ($("projectType")?.value === "sfd" ? "sfd" : "multi")),
+      projectType: registered ? projectTypeFromRow(registered) : ($("projectType")?.value || "multi"),
+      projectTypeOther: registered?.tracker_project_type_other || $("projectTypeOther")?.value || "",
       address: isTrackerManaged(registered) ? (registered.address_project_name || "") : (parsed.address || registered?.address_project_name || ""),
       defaultEstimatedDeliveryDate: $("projectDate").value || "",
       levels: parsed.levels.map(level => ({
@@ -1009,8 +1058,10 @@ async function handlePdf(file) {
     $("projectNumber").value = draft.projectNumber;
     $("revision").value = draft.revision;
     $("customer").value = draft.customer;
-    $("sales").value = draft.sales;
+    selectSales("sales", draft.sales);
     $("projectType").value = draft.projectType || "multi";
+    $("projectTypeOther").value = draft.projectTypeOther || "";
+    syncOtherTypeField();
     $("address").value = draft.address;
     ++projectLookupSerial;
     if (projectLookupTimer) clearTimeout(projectLookupTimer);
@@ -1030,6 +1081,30 @@ async function handlePdf(file) {
     status.className = "status error";
     status.textContent = error.message || "Could not read this PDF.";
   }
+}
+
+function startManualForecast() {
+  if (draft) syncDraftFromInputs();
+  // Preserve the form input data, including an existing Tracker project prefill.
+  const levels = draft?.levels?.length ? draft.levels : [{
+    id: uid(), name: "Level 1", estimatedDeliveryDate: $("projectDate").value || "",
+    dateSource: $("projectDate").value ? "auto" : "",
+    materials: [{ id: uid(), material: "", requiredLf: 0 }], filteredMaterials: [], deliveries: []
+  }];
+  draft = {
+    sourceFileName: "", projectNumber: sharedProjectNumber($("projectNumber").value),
+    revision: normalizeSpaces($("revision").value).toUpperCase(),
+    customer: normalizeSpaces($("customer").value), sales: normalizeSpaces($("sales").value),
+    projectType: $("projectType").value, projectTypeOther: normalizeSpaces($("projectTypeOther").value),
+    address: normalizeSpaces($("address").value),
+    defaultEstimatedDeliveryDate: $("projectDate").value || "", levels
+  };
+  applyProjectDateToDraft();
+  $("reviewCard").classList.remove("hidden");
+  $("parseStatus").className = "status success";
+  $("parseStatus").textContent = "Manual material entry enabled. Enter project information, levels and Total Lengths below.";
+  renderDraftLevels();
+  $("reviewCard").scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
 function renderDraftLevels() {
@@ -1106,12 +1181,10 @@ function renderDeliveryPreview() {
 
 
 function updateProjectTypeUi() {
-  const isSfd = $("projectType")?.value === "sfd";
   const hint = $("projectTypeHint");
-  if (hint) hint.textContent = isSfd
-    ? "SFD dates are optional. Uncommitted SFD material is grouped into the purchasing buffer; any quantities put in Spruce are tracked separately as committed demand."
-    : "Multi-family levels appear in the 6-week delivery schedule. Estimated delivery dates are required.";
-  if (draft) draft.projectType = isSfd ? "sfd" : "multi";
+  if (hint) hint.textContent = "SFD, Multi and Others have identical forecasting and purchasing behavior. New levels require an estimated delivery date.";
+  syncOtherTypeField();
+  if (draft) { draft.projectType = $("projectType")?.value || "multi"; draft.projectTypeOther = normalizeSpaces($("projectTypeOther").value); }
 }
 
 function applyManualDraftLevelDate(levelIndex, nextDate) {
@@ -1142,7 +1215,8 @@ function syncDraftFromInputs() {
   draft.revision = normalizeSpaces($("revision").value).toUpperCase();
   draft.customer = normalizeSpaces($("customer").value);
   draft.sales = normalizeSpaces($("sales").value);
-  draft.projectType = $("projectType")?.value === "sfd" ? "sfd" : "multi";
+  draft.projectType = $("projectType")?.value || "multi";
+  draft.projectTypeOther = normalizeSpaces($("projectTypeOther").value);
   draft.address = normalizeSpaces($("address").value);
   draft.defaultEstimatedDeliveryDate = $("projectDate").value;
 
@@ -1171,8 +1245,9 @@ function resetIntake() {
   $("projectNumber").value = "";
   $("revision").value = "";
   $("customer").value = "";
-  $("sales").value = "";
+  selectSales("sales", "");
   $("projectType").value = "multi";
+  $("projectTypeOther").value = "";
   $("address").value = "";
   $("projectDate").value = "";
   $("applyDateAll").checked = false;
@@ -1196,7 +1271,10 @@ function projectToCloudRows(project) {
     address_project_name: project.address || null,
     customer: project.customer || null,
     sales: project.sales || null,
-    project_type: project.projectType === "sfd" ? "sfd" : "multi",
+    project_type: databaseProjectType(project.projectType),
+    tracker_project_type: trackerProjectType(project.projectType),
+    tracker_project_type_other: project.projectType === "others" ? project.projectTypeOther || null : null,
+    tracker_status: "delivering",
     default_delivery_date: project.defaultEstimatedDeliveryDate || null,
     version: 1
   };
@@ -1363,12 +1441,12 @@ function validDraftMaterials(level) {
 function validateDraftForReview() {
   clearIntakeValidation();
   if (!draft) {
-    showIntakeValidation("Upload a material-list PDF before reviewing the project.");
+    showIntakeValidation("Import a PDF or choose Enter Materials Manually first.");
     return false;
   }
   syncDraftFromInputs();
   const projectDate = $("projectDate").value;
-  const isMulti = draft.projectType !== "sfd";
+  const requiresDate = true;
 
   if (!draft.projectNumber) {
     showIntakeValidation("Project # is required.", $("projectNumber"));
@@ -1398,7 +1476,7 @@ function validateDraftForReview() {
       showIntakeValidation("Every level needs a name.", levelNameInput);
       return false;
     }
-    if (isMulti && !level.estimatedDeliveryDate) {
+    if (requiresDate && !level.estimatedDeliveryDate) {
       showIntakeValidation(`Enter an estimated delivery date for ${level.name}.`, levelDateInput);
       return false;
     }
@@ -1441,12 +1519,12 @@ function projectReviewSummaryHtml() {
         <span><strong>Revision</strong> ${escapeHtml(draft.revision || "—")}</span>
         <span><strong>Customer</strong> ${escapeHtml(draft.customer || "—")}</span>
         <span><strong>Sales</strong> ${escapeHtml(draft.sales || "—")}</span>
-        <span><strong>Project Type</strong> ${draft.projectType === "sfd" ? "SFD" : "Multi-family"}</span>
+        <span><strong>Project Type</strong> ${projectTypeLabel(draft.projectType)}</span>
       </div>
     </section>
     <section class="review-section">
       <div class="review-section-heading">
-        <h3>${draft.projectType === "sfd" ? "Package Dates (optional for SFD)" : "Estimated Delivery Dates"}</h3>
+        <h3>Estimated Delivery Dates</h3>
         <span>${draft.levels.length} package${draft.levels.length === 1 ? "" : "s"}</span>
       </div>
       <div class="review-level-list">${levelRows}</div>
@@ -1531,7 +1609,9 @@ async function reconcileProjectRevision(existing, projectRecord) {
       customer: projectRecord.customer || existing.customer || null,
       sales: projectRecord.sales || existing.sales || null,
       address_project_name: projectRecord.address || existing.address || null,
-      project_type: projectRecord.projectType === "sfd" ? "sfd" : "multi"
+      project_type: databaseProjectType(projectRecord.projectType),
+      tracker_project_type: trackerProjectType(projectRecord.projectType),
+      tracker_project_type_other: projectRecord.projectType === "others" ? projectRecord.projectTypeOther || null : null
     });
   }
   const updatedProject = await updateRows("projects", { id: `eq.${existing.id}`, version: `eq.${existing.version}` }, forecastMetadataUpdate);
@@ -1661,6 +1741,7 @@ async function persistDraftProject() {
   ++projectLookupSerial;
   try {
     const freshRows = await loadCloudRows();
+    populateSalesChoices(freshRows);
     state = mapCloudRows(freshRows);
     renderAll();
     const existing = state.projects.find(project => sharedProjectNumber(project.projectNumber) === sharedProjectNumber(draft.projectNumber));
@@ -1684,7 +1765,8 @@ async function persistDraftProject() {
       revision: draft.revision,
       customer: draft.customer,
       sales: draft.sales,
-      projectType: draft.projectType === "sfd" ? "sfd" : "multi",
+      projectType: draft.projectType,
+      projectTypeOther: draft.projectTypeOther || "",
       address: draft.address,
       defaultEstimatedDeliveryDate: draft.defaultEstimatedDeliveryDate,
       levels: draft.levels.map(level => ({
@@ -1856,13 +1938,18 @@ function openProjectEdit(projectId) {
   $("editProjectNumber").value = project.projectNumber || "";
   $("editRevision").value = project.revision || "";
   $("editCustomer").value = project.customer || "";
-  $("editSales").value = project.sales || "";
-  $("editProjectType").value = project.projectType === "sfd" ? "sfd" : "multi";
+  selectSales("editSales", project.sales || "");
+  $("editProjectType").value = project.projectType || "multi";
+  $("editProjectTypeOther").value = project.projectTypeOther || "";
+  syncOtherTypeField(true);
   $("editAddress").value = project.address || "";
   $("editProjectDate").value = project.defaultEstimatedDeliveryDate || "";
   $("editApplyDateAll").checked = false;
   const managed = isTrackerManaged(project);
-  for (const id of ["editProjectNumber", "editCustomer", "editSales", "editAddress"]) $(id).readOnly = managed;
+  for (const id of ["editProjectNumber", "editCustomer", "editSales", "editAddress"]) {
+    if (id === "editSales") $(id).disabled = managed;
+    else $(id).readOnly = managed;
+  }
   $("editProjectType").disabled = managed;
   $("editProjectTrackerInfo").classList.toggle("hidden", !managed);
   $("projectEditDialog").showModal();
@@ -1877,7 +1964,8 @@ async function saveProjectEdit() {
   const revision = normalizeSpaces($("editRevision").value).toUpperCase();
   const customer = trackerManaged ? activeEditProject.customer : normalizeSpaces($("editCustomer").value);
   const sales = trackerManaged ? activeEditProject.sales : normalizeSpaces($("editSales").value);
-  const projectType = trackerManaged ? activeEditProject.projectType : ($("editProjectType")?.value === "sfd" ? "sfd" : "multi");
+  const projectType = trackerManaged ? activeEditProject.projectType : ($("editProjectType")?.value || "multi");
+  const projectTypeOther = trackerManaged ? (activeEditProject.projectTypeOther || "") : normalizeSpaces($("editProjectTypeOther").value);
   const address = trackerManaged ? activeEditProject.address : normalizeSpaces($("editAddress").value);
   const defaultDate = $("editProjectDate").value;
   const applyAll = $("editApplyDateAll").checked;
@@ -1885,10 +1973,9 @@ async function saveProjectEdit() {
   if (!projectNumber) return alert("Project # is required.");
   if (!address) return alert("Address (Project Name) is required.");
   if (applyAll && !defaultDate) return alert("Choose a project default delivery date before applying it to all levels.");
-  const undatedLevels = (activeEditProject.levels || []).filter(level => !level.estimatedDeliveryDate);
-  if (projectType === "multi" && undatedLevels.length && !(applyAll && defaultDate)) {
-    return alert(`Multi-family packages need estimated delivery dates. ${undatedLevels.length} package${undatedLevels.length === 1 ? " is" : "s are"} currently undated. Choose a default date and Apply to all levels, or set the package dates before changing the project type.`);
-  }
+  // Pre-V1.6 undated packages are allowed to remain saved. They are shown
+  // in the scheduling warning and counted as urgent unscheduled demand.
+  // Newly created/revised forecast levels must be dated in the intake review.
 
   const duplicate = state.projects.find(item => item.id !== projectId && item.projectNumber.toLowerCase() === projectNumber.toLowerCase());
   if (duplicate) return alert(`Project # ${projectNumber} already exists.`);
@@ -1899,7 +1986,7 @@ async function saveProjectEdit() {
     ["Revision", activeEditProject.revision || "", revision],
     ["Customer", activeEditProject.customer || "", customer],
     ["Sales", activeEditProject.sales || "", sales],
-    ["Project Type", activeEditProject.projectType === "sfd" ? "SFD" : "Multi-family", projectType === "sfd" ? "SFD" : "Multi-family"],
+    ["Project Type", projectTypeLabel(activeEditProject.projectType), projectTypeLabel(projectType)],
     ["Address (Project Name)", activeEditProject.address || "", address],
     ["Project default delivery date", activeEditProject.defaultEstimatedDeliveryDate || "", defaultDate]
   ];
@@ -1919,7 +2006,8 @@ async function saveProjectEdit() {
     };
     if (!trackerManaged) Object.assign(updates, {
       project_number: projectNumber, customer: customer || null,
-      sales: sales || null, project_type: projectType, address_project_name: address
+      sales: sales || null, project_type: databaseProjectType(projectType), tracker_project_type: trackerProjectType(projectType),
+      tracker_project_type_other: projectType === "others" ? projectTypeOther || null : null, address_project_name: address
     });
     const updated = await updateRows("projects", { id: `eq.${projectId}`, version: `eq.${projectVersion}` }, updates);
     if (!updated?.length) throw new Error("This project was changed by another user while you were editing it. The shared data will be reloaded so you can review the latest version.");
@@ -2084,7 +2172,7 @@ function sixWeekMultiLevels() {
   const first = weeks[0];
   const last = addDaysIso(weeks[5], 6);
   return allLevels()
-    .filter(({ project, level }) => project.projectType !== "sfd" && levelStats(level).outstanding > EPSILON && level.estimatedDeliveryDate)
+    .filter(({ level }) => levelStats(level).outstanding > EPSILON && level.estimatedDeliveryDate)
     // Keep overdue packages visible until their date is corrected or material is delivered.
     .filter(({ level }) => level.estimatedDeliveryDate <= last)
     .sort((a, b) => a.level.estimatedDeliveryDate.localeCompare(b.level.estimatedDeliveryDate) || a.project.projectNumber.localeCompare(b.project.projectNumber));
@@ -2157,7 +2245,7 @@ function renderWeeklyMaterialForecast() {
 }
 
 function renderMonthlyForecast() {
-  const datedLevels = allLevels().filter(({ project, level }) => project.projectType !== "sfd" && level.estimatedDeliveryDate && levelStats(level).forecastRemaining > EPSILON);
+  const datedLevels = allLevels().filter(({ level }) => level.estimatedDeliveryDate && levelStats(level).forecastRemaining > EPSILON);
   const months = [...new Set(datedLevels.map(({ level }) => monthKey(level.estimatedDeliveryDate)))].sort();
   const materials = uniqueMaterials(datedLevels);
   const wrap = $("forecastWrap");
@@ -2190,7 +2278,24 @@ function renderMonthlyForecast() {
   empty.classList.add("hidden");
 }
 
+function renderUnscheduledForecast() {
+  const wrap = $("undatedForecastWrap");
+  if (!wrap) return;
+  const missing = allLevels().filter(({ level }) => !level.estimatedDeliveryDate && levelStats(level).outstanding > EPSILON);
+  if (!missing.length) {
+    wrap.classList.add("hidden");
+    wrap.innerHTML = "";
+    return;
+  }
+  wrap.classList.remove("hidden");
+  wrap.innerHTML = `<div class="unscheduled-alert"><strong>⚠ ${missing.length} unscheduled level${missing.length === 1 ? "" : "s"}</strong>
+    <span>Enter delivery dates for older projects to place demand into weekly/monthly schedules. Undated forecast materials remain included in urgent purchasing calculations.</span>
+    <div class="unscheduled-rows">${missing.map(({project, level}) => `<div class="unscheduled-row"><span><b>${escapeHtml(project.projectNumber)}</b> · ${escapeHtml(level.name)} · ${escapeHtml(projectTypeLabel(project.projectType))}</span><strong>${formatNumber(levelStats(level).outstanding)} LF outstanding</strong></div>`).join("")}</div>
+  </div>`;
+}
+
 function renderForecast() {
+  renderUnscheduledForecast();
   renderWeeklySchedule();
   renderWeeklyMaterialForecast();
   renderMonthlyForecast();
@@ -2231,9 +2336,9 @@ function demandBreakdownFor(materialName, leadTimeWeeks = 6) {
   const key = normalizeMaterialKey(materialName);
   const cutoff = addDaysIso(todayIso(), Math.max(0, Number(leadTimeWeeks || 0)) * 7);
   let committed = 0;
-  let multiForecast = 0;
+  let multiForecast = 0; // All project types now use the same scheduled forecast.
   let multiDueInLeadTime = 0;
-  let sfdBuffer = 0;
+  let sfdBuffer = 0; // Legacy name retained for an *undated* demand safeguard.
 
   for (const { project, level } of allLevels()) {
     for (const material of level.materials || []) {
@@ -2242,11 +2347,10 @@ function demandBreakdownFor(materialName, leadTimeWeeks = 6) {
       const forecastLf = forecastRemainingFor(level, material);
       if (committedLf > EPSILON) committed += committedLf;
       if (forecastLf <= EPSILON) continue;
-      if (project.projectType === "sfd") {
-        sfdBuffer += forecastLf;
-      } else {
+      if (!level.estimatedDeliveryDate) sfdBuffer += forecastLf; // Old undated levels cannot disappear from purchasing.
+      else {
         multiForecast += forecastLf;
-        if (level.estimatedDeliveryDate && level.estimatedDeliveryDate <= cutoff) multiDueInLeadTime += forecastLf;
+        if (level.estimatedDeliveryDate <= cutoff) multiDueInLeadTime += forecastLf;
       }
     }
   }
@@ -2440,7 +2544,7 @@ function renderInventory() {
       <td><button type="button" class="mini-button save-inventory-row">Save</button></td>
     </tr>`;
   }).join("");
-  wrap.innerHTML = `<table class="inventory-table"><thead><tr><th class="material-col">Material</th><th>On Hand LF</th><th>Lead Time (wk)</th><th>Committed / Spruce</th><th>Multi Forecast</th><th>SFD Buffer</th><th>Open Incoming</th><th>Incoming by Lead Time</th><th>Available Now</th><th>Need in Lead Time</th><th>Stock Owed</th><th>Projected Balance</th><th></th></tr></thead><tbody>${rows}</tbody></table>`;
+  wrap.innerHTML = `<table class="inventory-table"><thead><tr><th class="material-col">Material</th><th>On Hand LF</th><th>Lead Time (wk)</th><th>Committed / Spruce</th><th>Dated Forecast</th><th>Undated Demand</th><th>Open Incoming</th><th>Incoming by Lead Time</th><th>Available Now</th><th>Need in Lead Time</th><th>Stock Owed</th><th>Projected Balance</th><th></th></tr></thead><tbody>${rows}</tbody></table>`;
   wrap.classList.remove("hidden");
   empty.classList.add("hidden");
   updateAddInventoryMaterialButton();
@@ -4064,7 +4168,7 @@ function exportMatrixCsv() {
 }
 
 function exportForecastCsv() {
-  const levels = allLevels().filter(({ project, level }) => project.projectType !== "sfd" && level.estimatedDeliveryDate && levelStats(level).forecastRemaining > EPSILON);
+  const levels = allLevels().filter(({ level }) => level.estimatedDeliveryDate && levelStats(level).forecastRemaining > EPSILON);
   const months = [...new Set(levels.map(({ level }) => monthKey(level.estimatedDeliveryDate)))].sort();
   const materials = uniqueMaterials(levels);
   const rows = [["Material", ...months.map(monthLabel)]];
@@ -4084,7 +4188,7 @@ function exportForecastCsv() {
 }
 
 function exportInventoryCsv() {
-  const rows = [["Material", "On Hand LF", "Lead Time Weeks", "Committed / Spruce LF", "Multi Forecast LF", "SFD Buffer LF", "Open Incoming LF", "Incoming by Lead Time LF", "Available Now LF", "Need In Lead Time LF", "Stock Owed LF", "Projected Balance LF"]];
+  const rows = [["Material", "On Hand LF", "Lead Time Weeks", "Committed / Spruce LF", "Dated Forecast LF", "Undated Demand LF", "Open Incoming LF", "Incoming by Lead Time LF", "Available Now LF", "Need In Lead Time LF", "Stock Owed LF", "Projected Balance LF"]];
   for (const materialName of allKnownMaterialNames()) {
     const c = inventoryCalculation(materialName);
     rows.push([materialName, c.onHand, c.leadTimeWeeks, c.committed, c.multiForecast, c.sfdBuffer, c.incomingOpen, c.incomingDue, c.availableNow, c.needInLeadTime, c.stockOwed, c.projectedBalance]);
@@ -4122,7 +4226,7 @@ function cleanBackupState() {
       customer: project.customer,
       sales: project.sales,
       address: project.address,
-      projectType: project.projectType === "sfd" ? "sfd" : "multi",
+      projectType: ["sfd", "multi", "others"].includes(project.projectType) ? project.projectType : "multi",
       defaultEstimatedDeliveryDate: project.defaultEstimatedDeliveryDate,
       levels: (project.levels || []).map(level => ({
         name: level.name,
@@ -4182,7 +4286,7 @@ function normalizeBackup(parsed) {
       customer: normalizeSpaces(project.customer || ""),
       sales: normalizeSpaces(project.sales || ""),
       address: normalizeSpaces(project.address || ""),
-      projectType: project.projectType === "sfd" ? "sfd" : "multi",
+      projectType: ["sfd", "multi", "others"].includes(project.projectType) ? project.projectType : "multi",
       defaultEstimatedDeliveryDate: project.defaultEstimatedDeliveryDate || "",
       levels: (project.levels || []).map((level, index) => ({
         id: uid(),
@@ -4241,7 +4345,8 @@ async function importProjectsToCloud(importState, label) {
   if (!confirm(`${label} contains ${validProjects.length} project${validProjects.length === 1 ? "" : "s"}.\n\nMatching Project # records will be reconciled in place so existing delivery history is preserved. Continue?`)) return;
 
   const freshRows = await loadCloudRows();
-  state = mapCloudRows(freshRows);
+  populateSalesChoices(freshRows);
+    state = mapCloudRows(freshRows);
   for (const project of validProjects) {
     const existing = state.projects.find(item => sharedProjectNumber(item.projectNumber) === sharedProjectNumber(project.projectNumber));
     let projectId;
@@ -4328,10 +4433,10 @@ async function updateForecastDate() {
   if (!activeDelivery) return;
   const nextDate = $("forecastDateEdit").value;
   const { project, level } = activeDelivery;
-  if (project.projectType !== "sfd" && !nextDate) {
+  if (!nextDate) {
     $("forecastDateEdit").value = level.estimatedDeliveryDate || "";
     setForecastDateStatus("error");
-    return alert("Choose an estimated delivery date for a Multi-family package.");
+    return alert("Choose an estimated delivery date for this package.");
   }
   if ((level.estimatedDeliveryDate || "") === (nextDate || "")) {
     setForecastDateStatus("saved");
@@ -4484,6 +4589,9 @@ function wireEvents() {
     }
   });
 
+  $("startManualProject").addEventListener("click", startManualForecast);
+  $("projectTypeOther").addEventListener("input", () => { if (draft) draft.projectTypeOther = normalizeSpaces($("projectTypeOther").value); });
+  $("editProjectType").addEventListener("change", () => syncOtherTypeField(true));
   const dropZone = $("dropZone");
   ["dragenter", "dragover"].forEach(name => dropZone.addEventListener(name, event => {
     event.preventDefault();
@@ -4513,7 +4621,7 @@ function wireEvents() {
       renderDraftLevels();
     }
   });
-  ["projectNumber", "revision", "customer", "sales", "address"].forEach(id => {
+  ["projectNumber", "revision", "customer", "sales", "address", "projectTypeOther"].forEach(id => {
     $(id).addEventListener("input", () => {
       $(id).classList.remove("input-invalid");
       const message = $("intakeValidationMessage");

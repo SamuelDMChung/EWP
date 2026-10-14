@@ -1,3 +1,9 @@
+## Project Tracking V1.7 UI
+
+V1.7 shares Griff header and Light/Dark appearance with other portal pages via `../theme.css` and `../theme.js`. Forecast calculation, material import and database code is unchanged from V1.6. No V1.7 SQL. Full release information is in `../PORTAL_HANDOFF.md`.
+
+---
+
 # Project Tracking V1.5 WEB — current behavior
 
 Move each individual work item directly to Coordination; when all linked tasks arrive, one combined project card appears in In Review. Move individual coordinated tasks back by drag; to reopen a combined project drag back and select a task. New-project tasks always Queue and inherit the project due date without a reset control. Run root `v1_5_atomic_task_coordination.sql` before deployment. Refer to root `PORTAL_HANDOFF.md`.

@@ -5,8 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="color-scheme" content="light" />
   <title>EWP Material Forecast</title>
-  <link rel="stylesheet" href="styles.css?v=1.5" />
-  <link rel="stylesheet" href="../portal-nav.css?v=1.5" />
+  <link rel="stylesheet" href="styles.css?v=1.7" />
+  <link rel="stylesheet" href="../portal-nav.css?v=1.7" />
+  <link rel="stylesheet" href="../theme.css?v=1.7" />
+  <script src="../theme.js?v=1.7"></script>
 </head>
 <body>
   <nav class="ewp-portal-nav" aria-label="EWP Management Portal navigation">
@@ -23,7 +25,7 @@
     <div>
       <p class="eyebrow">EWP PURCHASING</p>
       <h1>EWP Material Forecast</h1>
-      <p class="subtitle">Version V1.5 · Developed by Samuel Chung</p>
+      <p class="subtitle">Version V1.7 · Developed by Samuel Chung</p>
     </div>
     <div class="header-actions">
       <div class="user-chip" title="Signed-in Supabase account used for database access and edit history.">
@@ -32,6 +34,7 @@
         <button id="signOutButton" type="button" class="user-change-button">Sign out</button>
       </div>
       <span id="cloudPill" class="cloud-pill connecting">Connecting to shared data…</span>
+      <button id="forecastSettingsButton" class="button secondary forecast-settings-button" type="button" aria-haspopup="dialog" aria-controls="forecastSettingsDialog">⚙ Settings</button>
       <button id="addProjectTop" class="button primary">+ Add Project</button>
     </div>
   </header>
@@ -53,7 +56,7 @@
           <div class="card-heading">
             <div>
               <p class="step">STEP 1</p>
-              <h2>Upload Material List</h2>
+              <h2>Add Project Materials</h2>
             </div>
             <span class="privacy-pill">PDF parsed locally</span>
           </div>
@@ -63,6 +66,7 @@
             <strong>Drop an EWP material-list PDF here</strong>
             <span>or click to choose a file</span>
           </label>
+          <div class="forecast-method-switch"><button id="startManualProject" type="button" class="button secondary">+ Enter Materials Manually</button><span class="small-note">No PDF required. Enter levels and lengths in Step 3.</span></div>
           <div id="parseStatus" class="status muted">No PDF selected.</div>
           <p class="small-note">The PDF itself stays on this computer. The browser extracts Project #, Address (Project Name), Level and each level's <strong>Total Lengths</strong>, then only the structured project data is saved to the shared database.</p>
         </article>
@@ -75,13 +79,15 @@
             <p id="projectLookupStatus" class="small-note shared-project-lookup" aria-live="polite"></p>
             <label>Revision<input id="revision" autocomplete="off" placeholder="e.g. R1" /></label>
             <label>Customer<input id="customer" autocomplete="off" placeholder="Customer" /></label>
-            <label>Sales<input id="sales" autocomplete="off" placeholder="Salesperson" /></label>
+            <label>Sales<select id="sales" aria-label="Salesperson"><option value="">Choose salesperson…</option></select></label>
             <label>Project Type
               <select id="projectType">
-                <option value="multi">Multi-family</option>
                 <option value="sfd">SFD</option>
+                <option value="multi" selected>Multi</option>
+                <option value="others">Others</option>
               </select>
             </label>
+            <label id="projectTypeOtherWrap" class="hidden">Specify Other Type<input id="projectTypeOther" autocomplete="off" placeholder="Optional project type description" /></label>
             <label class="full">Address (Project Name)<textarea id="address" rows="2" placeholder="Address / project name"></textarea></label>
             <div class="full intake-schedule-block">
               <label class="delivery-date-field">Estimated Delivery Date<input id="projectDate" type="date" /></label>
@@ -89,7 +95,7 @@
                 <label class="checkbox-row compact"><input id="applyDateAll" type="checkbox" /> Apply this delivery date to all levels</label>
                 <label class="checkbox-row compact"><input id="staggerWeekly" type="checkbox" /> Auto-set levels 1 week apart</label>
               </div>
-              <p id="projectTypeHint" class="small-note schedule-hint">Multi-family levels appear in the 6-week delivery schedule. Estimated delivery dates are required.</p>
+              <p id="projectTypeHint" class="small-note schedule-hint">All project types use the same dated delivery forecast. New levels require estimated delivery dates.</p>
               <div id="deliveryPreview" class="delivery-preview hidden" aria-live="polite"></div>
             </div>
           </div>
@@ -100,14 +106,14 @@
         <div class="card-heading">
           <div>
             <p class="step">STEP 3</p>
-            <h2>Review Extracted Levels &amp; Materials</h2>
+            <h2>Review Levels &amp; Materials</h2>
           </div>
           <button id="addLevelBtn" class="button secondary">+ Add Level</button>
         </div>
         <div id="levelEditor" class="level-editor"></div>
         <div id="intakeValidationMessage" class="form-validation hidden" role="alert"></div>
         <div class="save-row">
-          <p class="small-note">Nothing is added to the shared forecast until you confirm the review. You can correct any parser result first.</p>
+          <p class="small-note">Nothing is added to the shared forecast until you confirm. Edit imported or manually entered materials here.</p>
           <button id="saveProject" class="button primary large">Review Project</button>
         </div>
       </article>
@@ -153,7 +159,7 @@
       <div class="toolbar">
         <div>
           <h2>Delivery Forecast</h2>
-          <p>Multi-family packages are shown in the next six weeks by estimated delivery date. The monthly table remains available for the longer-term material outlook.</p>
+          <p>All SFD, Multi and Others packages are shown in the next six weeks by estimated delivery date. The monthly table remains available for the longer-term material outlook.</p>
         </div>
         <div class="toolbar-actions">
           <button id="refreshCloudForecast" class="button secondary">Refresh</button>
@@ -161,14 +167,15 @@
         </div>
       </div>
 
+      <div id="undatedForecastWrap" class="hidden"></div>
       <article class="card forecast-card">
         <div class="section-heading-row">
           <div>
-            <h3>6-Week Multi Delivery Schedule</h3>
+            <h3>6-Week Delivery Schedule</h3>
             <p class="small-note">Forecast = not yet committed. In Spruce = committed against inventory. A level can contain both until each Spruce order is delivered.</p>
           </div>
         </div>
-        <div id="weeklyScheduleEmpty" class="empty-state compact-empty">No outstanding Multi-family levels are overdue or due within the next six weeks.</div>
+        <div id="weeklyScheduleEmpty" class="empty-state compact-empty">No dated outstanding levels are overdue or due within the next six weeks.</div>
         <div id="weeklyScheduleWrap" class="table-wrap hidden"></div>
       </article>
 
@@ -176,7 +183,7 @@
         <div class="section-heading-row">
           <div>
             <h3>6-Week Material Demand</h3>
-            <p class="small-note">Uncommitted Multi-family forecast LF grouped by delivery week. Material already in Spruce is tracked separately as committed inventory.</p>
+            <p class="small-note">Uncommitted forecast LF from all project types, grouped by delivery week. Material already in Spruce is tracked separately as committed inventory.</p>
           </div>
         </div>
         <div id="weeklyMaterialEmpty" class="empty-state compact-empty">No material demand falls within the next six weeks.</div>
@@ -187,7 +194,7 @@
         <div class="section-heading-row">
           <div>
             <h3>Monthly Material Forecast</h3>
-            <p class="small-note">Uncommitted dated quantities only. Material already in Spruce is tracked separately as committed inventory; SFD forecast quantities remain a purchasing buffer.</p>
+            <p class="small-note">Uncommitted dated quantities from all project types. Material in Spruce is tracked separately. Existing undated levels remain outstanding and are included in urgent purchasing demand until scheduled.</p>
           </div>
         </div>
         <div id="forecastEmpty" class="empty-state compact-empty">Add dated projects to see the monthly forecast.</div>
@@ -519,13 +526,15 @@
         <label>Project #<input id="editProjectNumber" autocomplete="off" /></label>
         <label>Revision<input id="editRevision" autocomplete="off" /></label>
         <label>Customer<input id="editCustomer" autocomplete="off" /></label>
-        <label>Sales<input id="editSales" autocomplete="off" /></label>
+        <label>Sales<select id="editSales" aria-label="Edit salesperson"><option value="">Choose salesperson…</option></select></label>
         <label>Project Type
           <select id="editProjectType">
-            <option value="multi">Multi-family</option>
             <option value="sfd">SFD</option>
+            <option value="multi">Multi</option>
+            <option value="others">Others</option>
           </select>
         </label>
+        <label id="editProjectTypeOtherWrap" class="hidden">Specify Other Type<input id="editProjectTypeOther" autocomplete="off" placeholder="Optional project type description" /></label>
         <label class="full">Address (Project Name)<textarea id="editAddress" rows="2"></textarea></label>
         <label>Project Default Delivery Date<input id="editProjectDate" type="date" /></label>
         <label class="checkbox-row"><input id="editApplyDateAll" type="checkbox" /> Apply this date to all levels</label>
@@ -601,7 +610,28 @@
     </div>
   </div>
 
-  <script type="module" src="app.mjs?v=1.5"></script>
-  <script type="module" src="../workspace-auth.mjs?v=1.5"></script>
+  <script type="module" src="app.mjs?v=1.7"></script>
+  <script type="module" src="../workspace-auth.mjs?v=1.7"></script>
+  <dialog id="forecastSettingsDialog" class="ewp-theme-dialog" aria-labelledby="forecastSettingsTitle">
+    <div class="ewp-theme-dialog-title">
+      <div><span class="ewp-theme-dialog-kicker">EWP MANAGEMENT</span><h2 id="forecastSettingsTitle">Settings</h2></div>
+      <button id="forecastSettingsClose" type="button" class="ewp-theme-dialog-close" aria-label="Close settings">×</button>
+    </div>
+    <div class="ewp-theme-dialog-body">
+      <h3>Appearance</h3>
+      <p>Choose the display theme for the Portal, Project Tracking and Forecast on this browser.</p>
+      <label class="appearance-chooser">Theme
+        <select data-ewp-theme-select aria-label="Theme preference"><option value="light">Light</option><option value="dark">Dark</option></select>
+      </label>
+    </div>
+  </dialog>
+  <script>
+    (() => {
+      const dialog = document.getElementById('forecastSettingsDialog');
+      document.getElementById('forecastSettingsButton').addEventListener('click', () => dialog.showModal());
+      document.getElementById('forecastSettingsClose').addEventListener('click', () => dialog.close());
+      dialog.addEventListener('click', event => { if (event.target === dialog) dialog.close(); });
+    })();
+  </script>
 </body>
 </html>

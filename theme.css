@@ -1,0 +1,153 @@
+/* EWP Management V1.7: shared header, appearance settings, and browser-local dark theme.
+   Colors in coordination-status pills intentionally retain their semantic meanings. */
+:root { --ewp-focus: #949300; }
+
+/* Tracking account/connectivity matches the Forecast header without an extra cloud strip. */
+.site-header .brand-wrap {
+  display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center;
+  padding: 28px clamp(20px,4vw,56px) 22px; gap: 18px 26px;
+  max-width: none;
+}
+.tracker-header-title { min-width: 225px; }
+.tracker-header-actions { display: flex; justify-content: flex-end; align-items: center; flex-wrap: wrap; gap: 10px; }
+.site-header .settings-button {
+  position: static; top: auto; right: auto;
+  min-height: 38px; background: #f0efd5; border-color: #d4d0a5;
+}
+.tracker-header-refresh { min-height: 38px; }
+.tracker-user-chip, .tracker-header-actions .cloud-pill {
+  display: inline-flex; align-items: center; gap: 6px; padding: 6px 9px;
+  border: 1px solid #ddd7cc; background: #fbfaf7; color: #3c3935;
+  border-radius: 999px; font-size: 11px; font-weight: 800; white-space: nowrap;
+}
+.tracker-user-chip { max-width: min(360px,100%); min-height: 32px; }
+.tracker-user-chip .user-chip-label { color: #655f57; font-size: 10px; letter-spacing: .06em; text-transform: uppercase; }
+.tracker-user-chip strong { overflow: hidden; text-overflow: ellipsis; max-width: 200px; }
+.tracker-user-chip .user-change-button { background: none; border: none; padding: 3px 5px; color: #646300; cursor: pointer; font-size: 10px; font-weight: 800; }
+.tracker-user-chip .user-change-button:hover { background: #f0efd5; border-radius: 5px; }
+.tracker-header-actions .cloud-pill::before {
+  content: ''; width: 7px; height: 7px; border-radius: 50%; background: #a58d36; flex: 0 0 7px;
+}
+.tracker-header-actions .cloud-pill.connected { color: #18794e; background: #e9f7ef; border-color: #cbe9da; }
+.tracker-header-actions .cloud-pill.connected::before { background: #18794e; }
+.tracker-header-actions .cloud-pill.error { color: #b42318; background: #fff0ee; border-color: #f2c3bd; }
+.tracker-header-actions .cloud-pill.error::before { background: #b42318; }
+.tracker-header-actions .cloud-pill.connecting { color: #8a6112; background: #fff7df; border-color: #f2ddb4; }
+@media (max-width: 850px) {
+  .tracker-header-actions { justify-content: flex-start; width: 100%; }
+}
+
+/* Appearance controls use the same wording and input behavior on both workspaces. */
+.appearance-panel {
+  display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 20px;
+  padding: 18px 20px; margin-bottom: 16px;
+}
+.appearance-panel h3, .ewp-theme-dialog-body h3 { font-size: 17px; margin: 0 0 5px; color: #3c3935; }
+.appearance-panel p, .ewp-theme-dialog-body p { color: #655f57; font-size: 12px; margin: 0; line-height: 1.5; }
+.appearance-chooser { display: flex; align-items: center; gap: 12px; font-size: 13px; font-weight: 750; white-space: nowrap; }
+.appearance-chooser select { width: auto; min-width: 145px; padding: 9px 12px; border-radius: 9px; border: 1px solid #bfb7ac; background: white; color: #3c3935; font: inherit; }
+.forecast-settings-button { min-height: 36px; white-space: nowrap; }
+.ewp-theme-dialog {
+  width: min(480px, calc(100vw - 32px)); max-height: calc(100vh - 40px);
+  background: #fff; color: #3c3935; border: 1px solid #ddd7cc; border-radius: 15px;
+  padding: 0; box-shadow: 0 24px 70px rgba(20,20,20,.28);
+}
+.ewp-theme-dialog::backdrop { background: rgba(16,17,16,.55); }
+.ewp-theme-dialog-title { display:flex; justify-content:space-between; align-items:center; gap:14px; padding:20px 23px 16px; border-bottom:1px solid #ddd7cc; }
+.ewp-theme-dialog-title h2 { margin:3px 0 0; font-size:23px; color:#3c3935; }
+.ewp-theme-dialog-kicker {font-size:10px; font-weight:850; letter-spacing:.1em; color:#747300; }
+.ewp-theme-dialog-close { border:0; padding:0; width:34px; height:34px; background:#f0eee8; border-radius:8px; font-size:23px; color:#3c3935; cursor:pointer; }
+.ewp-theme-dialog-body { padding:22px 23px 26px; }
+.ewp-theme-dialog-body .appearance-chooser { margin-top:19px; justify-content:space-between; }
+
+/* Dark theme: semantic Griff olive/green, blue review, orange pending status pills survive. */
+html[data-ewp-theme="dark"] {
+  --bg: #161815; --panel: #242822; --surface: #242822; --surface-alt: #20231e;
+  --text: #f0eee7; --navy: #f0eee7; --ink: #f0eee7; --muted: #b9b6ac;
+  --line: #41463d; --border: #41463d; --border-strong: #666a5e;
+  --primary: #aaaa31; --primary-dark: #90901e; --primary-soft: #36391e;
+  --accent: #aaaa31; --accent-dark: #90901e; --accent-soft: #36391e;
+  --success: #80c9a2; --success-soft: #1c3c2e;
+  --warning: #f0ba65; --warning-soft: #45351c;
+  --danger: #ff9f98; --green: #80c9a2; --green-soft: #1c3c2e;
+  --yellow: #f0ba65; --yellow-soft: #45351c;
+  --red: #ff9f98; --red-soft: #4a2726;
+  color-scheme: dark;
+}
+html[data-ewp-theme="dark"], html[data-ewp-theme="dark"] body {background: #161815; color: #f0eee7;}
+html[data-ewp-theme="dark"] :is(.site-header,.main-nav,.app-header,.tabs,.masthead) { background: #20231e; border-color: #41463d; }
+html[data-ewp-theme="dark"] :is(.brand-kicker,.eyebrow,.step,.card-eyebrow,.compact-project-number,.ewp-theme-dialog-kicker) {color:#d4d36c;}
+html[data-ewp-theme="dark"] :is(h1,h2,h3,h4,.intro h1,.site-header h1,.site-header .column-header h3,.column-header h3,.section-heading h2,.setting-title h3,.setting-card h3,.followup-email-heading h3,.card h2,.dialog h2,.toolbar h2,.app-header h1,.modal-header h2,.card-title,.appearance-panel h3,.ewp-theme-dialog-body h3) { color:#f0eee7; }
+html[data-ewp-theme="dark"] :is(.subtitle,.version-line,.portal-version,.small-note,.section-heading p,.setting-card > p,.appearance-panel p,.ewp-theme-dialog-body p,.compact-project-parties,.compact-card-footer,.muted,.card-copy,.toolbar p,.modal-header p,.column-kicker,.card-meta,.followup-card p) {color:#b9b6ac;}
+html[data-ewp-theme="dark"] :is(.filter-shell,.column,.content-card,.setting-card,.project-card,.card,.modal,.dialog,.level-card,.workspace-card,.portal-signed-in,.portal-login,.portal-auth-loading,.empty-state,.tracker-login-card,.project-col,.collapsed-summary-card,.inventory-summary,.forecast-card,.inventory-card,.table-wrap,.matrix-scroll-viewport,.review-dialog,.ewp-theme-dialog,.appearance-panel,.user-chip,.tracker-user-chip,.project-search-bar,.project-search-box,.saved-filter-group,.filter-panel,.multi-filter-menu,.drop-zone,.data-footer) {
+  background-color: #242822; color: #f0eee7; border-color: #41463d;
+}
+html[data-ewp-theme="dark"] :is(.column,.drop-zone,.level-header,.filter-panel,.board-view-switch,.nav-tab.active,.tab.active,.icon-btn,.btn-secondary,.button.secondary,.button.ghost,.setting-chip,.setting-chip button,.compact-project-type,.project-number-prefix,.work-item-card,.work-item-row,.work-item-editor,.project-search-wrap,.choice-field,.tracker-cloud-top) {
+  background-color:#2c3028; color:#f0eee7; border-color:#4a5045;
+}
+html[data-ewp-theme="dark"] :is(input:not([type="checkbox"]):not([type="radio"]),select,textarea,.appearance-chooser select,.multi-filter-trigger,.saved-filter-group select) {
+  background-color:#1d211c; color:#f0eee7; border-color:#666a5e;
+}
+html[data-ewp-theme="dark"] input::placeholder, html[data-ewp-theme="dark"] textarea::placeholder { color:#a3a59b; }
+html[data-ewp-theme="dark"] :is(label,fieldset legend,.form-grid label,.followup-field,.followup-email-heading label,.followup-body-heading label,.work-item-grid label,.project-number-label) { color:#e9e6dc; }
+html[data-ewp-theme="dark"] :is(.board-view-option,.nav-tab,.tab,.btn-filter,.btn-linkish,.button.secondary,.btn-secondary,.filter-label,.setting-chip,.setting-chip button) {color:#e9e6dc;}
+html[data-ewp-theme="dark"] :is(.nav-tab.active,.tab.active,.board-view-option.is-active,.btn-primary,.button.primary,.portal-primary-button) {background:#747300;color:#fff;}
+html[data-ewp-theme="dark"] :is(.nav-tab:hover,.tab:hover,.board-view-option:not(.is-active):hover,.setting-chip:hover,.project-table tbody tr:hover,.filter-check-row:hover) { background:#353a30; }
+html[data-ewp-theme="dark"] :is(.site-header .settings-button,.forecast-settings-button,.ewp-theme-dialog-close) { background:#343820; border-color:#5e633e; color:#ecebb6; }
+html[data-ewp-theme="dark"] :is(.site-header .settings-button:hover,.forecast-settings-button:hover) { background:#474c29; }
+html[data-ewp-theme="dark"] :is(.tracker-user-chip,.user-chip) {background:#292c26;border-color:#515648;}
+html[data-ewp-theme="dark"] .tracker-user-chip .user-chip-label {color:#c3c0b6;}
+html[data-ewp-theme="dark"] .tracker-user-chip .user-change-button {color:#d8d66a;}
+html[data-ewp-theme="dark"] :is(.cloud-pill.connected,.tracker-header-actions .cloud-pill.connected) { background:#1c3c2e; color:#a3e4bd; border-color:#356b4e; }
+html[data-ewp-theme="dark"] :is(.cloud-pill.connecting,.tracker-header-actions .cloud-pill.connecting) { background:#45351c; color:#f0ba65; border-color:#66522d; }
+html[data-ewp-theme="dark"] :is(.cloud-pill.error,.tracker-header-actions .cloud-pill.error) { background:#4a2726; color:#ff9f98; border-color:#6e3c39; }
+html[data-ewp-theme="dark"] .cloud-pill.connected::before {background:#80c9a2;}
+html[data-ewp-theme="dark"] .tracker-header-actions .cloud-pill.connected::before {background:#80c9a2;}
+html[data-ewp-theme="dark"] .column::before {background:#949300;}
+html[data-ewp-theme="dark"] :is(.project-card,.level-card,.drop-zone,.filter-shell,.setting-card,.form-grid,.material-row,.project-col,.material-col,.table-wrap,.project-table,.dialog,.modal,.card) {border-color:#41463d;}
+html[data-ewp-theme="dark"] :is(table,th,td,.project-table th,.project-table td) {color:#e9e6dc;border-color:#41463d;}
+html[data-ewp-theme="dark"] :is(thead th,thead .material-col,.matrix-scroll-viewport thead .material-col,.project-table thead th,.project-table th,.material-head) {background:#343930;color:#f0eee7;}
+html[data-ewp-theme="dark"] :is(tbody .material-col,.matrix-scroll-viewport tbody .material-col,.project-table tbody td) {background:#242822;color:#f0eee7;}
+html[data-ewp-theme="dark"] :is(.matrix-scroll-viewport tbody tr:hover td,.matrix-scroll-viewport tbody tr:hover .material-col) {background:#33392f;}
+html[data-ewp-theme="dark"] :is(.project-header-card,.project-search-filter,.inventory-add-material,.data-footer,.collapsed-summary-card) {background:#272b25;}
+html[data-ewp-theme="dark"] :is(.status-pending,.status-in_review,.status-delivering,.status-completed,.status-queue,.status-in_progress) {filter:brightness(.9);}
+html[data-ewp-theme="dark"] .status-in_review {background:#1f345a; color:#b8d2ff; border-color:#3e6299;filter:none;}
+html[data-ewp-theme="dark"] .status-pending {background:#48371b; color:#ffd58e; border-color:#85652c;filter:none;}
+html[data-ewp-theme="dark"] .status-delivering {background:#1d3e2e; color:#a3e4bd; border-color:#3b7654;filter:none;}
+html[data-ewp-theme="dark"] .status-queue {background:#3e4039;color:#e6e1d4;border-color:#54574d;filter:none;}
+html[data-ewp-theme="dark"] .status-in_progress {background:#41421c;color:#f4ee96;border-color:#6d6f2f;filter:none;}
+html[data-ewp-theme="dark"] .status-completed {background:#2c3c2e;color:#c7ecc5;border-color:#4d6b4e;filter:none;}
+html[data-ewp-theme="dark"] :is(.status-badge,.privacy-pill,.compact-forecast-link,.forecast-project-link,.project-col .tracker-project-link) {filter: brightness(.87);}
+html[data-ewp-theme="dark"] :is(.unscheduled-alert,.notice) {background:#45351c;color:#f2dcac;border-color:#806638;}
+html[data-ewp-theme="dark"] :is(.project-search-box,.project-search-wrap,.filter-toolbar,.filter-shell) {box-shadow:none;}
+html[data-ewp-theme="dark"] .ewp-theme-dialog-title {border-color:#41463d;}
+html[data-ewp-theme="dark"] .ewp-theme-dialog-title h2 {color:#f0eee7;}
+html[data-ewp-theme="dark"] :is(.portal-signed-in strong,.portal-signed-in button,.intro .portal-version,.brandline,.setting-chip,.followup-project-row,.compact-card) {color:#f0eee7;}
+html[data-ewp-theme="dark"] :is(.workspace-arrow,.open-link) {color:#d4d36c;}
+html[data-ewp-theme="dark"] :is(.portal-login-form input,.tracker-login-card input) {background:#1d211c;color:#f0eee7;border-color:#666a5e;}
+html[data-ewp-theme="dark"] :is(.card-icon-tracker,.card-icon-forecast) {background:#343820;color:#d4d36c;}
+html[data-ewp-theme="dark"] :is(.header-actions .user-change-button,.user-change-button) {color:#d4d36c;}
+html[data-ewp-theme="dark"] .ewp-theme-dialog-body {background:#242822;}
+html[data-ewp-theme="dark"] .ewp-portal-nav {background:#131513; border-color:#41463d;}
+html[data-ewp-theme="dark"] .ewp-portal-nav__mark {background:#131513;}
+html[data-ewp-theme="dark"] .ewp-portal-nav__link[aria-current="page"] {background:#42463b;color:#f4f1e8;}
+html[data-ewp-theme="dark"] .ewp-portal-nav__link:hover {background:#3c4036;}
+
+@media(max-width:620px) {
+  .site-header .brand-wrap{padding:21px 16px;}
+  .tracker-header-actions{gap:8px;}
+  .tracker-user-chip{max-width:100%;}
+  .tracker-user-chip strong{max-width:130px;}
+  .appearance-panel {align-items:stretch;}
+  .appearance-chooser {justify-content:space-between;}
+}
+/* Contrast polish based on V1.7 dark-mode board and Settings previews. */
+html[data-ewp-theme="dark"] .btn-filter {background:#353a30; color:#f0eee7; border-color:#555b50;}
+html[data-ewp-theme="dark"] .btn-filter:hover {background:#42483b;}
+html[data-ewp-theme="dark"] .compact-task-linkage {color:#d9d8b6;}
+html[data-ewp-theme="dark"] .compact-task-arrival {color:#9bd7ae;}
+html[data-ewp-theme="dark"] .filter-result-count {color:#b9b6ac;}
+html[data-ewp-theme="dark"] .empty-state {background:#242822;color:#d0cfc5;border-color:#41463d;}
+html[data-ewp-theme="dark"] .followup-project-row {background:#242822;color:#f0eee7;border-color:#41463d;}
+html[data-ewp-theme="dark"] .followup-project-row:has(input:checked) {background:#343b2b;}
+html[data-ewp-theme="dark"] .followup-project-row:hover {background:#343930;}

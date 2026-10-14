@@ -1,3 +1,72 @@
+# EWP Management Portal — Canonical V1.7 WEB Handoff
+
+**Release:** `EWP_Management_Portal_V1_7_WEB_FULL.zip` (October 13, 2026).  
+**Source baseline:** V1.6 WEB FULL, preserving V1.5 task workflow and V1.6 Forecast intake and calculations.  
+**Next:** V1.8 WEB. **Scope:** UI consistency, dark theme and removal of redundant Tracker summary counters; **no SQL migration**.
+
+## V1.7 changes
+
+1. **Consistent Griff page headers.** Project Tracking uses the same account chip, sign-out and Supabase connection pill treatment as Forecast rather than a separate cloud strip. Tracker's `#trackerCloudMessage` is now placed within the page header and reports connected/error state; green connected text includes `live` only after the Realtime channel actually reaches `SUBSCRIBED`. An explicit Refresh button remains in the Tracker header, and Settings remains clearly visible beside it. Signed-in email derives from the **existing Supabase session**, not a new account system.
+2. **Removed duplicate Tracker summary counters:** Deleted the row of Queue/In Progress/Coordination/Completed and Next Project Number cards entirely. Also removed the tiny numeric bubbles beside board-column names, per user's request. The filter-result count (e.g. '2 projects') remains useful; column headings, drag zones, card data, filters and task behavior remain the same. Internally the next TC number generator still runs when creating projects; only the dashboard number was removed.
+3. **Settings in both workspaces.** Project Tracking Settings now includes an Appearance control before existing Sales, Assignees, Tasks settings. Forecast adds a prominent Settings button in its header, opening a modal with the same Appearance control. Both offer Light and Dark themes. This is a UI-only preference saved as `ewp_management_display_theme_v17` in localStorage on the browser origin, shared by homepage, Tracker and Forecast. Changing theme in one open tab also updates other tabs via `storage` events. Theme is *not* stored in Supabase and is therefore not automatically shared to a different device or browser.
+4. **Unified, accessible dark styling.** New common `theme.js` and `theme.css` are included at the portal root and loaded by all three HTML entrypoints. Colors preserve the supplied Griff olive/charcoal palette and semantic Coordination Pending/In Review/Delivering status colors. Dark backgrounds, forms, search, cards, tables, modal dialogs and the landing portal are styled to avoid light flashes. Default remains Light. `theme.js` runs in the document head to set `data-ewp-theme` early.
+5. **Scope protections:** No edits to V1.6 Forecast `app.mjs` algorithms, data parser files, Supabase API client, migrations, RLS, authentication implementation, project task SQL or work-item drag logic. Tracker JavaScript changes only wire the new header and remove display-only counter writes; no new database fields. Existing V1.6 SQL files remain packaged for new installations, but **do not run any SQL just for V1.7**.
+
+## Verification / deployment
+
+- 26 V1.5 Tracker mock-browser workflow assertions still pass: independent task movement, partial/full Coordination merge, selective reopen, date inheritance and zero JavaScript exceptions.
+- V1.6 Forecast mock-browser tests still pass: Sales and types, Others, manual entries, SFD/undated demand, Forecast-created Delivering and preservation of pre-existing Tracker status; zero JavaScript exceptions.
+- Separate UI mock-browser tests passed: removed counts, theme controls in both Settings locations, Light/Dark update, Forecast Settings modal and shared browser preference across Tracker, Forecast and Portal. Dark Tracker board and Forecast Settings dialog visually reviewed; light and dark use same Griff accents.
+- JavaScript syntax checked and full ZIP contents validated. **No live production Supabase/Chrome-Safari deployment was tested here.**
+- To deploy: back up the V1.6 website, then replace the complete GitHub Pages web root files with V1.7 files (especially `theme.js` and `theme.css`). There is no V1.7 SQL execution. A browser hard-refresh may be needed if GitHub Pages/clients cache old CSS/JS. Test signed-in status, Forecast dialog, theme retention across pages and board tasks on live data.
+- If upgrading directly from a version earlier than V1.6, consult the V1.6 migration section below for required Supabase SQL *before* deploying this frontend. Do not rerun prior migrations that have already been applied.
+
+---
+
+# EWP Management Portal — Canonical V1.6 WEB Handoff
+
+**Release:** `EWP_Management_Portal_V1_6_WEB_FULL.zip` (October 13, 2026).  
+**Baseline:** canonical V1.5 WEB; all V1.5 independent-task/Coordination workflows and shared project IDs preserved.  
+**Scope:** WEB only (Forecast functionality, Tracker-aware entry, legacy SQL organization). Capacitor iOS demo remains V1.3. **Next version: V1.7 WEB.**  
+**Deployment prerequisite:** Back up the Supabase database and GitHub repo, make sure V1.4 and V1.5 SQL migrations were previously applied, then **run `v1_6_forecast_coordination_intake.sql` ONCE before uploading the V1.6 frontend.** Do not run historical setup SQL.
+
+## V1.6 implementation and decisions
+
+1. **Same Sales list as Tracker.** Forecast Add Project AND Edit Project now load `tracker_settings.sales` from the SAME Supabase shared team settings, plus salesperson names on existing project records, matching the Tracker's exact Sales-choice behavior. Changing settings in Tracker will flow into Forecast on the next shared sync/reload/focus. If Forecast encounters an existing saved name no longer in settings, it retains that name as a valid displayed selection so old records are not discarded. Tracker-owned project metadata remains read-only in Forecast. If the settings request fails, Forecast's existing normal cloud sync shows an error instead of pretending the new list is current.
+2. **Same Project Type choices:** `SFD`, `Multi`, `Others`, with optional detail input for Others. `tracker_project_type` stores the precise type so it can round-trip with Tracking. Existing legacy database `projects.project_type` continues using only `sfd`/`multi` per the existing DB constraint; Others uses `multi` for that legacy internal column. In the UI and Tracker it remains `Others`, never displayed as Multi. This avoids changing existing schema/check constraints and keeps old Tracker code compatible.
+3. **SFD/Multi/Others forecasting parity:** All 3 can use the 6-week package schedule, 6-week material demand, monthly material outlook, purchasing, Spruce, deliveries, inventory, manual entry and PDF imports. Removes the historical rule excluding SFD from dated forecasts and the SFD-only purchasing buffer. For **new or revised** Forecast entries, each level requires a delivery date. Existing undated levels are NOT deleted or forcibly dated: the Delivery Forecast shows an Unscheduled warning by project/level, and undated outstanding material is counted as immediate/lead-time purchasing exposure, not silently ignored. Inventory columns/CSV show **Dated Forecast** and **Undated Demand** rather than type-specific buffers. Forecast edit dialogs preserve legacy undated levels on unrelated edits; date editing asks for a date.
+4. **PDF-free manual original Forecast creation.** New `+ Enter Materials Manually` button in Add Project reveals the existing Step 3 level/material editor without a PDF. User can add/remove multiple levels and enter material/positive total LF, schedule estimated dates, preview, then run the EXACT same confirmation and save/revision flow as imports. The old Spruce-order Manual Entry option remains separate and unchanged. Adding material forecast to an existing Tracker project uses the same shared Project # and preserves Tracker authority.
+5. **One-way project creation.** A genuinely **new** Forecast project creates one shared `projects` row with `tracker_status='delivering'` and displays in Tracker's Coordination→Delivering, bypassing the legacy trigger's spurious `Assign task` placeholder. The supplied one-time SQL changes **only** `tracker_initialize_work_item()` so it skips a placeholder specifically for Forecast insertions marked Delivering and with no Tracker phase. Tracker-created projects still start in Queue with their own tasks and no Forecast materials. **Existing projects (including first Forecast imports from Tracker) preserve their existing Tracker statuses**, work items and metadata, regardless of whether Forecast import uses a PDF or manual entry. Existing imported Forecast revisions also preserve workflow. No new tables or user credentials are introduced.
+6. **SQL cleanup:** Historical SQL scripts that were cluttering the active project root were relocated byte-for-byte to `sql/archive/` (Phase 2, optional realtime, V1.2, V1.4, V1.5, Forecast V0.26). No historical scripts are executed as part of cleanup; no live table/data deletion. The only *new* executable V1.6 script in root is `v1_6_forecast_coordination_intake.sql`. `sql/README.md` gives the exact path and migration order. When updating your GitHub Pages repository, remove superseded SQL files from their OLD root locations once safely archived as in this ZIP; this affects Git source files, NOT live Supabase records.
+7. **V1.5 Tracker regression preserved:** Drag linked work items separately through Queue/In Progress/Coordination, automatic one-card In Review merge once the last task arrives, selective reopen, due-date inheritance, default Queue on new tasks, unchanged Follow-up and color filters. Tracker gets only a minor zero-task Forecast-card label/safeguard: it no longer pretends Forecast-created Delivering projects have a drawing task, and asks the user to add a task in Edit Project before dragging such a project back on-plate.
+
+## Important operational precautions
+
+- **This is not a tested live-Supabase deployment.** Browser tests use a mock of the shared Supabase tables; SQL was reviewed statically, not executed against a real database. Back up live data, run SQL in Supabase, check for success, and then deploy to GitHub Pages. Do not push this frontend first.
+- V1.6 new Forecast project insertion + several related level/material REST writes are still the pre-existing multi-request implementation, not an all-or-nothing server transaction. The client attempts cleanup on failure; refresh and verify if connectivity drops midway. For complex future workflows a transactional Supabase RPC would be a separate project.
+- Do not rerun historical `phase2_migration.sql` or `supabase_v0_26.sql`; these are archived for disaster recovery/documentation. If V1.5 migration wasn't applied, apply `sql/archive/v1_4_legacy_task_status_reconciliation.sql`, then `sql/archive/v1_5_atomic_task_coordination.sql`, then the V1.6 SQL, after assessing which have already been run.
+- `tracker_settings` requires the authenticated team's existing RLS access; no credentials/API endpoints are changed.
+- Keep Project # unchanged once levels exist; the shared project record remains one row for web and future iOS.
+
+## Verification performed here
+
+- `node --check` on all 13 JS modules (success).
+- Mocked browser tests: settings Sales options; type dropdown SFD/Multi/Others; Others metadata classification; dated Other project in monthly schedule; undated SFD warning and purchasing demand; PDF-free manual Step 3, review and save; new manual Other project saved as Delivering with shared type details; adding original materials to a Tracker project without changing In Progress status; browser errors none. No native PDF parsing regression was triggered in this mock.
+- Re-ran all 26 V1.5 mocked headless Chromium Tracker workflow assertions successfully (linked tasks, partial/full Coordination, reopen, inherited dates, no JS errors).
+- ZIP file integrity, file references, and source/handoff preservation verified when packaging.
+
+## Quick company-side rollout and acceptance checklist
+
+1. Back up live Supabase and repo; ensure v1_5 RPC migration exists. In Supabase SQL Editor execute `v1_6_forecast_coordination_intake.sql` once; confirm success.
+2. Replace web files at GitHub Pages repository root with V1.6. Historical SQL from old root folders can be deleted there because they now reside in `sql/archive/`.
+3. Open Tracker Settings, confirm Sales list; open Forecast Add Project, compare Sales dropdown and SFD/Multi/Others choices. Change a Sales option in Tracker Settings and verify Forecast refresh picks it up.
+4. Use a TEST TC# to create an Others project via Manual Entry with one dated level and positive material LF; verify it appears once in Tracker Coordination under Delivering and NOT as an Assign Task/Queue item.
+5. Create a separate test project in Tracker with two tasks; open that TC# in Forecast, manually add a dated level; verify Tracker's Queue/In Progress remains exactly as it was. Test the PDF import path separately.
+6. Confirm one existing SFD project with a dated level now appears in 6-week/monthly schedules. Verify older undated SFD projects remain visible in the Unscheduled warning and counted in purchasing.
+7. Regression: Task 1 drag to Coordination while Task 2 remains In Progress; Task 2 drag merges cards In Review; reopen only one task. Verify Spruce partial orders, purchase PDF/Excel import, forecast revision reconciliation, Follow-up and permissions before broad rollout.
+
+---
+
 # EWP Management Portal — Canonical V1.5 WEB Handoff
 
 **Release:** `EWP_Management_Portal_V1_5_WEB_FULL.zip` (October 13, 2026).  

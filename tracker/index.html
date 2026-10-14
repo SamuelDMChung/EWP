@@ -4,8 +4,10 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>EWP Project Tracker — Shared Cloud</title>
-  <link rel="stylesheet" href="styles.css?v=1.5" />
-  <link rel="stylesheet" href="../portal-nav.css?v=1.5" />
+  <link rel="stylesheet" href="styles.css?v=1.7" />
+  <link rel="stylesheet" href="../portal-nav.css?v=1.7" />
+  <link rel="stylesheet" href="../theme.css?v=1.7" />
+  <script src="../theme.js?v=1.7"></script>
 </head>
 <body>
   <nav class="ewp-portal-nav" aria-label="EWP Management Portal navigation">
@@ -18,10 +20,6 @@
     <span class="ewp-portal-nav__account" id="ewpNavAccount" aria-live="polite"></span>
   </nav>
 
-  <div class="tracker-cloud-top" role="status"><span id="trackerCloudMessage">Connecting to Supabase…</span>
-    <button type="button" id="trackerReload">Refresh</button>
-    <button type="button" id="trackerSignOut">Sign out</button>
-  </div>
   <section id="trackerLogin" class="tracker-login hidden" aria-label="Sign in to shared project tracking">
     <form id="trackerLoginForm" class="tracker-login-card">
       <h2>EWP Management Sign In</h2>
@@ -35,10 +33,21 @@
   <div id="trackerWorkspace" class="hidden">
   <header class="site-header">
     <div class="brand-wrap">
-      <div class="brand-kicker">EWP PROJECT TRACKING</div>
-      <h1>EWP Project Tracker</h1>
-      <div class="version-line">Version V1.5 · Developed by Samuel Chung</div>
-      <button id="settingsButton" class="settings-button" type="button" aria-label="Settings" title="Open project tracking settings"><span class="settings-button-icon" aria-hidden="true">⚙</span><span>Settings</span></button>
+      <div class="tracker-header-title">
+        <div class="brand-kicker">EWP PROJECT TRACKING</div>
+        <h1>EWP Project Tracker</h1>
+        <div class="version-line">Version V1.7 · Developed by Samuel Chung</div>
+      </div>
+      <div class="tracker-header-actions">
+        <div class="user-chip tracker-user-chip" title="Signed-in Supabase account used for shared project data.">
+          <span class="user-chip-label">Signed in</span>
+          <strong id="trackerCurrentUserName">Not signed in</strong>
+          <button id="trackerSignOut" type="button" class="user-change-button">Sign out</button>
+        </div>
+        <span class="cloud-pill connecting" id="trackerCloudMessage" role="status" aria-live="polite">Connecting to shared data…</span>
+        <button type="button" id="trackerReload" class="btn btn-secondary tracker-header-refresh" title="Refresh shared projects">↻ Refresh</button>
+        <button id="settingsButton" class="settings-button" type="button" aria-label="Settings" title="Open project tracking settings"><span class="settings-button-icon" aria-hidden="true">⚙</span><span>Settings</span></button>
+      </div>
     </div>
   </header>
 
@@ -134,19 +143,10 @@
         </div>
       </div>
 
-      <div class="summary-row" aria-label="Project summary">
-        <div class="summary-card"><span>Queue</span><strong id="queueCount">0</strong></div>
-        <div class="summary-card"><span>In Progress</span><strong id="progressCount">0</strong></div>
-        <div class="summary-card"><span>Coordination</span><strong id="coordinationCount">0</strong></div>
-        <div class="summary-card"><span>Completed</span><strong id="doneCount">0</strong></div>
-        <div class="summary-card summary-wide"><span>Next Project Number</span><strong id="nextProjectNumber">—</strong></div>
-      </div>
-
       <div class="board board-compact" id="board">
         <section class="column" data-status="queue">
           <div class="column-header">
             <div><p class="column-kicker">NEW WORK</p><h3>Queue</h3></div>
-            <span class="count-badge" id="queueBadge">0</span>
           </div>
           <div class="dropzone" id="queueList" data-status="queue"></div>
         </section>
@@ -154,7 +154,6 @@
         <section class="column" data-status="in_progress">
           <div class="column-header">
             <div><p class="column-kicker">ACTIVE</p><h3>In Progress</h3></div>
-            <span class="count-badge" id="progressBadge">0</span>
           </div>
           <div class="dropzone" id="progressList" data-status="in_progress"></div>
         </section>
@@ -162,7 +161,6 @@
         <section class="column" data-status="coordination">
           <div class="column-header">
             <div><p class="column-kicker">OFF THE EWP PLATE</p><h3>Coordination</h3></div>
-            <span class="count-badge" id="coordinationBadge">0</span>
           </div>
           <div class="column-status-legend" role="group" aria-label="Filter Coordination by status"><button type="button" class="status-pill status-pending coordination-filter" data-coordination-status="pending" aria-pressed="false" title="Filter by Pending; click again to clear">Pending</button><button type="button" class="status-pill status-in_review coordination-filter" data-coordination-status="in_review" aria-pressed="false" title="Filter by In Review; click again to clear">In Review</button><button type="button" class="status-pill status-delivering coordination-filter" data-coordination-status="delivering" aria-pressed="false" title="Filter by Delivering; click again to clear">Delivering</button></div>
           <div class="dropzone" id="coordinationList" data-status="coordination"></div>
@@ -171,7 +169,6 @@
         <section class="column" data-status="completed">
           <div class="column-header">
             <div><p class="column-kicker">FULLY DELIVERED</p><h3>Completed</h3></div>
-            <span class="count-badge" id="doneBadge">0</span>
           </div>
           <div class="dropzone" id="doneList" data-status="completed"></div>
         </section>
@@ -388,6 +385,16 @@
         <button id="closeSettingsView" class="btn btn-secondary" type="button">Back</button>
       </div>
 
+      <section class="content-card appearance-panel" aria-labelledby="trackerAppearanceTitle">
+        <div>
+          <h3 id="trackerAppearanceTitle">Appearance</h3>
+          <p>Choose the display theme for the Portal, Project Tracking and Forecast on this browser.</p>
+        </div>
+        <label class="appearance-chooser">Theme
+          <select data-ewp-theme-select aria-label="Theme preference"><option value="light">Light</option><option value="dark">Dark</option></select>
+        </label>
+      </section>
+
       <div class="settings-grid">
         <section class="content-card setting-card">
           <div class="setting-title"><h3>Sales Names</h3><span id="salesSettingsCount" class="settings-count">0</span></div>
@@ -582,7 +589,7 @@
   </template>
 
   </div>
-  <script type="module" src="app.js?v=1.5"></script>
-  <script type="module" src="../workspace-auth.mjs?v=1.5"></script>
+  <script type="module" src="app.js?v=1.7"></script>
+  <script type="module" src="../workspace-auth.mjs?v=1.7"></script>
 </body>
 </html>

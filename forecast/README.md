@@ -1,3 +1,13 @@
+**V1.10:** Adds a fourth Sales Requests tool (separate from Forecast); core Forecast logic is unchanged. The portal now shares an editable Phase options list across Sales and Tracking. See root `PORTAL_HANDOFF.md` and `SALES_EMAIL_SETUP.md`.
+
+> **Portal V1.9 WEB (Oct 14, 2026):** Forecast matrix Edit buttons are replaced with clickable estimated delivery dates for undelivered levels, using either a project-wide outstanding-level dialog or single-level dialog. Fixed-height matrix vertical scrolling is removed; Tracker Follow-up project list now scrolls with page. No SQL changes, underlying database/calculations preserved. Root `PORTAL_HANDOFF.md` is authoritative.
+
+## Combined Portal V1.8 WEB (current)
+
+Forecast header and typography now match Tracking and Portal. Header Add Project removed (Add Project tab remains). Settings opens the **same shared editor** as Tracking/Portal: Sales Names, Assignee Names, Tasks and Light/Dark. `../shared-settings.mjs` reuses the existing authenticated Supabase settings row. Header Refresh delegates to the existing cloud synchronization. Dark table/overdue/purchasing contrast improvements are in `../theme.css`. No Forecast domain algorithms or SQL changed. See `../PORTAL_HANDOFF.md` for migration details.
+
+---
+
 ## Forecast V1.7 UI
 
 V1.7 shares Griff header and Light/Dark appearance with other portal pages via `../theme.css` and `../theme.js`. Forecast calculation, material import and database code is unchanged from V1.6. No V1.7 SQL. Full release information is in `../PORTAL_HANDOFF.md`.

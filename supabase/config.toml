@@ -1,0 +1,2 @@
+[functions.sales-request-email]
+verify_jwt = true

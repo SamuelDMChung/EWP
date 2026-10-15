@@ -1,3 +1,88 @@
+# EWP Management Portal — Canonical V1.10 WEB Handoff
+
+**Release:** `EWP_Management_Portal_V1_10_WEB_FULL.zip` (October 14, 2026).
+**Parent baseline:** V1.9 WEB; V1.3 Capacitor iOS demo remains unchanged. **Next:** V1.11 WEB.
+**REQUIRES new incremental SQL and deployed email Edge Function**. See `SALES_EMAIL_SETUP.md` before deployment; never publish Resend/service-role secrets to GitHub Pages.
+
+## V1.10 — fourth Sales Requests tool
+
+- Adds fourth `sales/` workspace accessible from Portal and three existing navigation bars. Reuses existing portal Supabase authentication, dark/light theme and shared Settings. No TC project created by submission.
+- Sales form: Customer, Project Name/Address, Sales dropdown, Phase dropdown, Task multi-select checkboxes (>=1), and Requested Due Date are mandatory. Instructions and Drawings/Attachments are optional. Sales, Tasks and Phases source the same `tracker_settings` record; V1.10 SQL adds `phases` column with Awarded/Bidding defaults. The Project Tracking Phase dropdown/filter/editor now uses that same shared Phase list; existing phases remain available on old projects. Shared Settings exposes Phases across all tools.
+- Supabase `sales_requests` rows protected by RLS; authenticated team can read all submissions, insert their own, not erase or fake notification status. The request is saved before sending email. Submission History displays saved requests, email status and retry. Private Supabase Storage bucket stores optional PDF/JPG/PNG files, and email links to an authenticated request instead of attaching drawings. Limit 10 MB/file / 30 MB/request. Confirm storage permissions fit your employee access policy.
+- Authenticated Edge Function `supabase/functions/sales-request-email/index.ts` sends via Resend API to the configured recipient `schung@griff.ca` (environment variable `SALES_NOTIFY_TO`). Sender must be a verified domain/address set in `SALES_EMAIL_FROM`; never assume the recipient may be used as a sender. Server verifies Supabase user, atomically claims each request via SQL RPC, idempotency key prevents common duplicates, logs success/failure. The server cannot start delivering email until credentials, verified sender and the Edge Function are configured by your company.
+- No changes to Forecast quantities/PDF/Spruce/deliveries, existing Tracker task split/merge/Coordination or project-number logic; no new iOS build. Historical SQL remains under `sql/archive/` and current V1.6 migration remains at root.
+
+## Deployment/testing status
+
+1. Back up V1.9 web and Supabase. Apply `v1_10_sales_requests.sql` once; complete setup in `SALES_EMAIL_SETUP.md`, including Resend verification/secrets and Supabase Edge Function deploy; then replace web source on GitHub Pages.
+2. In Settings verify Sales, Tasks and Phases. Submit with all required fields, first without attachment then with PDF; inspect email receipt, Submission History and linked private attachment. Verify pending/failed retry and dark mode. Test existing Tracker phase edit, task moving to Coordination, Forecast dates and purchasing unchanged.
+3. Offline: JS syntax verified; static DOM IDs unique; isolated mocked Chromium form submission required-field, checkbox, email invocation and history passed. **No live Supabase/Resend email, Storage or production RLS testing**; these are required before company rollout. Database SQL was authored but not executed here.
+
+---
+
+# EWP Management Portal — Canonical V1.9 WEB Handoff
+
+**Release:** `EWP_Management_Portal_V1_9_WEB_FULL.zip` (October 14, 2026).  
+**Parent baseline:** V1.8 WEB FULL, with shared Supabase database, unified typography/settings/headers and dark theme.  
+**Next release:** V1.10 WEB (continue sequential V1.8 → V1.9 → V1.10 unless the user requests otherwise).  
+**Backend migration: NONE**. V1.9 is a date-editing and scrolling frontend-only release.
+
+## V1.9 changes — Projects & Materials
+
+1. **Replace matrix header Edit buttons with interactive delivery dates.** In collapsed projects, clicking the date following **Next** opens a dialog with **every undelivered level** in that project (including undated legacy levels). Each level has its own date input, and one **Save Dates** action saves changed dates. Fully delivered levels never appear in the dialog. In expanded projects, the date next to the individual level name opens the same dialog containing **only that level**. Fully delivered expanded level dates remain visible but cannot be edited through this interaction. A pencil icon and focus-visible styles make interactive dates clear in both Griff light and dark themes. Tracking/Manage/Expand/Collapse functionality is retained.
+2. **No change to Forecast materials and delivered records.** Only `levels.estimated_delivery_date`, `levels.updated_at`, `levels.version` are PATCHed for changed, non-delivered levels. Project metadata, default date, revisions, quantities, exclusions, Spruce orders, physical delivery records, inventory and purchasing line items are not edited. Forecast's next date, weekly/monthly forecasts and lead-time purchasing recalculate on the normal `syncFromCloud()` path. Date modifications are logged to existing `activity_log` via the existing `update_forecast_date` action. The legacy `Edit Project` dialog code is retained internally to avoid risky deletion of functionality but its matrix header **Edit** entry buttons are removed per request. Forecast Manage Level still has its own existing delivery date control.
+3. **Concurrent changes:** Before saving, re-read current Supabase rows and check that each target level remains active, undelivered and unchanged since the dialog opened; optimistic version conditions protect each PATCH. Save issues are reported and shared records refreshed. **Note:** As there is no new database RPC/transaction, a multi-level Save applies individual level PATCHes in sequence. A network failure partway through can leave earlier dates saved: the interface warns clearly and requests a refresh/review of remaining levels. Live concurrency under a delivery happening during the brief PATCH interval still requires real-user verification; no claim of fully atomic multi-row transaction.
+4. **One regular page vertical scrollbar.** Remove Forecast material matrix's `68vh` fixed maximum height and internal vertical scrolling; retain left/right horizontal matrix scrolling, including the existing top horizontal scrollbar. Remove the artificial 430px internal scrolling on Tracker Follow-up's selected-project list. Other everyday Portal/Tracking/Forecast pages remain natural document scrolling. Native combo dropdowns, the Settings overlay, auth overlays, and modals may still scroll internally when necessary to fit shorter screens, since those are not additional page-scrolling regions. Root body scroll remains available.
+5. **Consistent V1.9 headings:** Three HTML pages and resource cache tags advance to `V1.9` and `?v=1.9`. The existing V1.8 shared theme, Settings, identity, navigation typography and native iOS V1.3 prototype are not changed.
+
+## Verification and known limitations
+
+- JS syntax checks for all JavaScript modules passed; HTML uniqueness checks passed for all three routes; no new SQL files or database changes.
+- Isolated headless Chromium tests (mocked Supabase APIs, **not** company data) covered collapsed two-level editor excluding a fully delivered third level, expanded one-level editor, persistence of changed dates, audit event calls, rejected stale versions, and restoration of normal page-height matrix scrolling with horizontal overflow intact. Dark-mode date-link style exists. All three pages keep the same V1.9 masthead.
+- **Not verified against production:** Real Supabase authentication/RLS, live activity logging, concurrent deliveries or two-person edits, end-to-end PDF import/Inventory and actual GitHub Pages deployment. Test before team rollout. No SQL needed when upgrading from properly migrated V1.8.
+
+## Deploy V1.9
+
+1. Back up the existing V1.8 website and Supabase records. Keep your existing Supabase URL, keys, schema and existing applied migrations intact.
+2. Replace all GitHub Pages repository root files with the contents of the full V1.9 ZIP; include updated Forecast `app.mjs`, `index.html`, `styles.css`, shared `theme.css`, and Tracker `styles.css`. Hard-refresh Portal, Tracking and Forecast.
+3. In Forecast → Projects & Materials, test one collapsed project (including mixed delivered/not delivered levels), click **Next** date, change multiple outstanding dates and save; expand a project, change just one level date, and ensure delivered levels are not editable. Confirm the Next date, 6-week Forecast, Purchasing and Entry History all reflect edits. Test from a second staff account and in dark mode.
+4. Scroll a long matrix and Tracking Follow-up: the browser should have one vertical page scrollbar; matrix horizontal scroll still works. Regression-test Tracking tasks/Coordination, Forecast PDF/manual entry, Spruce/delivery, Inventory, and the shared Settings/Supabase header.
+
+---
+
+# EWP Management Portal — Canonical V1.8 WEB Handoff
+
+**Release:** `EWP_Management_Portal_V1_8_WEB_FULL.zip` (October 14, 2026).  
+**Source baseline:** V1.7 WEB FULL (all three pages + Supabase backend, no iOS changes).  
+**Next release:** V1.9 WEB.  
+**No new SQL migration.** Do not modify Supabase schema or rerun historic migration scripts solely for V1.8.
+
+## V1.8 confirmed requirements and implementation
+
+1. **Identical typography across Portal, Project Tracking and EWP Forecast:** Shared `theme.css` typography tokens (`--ewp-font`, body, heading, form/control, label scales). Identical Inter/system font stack and matching page H1 `38px` at 1400px (responsive clamp), weight 850, line-height, tracking. Matching semantic styles for header kicker, version text, section headings, nav tabs, and controls. Compact work-item cards and dense material tables retain smaller intentional data-specific sizes while using the same family.
+2. **Consistent header action layout:** Three pages have the same account/email/sign-out chip, a color-coded Supabase connection pill, Refresh, and Settings button order and sizing. Forecast's redundant **header** `+ Add Project` button is removed; **Add Project tab is unchanged**. Project Tracking retains its Board/List `+ Add Project` actions. Forecast header Refresh calls existing cloud synchronization; Tracker retains existing cloud Refresh. Portal's Refresh runs an authenticated light-weight `tracker_settings` query; only reports **connected after a successful response**. Portal does not claim *live realtime subscribed* without starting a realtime channel; Tracker and Forecast retain their subscribed-only `· live` indicators.
+3. **One Settings implementation on all three routes:** New `shared-settings.mjs` renders the exact same dialog and handlers for Sales Names, Assignee Names, Tasks and Appearance on Portal, Tracking, and Forecast. Uses the existing authenticated Supabase `tracker_settings` REST read/write via `tracker/cloud.mjs`'s new `loadTrackerSettings` export and existing `saveTrackerSettings`. No duplicate settings list, new database table, or new permissions; uses same id `global` and list names `sales`, `assignees`, `tasks`. An add/remove reads the latest settings first, persists all three arrays, then refreshes. List values are rendered with DOM text nodes (not HTML injection). Tracker's original Settings `view-settings` markup is retained as an unreachable compatibility shell for legacy `app.js` DOM bindings; the visible Settings button instead opens the unified modal. Shared themes remain stored locally in the same V1.7 key. Changes in the same tab notify the relevant workspace to refresh from Supabase; other tabs get a browser storage signal and regular Realtime/foreground refresh.
+4. **Full dark-mode readability update:** Extended `theme.css` to fix light-only stripes in the material matrix; overdue delivery schedule rows; negative purchasing/inventory columns; purchase dialogs, alternate table rows, status and metadata chips, editable/readonly inputs, native date picker calendar icons, Follow-up lists, and project task cards. Olive/charcoal branding and Pending amber, In Review blue, Delivering green retain semantic meaning. Kept a readable light theme and high-density tables.
+5. **Protected existing behavior:** Supabase auth/API URLs/keys, RLS, Realtime setup, Tracker task drag/merge/Coordinator workflow, existing TC number generation, Forecast PDF/manual material import, purchase parsing, inventory/lead-time calculations, material-date rules and deliveries unchanged. Two minimal Forecast `app.mjs` handlers wire header Refresh and settings refresh. Tracker `app.js` only wires shared Settings and updates on cross-tab settings changes. Portal session setup additionally verifies database reachability for its status pill. No backend changes.
+
+## Verification and limits
+
+- Syntax checks passed for every 15 JS/MJS module (including new `shared-settings.mjs`) and all three HTML files have unique IDs.
+- Isolated headless Chromium DOM/CSS interaction tests using **mocked Supabase settings** confirmed that all three Settings dialogs load/submit shared list values, Light/Dark theme changes, and **all three H1 computed fonts are identical** (`38px`, `850`, identical family/line-height at 1400px).
+- Isolated computed-style tests confirm dark row/background pairs: matrix alternate row `rgb(44,50,41)` / text `rgb(240,238,231)`; overdue `rgb(73,56,37)` / text `rgb(255,211,138)`; purchase shortage `rgb(75,40,38)` / text `rgb(255,196,190)`. Static mock screenshots are not a production/live-site verification.
+- All previous Forecast and Tracker domain logic retained except event hookups above; ZIP integrity and source diff verified.
+- **Limit:** Browser policy here blocks local/file URL navigation (`ERR_BLOCKED_BY_ADMINISTRATOR`), so full production-like application page boot, live Supabase, RLS, real-time events, PDF import and SQL are **not** certified by this release's tests. Run live smoke tests after deployment.
+
+## Deploy
+
+1. Back up the current V1.7 GitHub Pages repository. Keep your Supabase database untouched.
+2. Replace the website files in your existing GitHub Pages **root** with the contents of this V1.8 package, including `shared-settings.mjs`, updated `theme.css`/`theme.js`, and all three page HTML files; do not put the extracted folder one level down.
+3. Hard-refresh Portal/Tracking/Forecast (cache query versions changed to `?v=1.8`). Sign in on Portal and confirm the status pill only claims Connected when network actually works.
+4. Open Settings on EACH page, verify identical Sales Names/Assignee Names/Tasks/Appearance; add a temporary test entry and remove it, then ensure Tracking/Forecast dropdowns refresh. Confirm the dark Forecast material matrix, overdue row, projected shortage, dates, dialogs, Follow-up and board. Check all three pages in Light mode too.
+5. Regression-test Tracker task Queue → In Progress → Coordination / combined In Review, Forecast manual entry, PDF import, Project # cross-link, and one-way Forecast → Tracking creation. No new SQL for V1.8; when upgrading from older versions, historical V1.4–V1.6 SQL prerequisites still apply.
+
+---
+
 # EWP Management Portal — Canonical V1.7 WEB Handoff
 
 **Release:** `EWP_Management_Portal_V1_7_WEB_FULL.zip` (October 13, 2026).  

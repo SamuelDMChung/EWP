@@ -27,12 +27,18 @@ async function allRows(table, order='created_at.asc') {
   }
 }
 
+export async function loadTrackerSettings() {
+  const rows = await request('tracker_settings?select=sales,assignees,tasks,phases&id=eq.global&limit=1');
+  const row = rows?.[0] || {};
+  return { sales: row.sales || [], assignees: row.assignees || [], tasks: row.tasks || [], phases: row.phases || ['Awarded','Bidding'] };
+}
+
 export async function loadTrackerCloud() {
   const [projects,workItems,settings,filters]=await Promise.all([
     allRows('projects'),allRows('tracker_work_items'),
     request('tracker_settings?select=*&id=eq.global'),allRows('tracker_saved_filters')
   ]);
-  return { projects, workItems, settings:settings?.[0] || {sales:[],assignees:[],tasks:[]}, filters };
+  return { projects, workItems, settings:settings?.[0] || {sales:[],assignees:[],tasks:[],phases:['Awarded','Bidding']}, filters };
 }
 export function saveTrackerProject(project, workItems, expectedVersion=null) {
   return request('rpc/tracker_save_project',{method:'POST',body:{p_project:project,p_work_items:workItems,p_expected_version:expectedVersion}});
@@ -50,7 +56,7 @@ export function getNextTrackerNumber(yy) {
   return request('rpc/tracker_next_number',{method:'POST',body:{p_yy:yy}});
 }
 export async function saveTrackerSettings(settings) {
-  return request('tracker_settings?on_conflict=id', {method:'POST',body:{id:'global',sales:settings.sales,assignees:settings.assignees,tasks:settings.tasks,updated_at:new Date().toISOString()},prefer:'resolution=merge-duplicates,return=representation'});
+  return request('tracker_settings?on_conflict=id', {method:'POST',body:{id:'global',sales:settings.sales,assignees:settings.assignees,tasks:settings.tasks,phases:settings.phases||['Awarded','Bidding'],updated_at:new Date().toISOString()},prefer:'resolution=merge-duplicates,return=representation'});
 }
 export async function addTrackerFilter(filter) {
   return request('tracker_saved_filters',{method:'POST',body:{id:filter.id,name:filter.name,search:filter.search,filters:filter.filters,created_at:filter.createdAt},prefer:'return=representation'});

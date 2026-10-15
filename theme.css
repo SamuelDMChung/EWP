@@ -151,3 +151,186 @@ html[data-ewp-theme="dark"] .empty-state {background:#242822;color:#d0cfc5;borde
 html[data-ewp-theme="dark"] .followup-project-row {background:#242822;color:#f0eee7;border-color:#41463d;}
 html[data-ewp-theme="dark"] .followup-project-row:has(input:checked) {background:#343b2b;}
 html[data-ewp-theme="dark"] .followup-project-row:hover {background:#343930;}
+
+/* V1.8 — shared semantic typography & header composition for all 3 pages.
+   Compact board cards preserve their information density, with one font family,
+   matching heading, tab, table, form and header-control type scales. */
+:root {
+  --ewp-font: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --ewp-font-body:14px;
+  --ewp-font-header:38px;
+  --ewp-font-section:24px;
+  --ewp-font-control:13px;
+  --ewp-font-meta:12px;
+}
+html,body {font-family:var(--ewp-font);font-size:var(--ewp-font-body);line-height:1.5;}
+body :is(button,input,select,textarea) {font-family:inherit;}
+:is(.intro h1,.site-header h1,.app-header h1) {
+  font-family:var(--ewp-font);font-size:clamp(28px,3vw,var(--ewp-font-header));
+  font-weight:850;letter-spacing:-.03em;line-height:1.14;margin:2px 0 5px;
+}
+:is(.masthead .eyebrow,.site-header .brand-kicker,.app-header .eyebrow) {
+  font-family:var(--ewp-font);font-size:11px;font-weight:850;letter-spacing:.11em;
+  line-height:1.3;text-transform:uppercase;margin:0 0 6px;
+}
+:is(.intro .portal-version,.site-header .version-line,.app-header .subtitle) {
+  font-family:var(--ewp-font);font-size:14px;font-weight:400;line-height:1.5;margin:8px 0 0;
+}
+:is(.section-heading h2,.toolbar h2,.card-heading h2,.ewp-shared-settings-head h2) {font-family:var(--ewp-font);font-size:24px;font-weight:800;line-height:1.3;}
+:is(.main-nav .nav-tab,.tabs .tab) {font-family:var(--ewp-font);font-size:14px;line-height:1.45;font-weight:750;}
+:is(.btn,.button,.portal-primary-button,.ewp-header-button,.ewp-settings-add button) {font-family:var(--ewp-font);font-size:var(--ewp-font-control);line-height:1.45;font-weight:750;}
+:is(.site-header .brand-wrap,.app-header,.masthead) {padding:26px clamp(20px,4vw,56px) 22px;min-height:124px;}
+.masthead {display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:18px 26px;}
+.masthead .intro {flex:1 1 260px;}
+.ewp-header-actions, .tracker-header-actions, .header-actions {
+  display:flex;align-items:center;justify-content:flex-end;gap:10px;flex-wrap:wrap;
+}
+.ewp-header-actions[hidden] {display:none!important;}
+.ewp-header-actions :is(.ewp-account-chip,.cloud-pill),
+.tracker-header-actions :is(.ewp-account-chip,.cloud-pill),
+.header-actions :is(.ewp-account-chip,.cloud-pill) {
+  display:inline-flex;align-items:center;gap:6px;
+  padding:6px 9px;min-height:33px;white-space:nowrap;
+  border:1px solid #ddd7cc;border-radius:999px;
+  background:#fbfaf7;color:#3c3935;font-size:11px;line-height:1.4;font-weight:750;
+}
+.ewp-account-chip strong {max-width:190px;overflow:hidden;text-overflow:ellipsis;}
+.ewp-account-chip .user-chip-label {font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;}
+.ewp-account-chip .user-change-button {border:0;background:none;color:#676600;padding:3px 5px;cursor:pointer;font-size:10px;font-weight:800;}
+.ewp-header-actions .cloud-pill::before,.tracker-header-actions .cloud-pill::before,.header-actions .cloud-pill::before {
+  content:"";width:7px;height:7px;border-radius:50%;background:currentColor;flex:none;
+}
+.ewp-header-actions .cloud-pill.connected,.tracker-header-actions .cloud-pill.connected,.header-actions .cloud-pill.connected {background:#e9f7ef;color:#16794c;border-color:#cbe9da;}
+.ewp-header-actions .cloud-pill.connecting,.tracker-header-actions .cloud-pill.connecting,.header-actions .cloud-pill.connecting {background:#fff7df;color:#8a6112;border-color:#f2ddb4;}
+.ewp-header-actions .cloud-pill.error,.tracker-header-actions .cloud-pill.error,.header-actions .cloud-pill.error {background:#fff0ee;color:#b42318;border-color:#f2c3bd;}
+.ewp-header-button, .site-header .ewp-header-button,.app-header .ewp-header-button {
+  min-height:38px;padding:9px 14px;border:1px solid #d7d1c5;border-radius:9px;
+  background:#f0eee8;color:#3c3935;box-shadow:none;white-space:nowrap;
+}
+.ewp-header-button:hover {background:#e7e3d8;}
+:is(.ewp-header-button.ewp-settings-trigger,.site-header .ewp-header-button.ewp-settings-trigger,.app-header .ewp-header-button.ewp-settings-trigger) {
+  background:#f0efd5;border-color:#d4d0a5;color:#595700;
+}
+.ewp-header-button.ewp-settings-trigger:hover {background:#e9e6be;}
+@media(max-width:950px) {
+  .masthead,.site-header .brand-wrap,.app-header {align-items:flex-start;}
+  .ewp-header-actions,.tracker-header-actions,.header-actions {justify-content:flex-start;}
+}
+
+/* One Settings dialog is used for all routes, reading/writing the same tracker_settings row. */
+.ewp-shared-settings-dialog {
+  color:#3c3935;background:#fff;border:1px solid #d8d2c8;border-radius:16px;
+  width:min(960px,calc(100vw - 32px));max-height:min(88vh,880px);
+  padding:0;box-shadow:0 24px 80px #0005;
+}
+.ewp-shared-settings-dialog::backdrop {background:rgba(10,14,10,.65);}
+.ewp-shared-settings-head {display:flex;justify-content:space-between;align-items:center;gap:18px;padding:18px 24px;border-bottom:1px solid #ddd7cc;}
+.ewp-shared-settings-head h2 {margin:4px 0 0;color:#3c3935;}
+.ewp-settings-kicker {font-size:11px;letter-spacing:.1em;font-weight:800;color:#6b6a00;}
+.ewp-settings-close {border:1px solid #d7d1c5;border-radius:8px;padding:2px 10px;background:#f1eee8;color:#3c3935;font-size:26px;cursor:pointer;}
+.ewp-shared-settings-scroll {overflow:auto;max-height:calc(min(88vh,880px) - 80px);padding:22px 24px 26px;}
+.ewp-settings-section {padding:18px;border-radius:12px;border:1px solid #ddd7cc;background:#fbfaf7;min-width:0;}
+.ewp-settings-section h3 {font-size:17px;font-weight:800;line-height:1.3;margin:0 0 4px;color:#3c3935;}
+.ewp-settings-section p {margin:0 0 14px;color:#655f57;font-size:12px;line-height:1.55;}
+.ewp-settings-grid {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;}
+.ewp-settings-appearance {display:flex;align-items:center;justify-content:space-between;gap:18px;margin-bottom:16px;}
+.ewp-settings-appearance p {margin-bottom:0;}
+.ewp-settings-appearance label {display:flex;align-items:center;gap:12px;font-weight:750;font-size:13px;}
+.ewp-shared-settings-dialog select,.ewp-shared-settings-dialog input {
+  font:inherit;font-size:13px;color:#3c3935;background:white;border:1px solid #bfb7ac;border-radius:8px;min-width:0;
+}
+.ewp-shared-settings-dialog select {padding:10px 13px;min-width:135px;}
+.ewp-settings-category-head {display:flex;align-items:center;gap:9px;margin-bottom:8px;}
+.ewp-settings-category-head h3 {margin:0;}
+.ewp-settings-count {background:#f0efd5;border-radius:99px;padding:3px 8px;font-size:11px;color:#595700;font-weight:800;}
+.ewp-settings-add {display:flex;gap:8px;margin:12px 0;}
+.ewp-settings-add input {flex:1 1 100px;width:100%;padding:10px;}
+.ewp-settings-add button {padding:9px 12px;border:0;border-radius:8px;background:#747300;color:#fff;cursor:pointer;}
+.ewp-settings-chips {display:flex;flex-wrap:wrap;gap:7px;}
+.ewp-settings-chip {display:inline-flex;align-items:center;gap:7px;padding:4px 7px 4px 10px;background:#f0eee8;border:1px solid #ded8cd;border-radius:999px;font-size:12px;max-width:100%;overflow-wrap:anywhere;}
+.ewp-settings-chip button {font-size:15px;line-height:1;border:0;background:transparent;color:#b42318;cursor:pointer;padding:3px;}
+.ewp-settings-empty {font-size:12px;color:#655f57;}
+.ewp-settings-status {min-height:24px;color:#38623f;font-size:12px;margin:0 2px 10px;}
+.ewp-settings-status.is-error {color:#b42318;}
+.ewp-shared-settings-dialog.is-saving :is(.ewp-settings-add button,.ewp-settings-chip button) {pointer-events:none;opacity:.6;}
+@media(max-width:750px){.ewp-settings-grid{grid-template-columns:1fr}.ewp-settings-appearance{align-items:flex-start;flex-direction:column}}
+
+/* V1.8 contrast audit — dark colors are applied to actual cell/row states.
+   These selectors intentionally override old light-only CSS with equal/higher specificity. */
+html[data-ewp-theme="dark"] :is(.ewp-shared-settings-dialog,.ewp-settings-section) {background:#242822;color:#f0eee7;border-color:#515748;}
+html[data-ewp-theme="dark"] .ewp-shared-settings-head {border-color:#515748;}
+html[data-ewp-theme="dark"] :is(.ewp-settings-section h3,.ewp-shared-settings-head h2) {color:#f0eee7;}
+html[data-ewp-theme="dark"] .ewp-settings-section p,html[data-ewp-theme="dark"] .ewp-settings-empty {color:#c5c5ba;}
+html[data-ewp-theme="dark"] .ewp-settings-chip {background:#30362d;color:#f0eee7;border-color:#586250;}
+html[data-ewp-theme="dark"] .ewp-settings-count {background:#3a3e1f;color:#f0efb7;}
+html[data-ewp-theme="dark"] :is(.ewp-settings-close,.ewp-shared-settings-dialog input,.ewp-shared-settings-dialog select) {background:#1c211b;color:#f4f2e9;border-color:#66725e;}
+html[data-ewp-theme="dark"] .ewp-settings-chip button {color:#ffada5;}
+html[data-ewp-theme="dark"] .ewp-settings-status {color:#b4e9c6;}
+html[data-ewp-theme="dark"] .ewp-settings-status.is-error {color:#ffb7b0;}
+html[data-ewp-theme="dark"] :is(.ewp-header-actions .ewp-account-chip,.header-actions .ewp-account-chip,.tracker-header-actions .ewp-account-chip) {background:#292c26;border-color:#515648;color:#f0eee7;}
+html[data-ewp-theme="dark"] .ewp-account-chip :is(.user-chip-label,strong) {color:#f0eee7;}
+html[data-ewp-theme="dark"] .ewp-account-chip .user-change-button {color:#e4e18a;}
+html[data-ewp-theme="dark"] :is(.ewp-header-actions .cloud-pill.connected,.tracker-header-actions .cloud-pill.connected,.header-actions .cloud-pill.connected) {background:#1c3c2e;color:#b5f0ca;border-color:#356b4e;}
+html[data-ewp-theme="dark"] :is(.ewp-header-actions .cloud-pill.connecting,.tracker-header-actions .cloud-pill.connecting,.header-actions .cloud-pill.connecting) {background:#45351c;color:#f9cc7d;border-color:#66522d;}
+html[data-ewp-theme="dark"] :is(.ewp-header-actions .cloud-pill.error,.tracker-header-actions .cloud-pill.error,.header-actions .cloud-pill.error) {background:#4a2726;color:#ffb4ae;border-color:#6e3c39;}
+html[data-ewp-theme="dark"] :is(.ewp-header-button,.site-header .ewp-header-button,.app-header .ewp-header-button) {background:#30362c;color:#f0eee7;border-color:#566051;}
+html[data-ewp-theme="dark"] :is(.ewp-header-button.ewp-settings-trigger,.site-header .ewp-header-button.ewp-settings-trigger,.app-header .ewp-header-button.ewp-settings-trigger) {background:#373b23;color:#f0efbe;border-color:#606943;}
+html[data-ewp-theme="dark"] .ewp-header-button:hover {background:#414b3b;}
+html[data-ewp-theme="dark"] :is(.card,.content-card,.matrix-scroll-viewport,.table-wrap,.matrix-top-scroll,.inventory-summary,.review-dialog,.dialog,.modal,.portal-login,.portal-auth-loading,.project-col,.project-header-card) {background-color:#242822;color:#f0eee7;}
+html[data-ewp-theme="dark"] :is(.matrix-scroll-viewport thead th,.matrix-scroll-viewport thead .material-col,.project-table thead th,.weekly-schedule-table thead th) {background:#343b30!important;color:#f5f3ec!important;}
+html[data-ewp-theme="dark"] .matrix-scroll-viewport tbody tr td,
+html[data-ewp-theme="dark"] .matrix-scroll-viewport tbody tr .material-col {background:#242822;color:#f0eee7;border-color:#414a3e;}
+html[data-ewp-theme="dark"] .matrix-scroll-viewport tbody tr:nth-child(even) td,
+html[data-ewp-theme="dark"] .matrix-scroll-viewport tbody tr:nth-child(even) .material-col {background:#2c3229;color:#f0eee7;}
+html[data-ewp-theme="dark"] .matrix-scroll-viewport tbody tr:hover td,
+html[data-ewp-theme="dark"] .matrix-scroll-viewport tbody tr:hover .material-col {background:#36412f;color:#f6f3e8;}
+html[data-ewp-theme="dark"] .matrix-scroll-viewport .project-col {background:#292f27;color:#f0eee7;}
+html[data-ewp-theme="dark"] .matrix-top-scroll {background:#292e28;border-color:#465046;}
+html[data-ewp-theme="dark"] :is(.weekly-schedule-table tbody tr td,.delivery-table tbody tr td,.inventory-table tbody tr td,.purchasing-table tbody tr td,.incoming-table tbody tr td,.entry-history-table tbody tr td,.purchase-review-table tbody tr td) {background:#252a23;color:#f0eee7;border-color:#414a3e;}
+html[data-ewp-theme="dark"] :is(.weekly-schedule-table,.delivery-table,.inventory-table,.purchasing-table,.incoming-table,.entry-history-table,.purchase-review-table) tbody tr:nth-child(even) td {background:#2d332a;}
+html[data-ewp-theme="dark"] .schedule-overdue td,html[data-ewp-theme="dark"] .weekly-schedule-table .schedule-overdue td {background:#493825!important;color:#fce4bc!important;}
+html[data-ewp-theme="dark"] .schedule-overdue td:first-child {color:#ffd38a!important;font-weight:850;}
+html[data-ewp-theme="dark"] :is(.inventory-negative,.stock-owed),
+html[data-ewp-theme="dark"] .inventory-table td.inventory-negative,
+html[data-ewp-theme="dark"] .inventory-table td.stock-owed {background:#4b2826!important;color:#ffc4be!important;border-color:#714440;}
+html[data-ewp-theme="dark"] :is(.inventory-negative,.stock-owed) :is(span,strong,small) {color:#ffc4be!important;}
+html[data-ewp-theme="dark"] :is(.purchase-intake-summary,.purchase-review-summary,.purchase-review-card,.purchase-intake-grid,.incoming-card,.purchase-order-row,.purchase-row,.purchase-breakdown-cell,.purchase-review-table) {background-color:#242822;color:#f0eee7;border-color:#515748;}
+html[data-ewp-theme="dark"] :is(.purchase-breakdown-cell,.purchase-source-name,.stock-owed-note,.material-notes,.date-source-badge,.project-meta,.project-meta strong,.level-summary,.table-subtext) {color:#c5cabc;}
+html[data-ewp-theme="dark"] :is(.purchase-notice,.purchase-note,.import-message.import-warning,.unscheduled-alert) {background:#46371e;color:#f6dca6;border-color:#776137;}
+html[data-ewp-theme="dark"] :is(.import-message.import-error,.delete-project-warning,.danger-notice,.import-error) {background:#502e29;color:#ffc3b7;border-color:#825248;}
+html[data-ewp-theme="dark"] :is(.project-status-pill,.status-badge,.date-source-badge.manual) {filter:none;}
+html[data-ewp-theme="dark"] :is(.date-source-badge.manual,.level-completion,.progress-label) {background:#323a30;color:#e4ead7;border-color:#596351;}
+html[data-ewp-theme="dark"] :is(.matrix-scroll-viewport .progress-track,.progress-bar-track,.level-progress) {background:#677367;border-color:#566051;}
+html[data-ewp-theme="dark"] :is(.matrix-scroll-viewport .progress-fill,.progress-bar-fill) {background:#c1c65d;}
+html[data-ewp-theme="dark"] input[readonly],html[data-ewp-theme="dark"] textarea[readonly],html[data-ewp-theme="dark"] select:disabled {background:#30372f!important;color:#d9dfd4!important;border-color:#566051;opacity:1;}
+html[data-ewp-theme="dark"] :is(.project-table tbody tr:nth-child(even) td,.entry-history-table tbody tr:nth-child(even) td) {background:#2d332a;color:#f0eee7;}
+html[data-ewp-theme="dark"] :is(.forecast-status,.level-status,.privacy-pill,.stock-status) {filter:none;}
+html[data-ewp-theme="dark"] :is(.light-bg,.light-surface) {background:#2a3028;color:#f0eee7;}
+@media (prefers-reduced-motion:reduce) {.ewp-shared-settings-dialog * {transition:none!important;}}
+
+/* Additional display fixes: date-pickers, task shelves, focus rings and popovers. */
+html[data-ewp-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator,
+html[data-ewp-theme="dark"] input[type="datetime-local"]::-webkit-calendar-picker-indicator { filter:invert(.9);opacity:.95;cursor:pointer; }
+html[data-ewp-theme="dark"] :is(.task-completed-card,.task-in-coordination,.followup-project-tags span,.row-overdue,.collapsed-summary-card) {background:#2b342a;color:#f0eee7;}
+html[data-ewp-theme="dark"] :is(.row-overdue,.compact-due.overdue) {color:#ffb4a8;}
+html[data-ewp-theme="dark"] :is(.followup-project-list,.followup-project-row,.setting-list,.combo-menu,.combo-option,.multi-filter-menu) {background:#242822;color:#f0eee7;border-color:#4b5445;}
+html[data-ewp-theme="dark"] :is(.combo-option:hover,.multi-filter-menu label:hover,.followup-project-row:hover) {background:#394334;color:#f5f4ed;}
+html[data-ewp-theme="dark"] :is(.compact-project-type,.followup-project-tags span,.date-source-badge.manual) {background:#3a4035;color:#e0e6da;}
+html[data-ewp-theme="dark"] :is(.status-badge,.privacy-pill) {filter:none;}
+html[data-ewp-theme="dark"] :focus-visible {outline:2px solid #d4d36c;outline-offset:2px;}
+@media(max-width:720px) {
+  .site-header .brand-wrap {padding:23px 18px 20px;}
+  .tracker-header-actions,.header-actions,.ewp-header-actions {width:100%;justify-content:flex-start;}
+  .ewp-header-actions :is(.ewp-account-chip,.cloud-pill),.tracker-header-actions :is(.ewp-account-chip,.cloud-pill),.header-actions :is(.ewp-account-chip,.cloud-pill) {max-width:100%;}
+  .ewp-account-chip strong {max-width:min(155px,30vw);}
+  .ewp-shared-settings-scroll {padding:18px 15px 22px;}
+}
+
+/* Header alignment is shared even at narrow screen sizes. */
+@media(max-width:720px) { .site-header .brand-wrap {padding-top:23px!important;padding-right:18px!important;} .site-header .settings-button {position:static!important;} }
+
+/* V1.9 calendar link and batch date form dark-mode parity. */
+html[data-ewp-theme="dark"] .matrix-date-link {color:#d9df85;}
+html[data-ewp-theme="dark"] .matrix-date-link:hover {color:#f5f6c6;background:#3d432e;}
+html[data-ewp-theme="dark"] .schedule-date-row {background:#2c3028;border-color:#515748;color:#f0eee7;}
+html[data-ewp-theme="dark"] .matrix-date-readonly {color:#b9b6ac;}

@@ -5,10 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="color-scheme" content="light" />
   <title>EWP Material Forecast</title>
-  <link rel="stylesheet" href="styles.css?v=1.7" />
-  <link rel="stylesheet" href="../portal-nav.css?v=1.7" />
-  <link rel="stylesheet" href="../theme.css?v=1.7" />
-  <script src="../theme.js?v=1.7"></script>
+  <link rel="stylesheet" href="styles.css?v=1.10" />
+  <link rel="stylesheet" href="../portal-nav.css?v=1.10" />
+  <link rel="stylesheet" href="../theme.css?v=1.10" />
+  <script src="../theme.js?v=1.10"></script>
 </head>
 <body>
   <nav class="ewp-portal-nav" aria-label="EWP Management Portal navigation">
@@ -17,6 +17,7 @@
       <a class="ewp-portal-nav__link" href="../">Portal</a>
       <a class="ewp-portal-nav__link" href="../tracker/">Project Tracking</a>
       <a class="ewp-portal-nav__link" href="../forecast/" aria-current="page">EWP Forecast</a>
+      <a class="ewp-portal-nav__link" href="../sales/">Sales Requests</a>
     </div>
     <span class="ewp-portal-nav__account" id="ewpNavAccount" aria-live="polite"></span>
   </nav>
@@ -25,17 +26,17 @@
     <div>
       <p class="eyebrow">EWP PURCHASING</p>
       <h1>EWP Material Forecast</h1>
-      <p class="subtitle">Version V1.7 · Developed by Samuel Chung</p>
+      <p class="subtitle">Version V1.10 · Developed by Samuel Chung</p>
     </div>
-    <div class="header-actions">
-      <div class="user-chip" title="Signed-in Supabase account used for database access and edit history.">
+    <div class="header-actions ewp-header-actions">
+      <div class="user-chip ewp-account-chip" title="Signed-in Supabase account used for database access and edit history.">
         <span class="user-chip-label">Signed in</span>
         <strong id="currentUserName">Not signed in</strong>
         <button id="signOutButton" type="button" class="user-change-button">Sign out</button>
       </div>
       <span id="cloudPill" class="cloud-pill connecting">Connecting to shared data…</span>
-      <button id="forecastSettingsButton" class="button secondary forecast-settings-button" type="button" aria-haspopup="dialog" aria-controls="forecastSettingsDialog">⚙ Settings</button>
-      <button id="addProjectTop" class="button primary">+ Add Project</button>
+      <button id="forecastHeaderRefresh" class="button secondary ewp-header-button" type="button">↻ Refresh</button>
+      <button id="forecastSettingsButton" class="button secondary forecast-settings-button ewp-header-button ewp-settings-trigger" type="button">⚙ Settings</button>
     </div>
   </header>
 
@@ -510,6 +511,26 @@
     </form>
   </dialog>
 
+  <dialog id="scheduleDateDialog" class="dialog schedule-date-dialog" aria-labelledby="scheduleDateTitle">
+    <form method="dialog">
+      <div class="dialog-header">
+        <div>
+          <p class="step">DELIVERY PLANNING</p>
+          <h2 id="scheduleDateTitle">Edit Delivery Dates</h2>
+          <p id="scheduleDateProject" class="muted"></p>
+        </div>
+        <button type="submit" value="cancel" class="icon-button" aria-label="Close">×</button>
+      </div>
+      <p id="scheduleDateDescription" class="small-note"></p>
+      <div id="scheduleDateRows" class="schedule-date-rows"></div>
+      <p id="scheduleDateMessage" class="small-note schedule-date-message" aria-live="polite"></p>
+      <div class="dialog-footer">
+        <button type="submit" value="cancel" class="button ghost">Cancel</button>
+        <button id="scheduleDateSave" type="button" class="button primary">Save Dates</button>
+      </div>
+    </form>
+  </dialog>
+
   <dialog id="projectEditDialog" class="dialog compact-dialog">
     <form method="dialog" id="projectEditForm">
       <div class="dialog-header">
@@ -610,28 +631,8 @@
     </div>
   </div>
 
-  <script type="module" src="app.mjs?v=1.7"></script>
-  <script type="module" src="../workspace-auth.mjs?v=1.7"></script>
-  <dialog id="forecastSettingsDialog" class="ewp-theme-dialog" aria-labelledby="forecastSettingsTitle">
-    <div class="ewp-theme-dialog-title">
-      <div><span class="ewp-theme-dialog-kicker">EWP MANAGEMENT</span><h2 id="forecastSettingsTitle">Settings</h2></div>
-      <button id="forecastSettingsClose" type="button" class="ewp-theme-dialog-close" aria-label="Close settings">×</button>
-    </div>
-    <div class="ewp-theme-dialog-body">
-      <h3>Appearance</h3>
-      <p>Choose the display theme for the Portal, Project Tracking and Forecast on this browser.</p>
-      <label class="appearance-chooser">Theme
-        <select data-ewp-theme-select aria-label="Theme preference"><option value="light">Light</option><option value="dark">Dark</option></select>
-      </label>
-    </div>
-  </dialog>
-  <script>
-    (() => {
-      const dialog = document.getElementById('forecastSettingsDialog');
-      document.getElementById('forecastSettingsButton').addEventListener('click', () => dialog.showModal());
-      document.getElementById('forecastSettingsClose').addEventListener('click', () => dialog.close());
-      dialog.addEventListener('click', event => { if (event.target === dialog) dialog.close(); });
-    })();
-  </script>
+  <script type="module" src="app.mjs?v=1.10"></script>
+  <script type="module" src="../workspace-auth.mjs?v=1.10"></script>
+  <script type="module" src="../shared-settings.mjs?v=1.10"></script>
 </body>
 </html>

@@ -1,6 +1,6 @@
 import { restoreSession, signInWithPassword, signOut, getCurrentSession, EWP_AUTH_STORAGE_KEY } from '../forecast/auth.mjs?v=1.0-p3';
 import { startTrackerRealtime, stopTrackerRealtime } from './realtime.mjs?v=1.0-p3';
-import { loadTrackerCloud, saveTrackerProject, setTrackerProjectStatus, moveTrackerWorkItem, deleteTrackerProject, getNextTrackerNumber, saveTrackerSettings, addTrackerFilter, removeTrackerFilter } from './cloud.mjs?v=1.0-p3';
+import { loadTrackerCloud, saveTrackerProject, setTrackerProjectStatus, moveTrackerWorkItem, deleteTrackerProject, getNextTrackerNumber, saveTrackerSettings, addTrackerFilter, removeTrackerFilter } from './cloud.mjs?v=1.10';
 
 (() => {
   const PROJECTS_KEY = 'tc_project_tracker_v01_projects'; // legacy browser data; never used as authoritative data
@@ -135,7 +135,7 @@ import { loadTrackerCloud, saveTrackerProject, setTrackerProjectStatus, moveTrac
     try {
       const data=await loadTrackerCloud();
       projects=(data.projects||[]).map(item=>fromRow(item,data.workItems||[]));
-      settings={sales:data.settings.sales||[],assignees:data.settings.assignees||[],tasks:data.settings.tasks||[]};
+      settings={sales:data.settings.sales||[],assignees:data.settings.assignees||[],tasks:data.settings.tasks||[],phases:data.settings.phases||['Awarded','Bidding']};
       savedFilters=(data.filters||[]).map(row=>({id:row.id,name:row.name,search:row.search||'',filters:row.filters||{},createdAt:row.created_at||''}));
       issuedCounters={};
       const yy=currentYY();
@@ -290,10 +290,7 @@ import { loadTrackerCloud, saveTrackerProject, setTrackerProjectStatus, moveTrac
   }
 
   function getFilterOptions(key) {
-    if (key === 'phase') return [
-      { value: 'Awarded', label: 'Awarded' },
-      { value: 'Bidding', label: 'Bidding' }
-    ];
+    if (key === 'phase') return uniqueSorted([...(settings.phases || ['Awarded','Bidding']),...projects.map(project=>project.phase)]).map(value=>({value,label:value}));
     if (key === 'status') return [
       { value: 'queue', label: 'Queue' },
       { value: 'in_progress', label: 'In Progress' },
@@ -608,6 +605,7 @@ import { loadTrackerCloud, saveTrackerProject, setTrackerProjectStatus, moveTrac
 
   function render() {
     renderSettingsPage();
+    refreshPhaseSelects();
     refreshWorkItemTaskSelects();
     refreshAllComboMenus();
     renderFilterDrivenViews();
@@ -1106,6 +1104,18 @@ import { loadTrackerCloud, saveTrackerProject, setTrackerProjectStatus, moveTrac
     });
   }
 
+  function refreshPhaseSelects() {
+    const choices=uniqueSorted([...(settings.phases||['Awarded','Bidding']),...projects.map(p=>p.phase)]);
+    for(const id of ['phase','editPhase','followUpPhase']) {
+      const select=document.getElementById(id);if(!select)continue;
+      const previous=select.value;
+      select.replaceChildren();
+      if(id==='followUpPhase') select.add(new Option('All phases',''));
+      for(const phase of choices) select.add(new Option(phase,phase));
+      if(choices.includes(previous)||(!previous&&id==='followUpPhase'))select.value=previous;
+      else if(id==='phase'&&choices.includes('Awarded'))select.value='Awarded';
+    }
+  }
   function refreshAllComboMenus() {
     document.querySelectorAll('.combo-field').forEach(combo => {
       bindCombo(combo);
@@ -1552,7 +1562,7 @@ import { loadTrackerCloud, saveTrackerProject, setTrackerProjectStatus, moveTrac
     renderFollowUpEmail();
   });
   document.querySelectorAll('.add-project-trigger').forEach(button => button.addEventListener('click', openAddProject));
-  document.getElementById('settingsButton').addEventListener('click', () => switchView('settings'));
+  document.getElementById('settingsButton').addEventListener('click', () => window.EWPSharedSettings?.open());
   document.getElementById('closeSettingsView').addEventListener('click', returnToPrimaryView);
   document.getElementById('cancelAddProjectTop').addEventListener('click', returnToPrimaryView);
   document.getElementById('cancelAddProject').addEventListener('click', returnToPrimaryView);
@@ -1901,6 +1911,7 @@ import { loadTrackerCloud, saveTrackerProject, setTrackerProjectStatus, moveTrac
     setCloudReady(false);
     window.location.assign('../');
   });
+  window.addEventListener('ewp:settings-saved', () => { if (cloudReady) syncCloud('Settings updated').catch(error => cloudMessage(error.message,true)); });
   document.getElementById('trackerReload').addEventListener('click',()=>{
     syncCloud('Shared data refreshed').catch(error => cloudMessage(error.message,true));
   });
@@ -1917,6 +1928,7 @@ import { loadTrackerCloud, saveTrackerProject, setTrackerProjectStatus, moveTrac
   document.addEventListener('visibilitychange', scheduleTrackerRefresh);
   window.addEventListener('storage', event => {
     if (event.key === PROJECT_SYNC_SIGNAL) scheduleTrackerRefresh();
+    if (event.key === 'ewp_tracker_settings_modified_v18') scheduleTrackerRefresh();
   });
   // Other employees may update projects while this workspace remains open.
   window.setInterval(scheduleTrackerRefresh, 60000);

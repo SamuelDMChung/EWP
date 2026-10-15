@@ -1,3 +1,11 @@
+> **Portal V1.9 WEB (Oct 14, 2026):** Forecast matrix Edit buttons are replaced with clickable estimated delivery dates for undelivered levels, using either a project-wide outstanding-level dialog or single-level dialog. Fixed-height matrix vertical scrolling is removed; Tracker Follow-up project list now scrolls with page. No SQL changes, underlying database/calculations preserved. Root `PORTAL_HANDOFF.md` is authoritative.
+
+## Portal V1.8 WEB integration note
+
+Shared top header, font scales, full Settings editor for Sales/Assignees/Tasks/Appearance, enhanced dark-mode table contrast. Existing Forecast calculations, PDF/material parsers, manual entry, Supabase schema, and deliveries preserved. No new SQL. The UI source now depends on `../shared-settings.mjs` and updated `../theme.css`. See `../PORTAL_HANDOFF.md`.
+
+---
+
 ## Forecast V1.7 visual integration
 
 V1.7 shares Griff header and Light/Dark appearance with other portal pages via `../theme.css` and `../theme.js`. Forecast calculation, material import and database code is unchanged from V1.6. No V1.7 SQL. Full release information is in `../PORTAL_HANDOFF.md`.

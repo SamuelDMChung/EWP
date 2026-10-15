@@ -15,6 +15,7 @@
       try { localStorage.setItem(KEY, theme); } catch (error) { console.warn('Theme preference could not be saved',error); }
     }
   }
+  window.EWPTheme = {apply, read};
   apply(read());
   window.addEventListener('storage', event => { if (event.key === KEY) apply(read()); });
   document.addEventListener('DOMContentLoaded', () => {

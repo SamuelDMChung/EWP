@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sales Requests — EWP Management</title>
+<link rel="stylesheet" href="../portal-nav.css?v=1.10"><link rel="stylesheet" href="../theme.css?v=1.10">
+<link rel="stylesheet" href="sales.css?v=1.10"><script src="../theme.js?v=1.10"></script></head>
+<body>
+<nav class="ewp-portal-nav" aria-label="EWP Management navigation">
+<a class="ewp-portal-nav__brand" href="../"><img class="ewp-portal-nav__mark" src="../assets/griff-nav-icon.png" alt="">EWP Management</a>
+<div class="ewp-portal-nav__links"><a class="ewp-portal-nav__link" href="../">Portal</a><a class="ewp-portal-nav__link" href="../tracker/">Project Tracking</a><a class="ewp-portal-nav__link" href="../forecast/">EWP Forecast</a><a class="ewp-portal-nav__link" href="./" aria-current="page">Sales Requests</a></div>
+<span class="ewp-portal-nav__account" id="ewpNavAccount"></span></nav>
+<div id="salesLoading" class="sales-loading">Restoring your EWP Management session…</div>
+<div id="salesWorkspace" hidden>
+<header class="sales-masthead"><div><span class="eyebrow">EWP SALES</span><h1>Sales Requests</h1><p class="version-line">Version V1.10 · Developed by Samuel Chung</p></div>
+<div class="ewp-header-actions"><div class="ewp-account-chip"><span class="user-chip-label">Signed in</span><strong id="salesEmail"></strong><button type="button" id="salesSignOut" class="user-change-button">Sign out</button></div>
+<span class="cloud-pill connecting" id="salesCloudPill" role="status">Connecting to shared data…</span><button class="ewp-header-button" id="salesRefresh" type="button">↻ Refresh</button><button class="ewp-header-button ewp-settings-trigger" type="button" id="salesSettingsButton">⚙ Settings</button></div></header>
+<main class="sales-main">
+<div class="sales-tabs"><button type="button" class="sales-tab active" id="newTab">New Request</button><button type="button" class="sales-tab" id="historyTab">Submission History</button></div>
+<section id="newPanel" class="sales-panel"><div class="sales-panel-heading"><h2>Request EWP Layout / Quotation</h2><p>Fields marked * are required. At least one task must be selected.</p></div>
+<form id="salesRequestForm" novalidate>
+<div class="sales-form-grid"><label>Customer *<input type="text" name="customer" maxlength="160" required placeholder="Customer name" autocomplete="off"></label>
+<label>Project Name / Address *<input type="text" name="address" maxlength="240" required placeholder="Project address or name" autocomplete="off"></label>
+<label>Sales *<select id="salesPerson" name="sales" required><option value="">Choose salesperson…</option></select></label>
+<label>Phase *<select id="salesPhase" name="phase" required><option value="">Choose phase…</option></select></label>
+<fieldset class="sales-tasks"><legend>Tasks * <span>(Select at least one)</span></legend><div id="salesTaskChoices" class="sales-task-choices"></div></fieldset>
+<label>Requested Due Date *<input type="date" name="due_date" required></label>
+<label class="sales-full"><span>Drawings / Attachments <span class="optional">(Optional)</span></span><input id="salesFiles" type="file" multiple accept=".pdf,.png,.jpg,.jpeg,application/pdf,image/png,image/jpeg"><small>PDF/JPG/PNG, up to 10 MB each and 30 MB total. Stored privately in Supabase Storage; email contains a secure portal link.</small></label>
+<label class="sales-full"><span>Additional Instructions <span class="optional">(Optional)</span></span><textarea name="instructions" rows="4" maxlength="5000" placeholder="Any special requirements for the design team…"></textarea></label></div>
+<p id="salesFormMessage" class="sales-message" role="status" aria-live="polite"></p><button id="salesSubmit" class="sales-primary" type="submit">Submit Request &amp; Notify Team</button></form></section>
+<section id="historyPanel" class="sales-panel" hidden><div class="sales-panel-heading"><h2>Submission History</h2><p>All company requests. Requests are saved even if an email notification needs retrying.</p></div><div id="salesHistory"></div></section>
+</main></div>
+<script type="module" src="../shared-settings.mjs?v=1.10"></script>
+<script type="module" src="sales.mjs?v=1.10"></script>
+</body></html>

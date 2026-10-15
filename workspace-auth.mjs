@@ -1,6 +1,6 @@
 import { restoreSession, EWP_AUTH_STORAGE_KEY } from "./forecast/auth.mjs?v=1.0-p3";
 const label = document.getElementById("ewpNavAccount");
-const workspace = location.pathname.includes("/tracker/") ? "tracker/" : "forecast/";
+const workspace = location.pathname.includes("/tracker/") ? "tracker/" : location.pathname.includes("/sales/") ? "sales/" : "forecast/";
 function redirectToPortal() {
   location.replace(new URL("../?next=" + encodeURIComponent(workspace + location.search), location.href).href);
 }

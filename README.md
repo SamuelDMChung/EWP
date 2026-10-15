@@ -1,3 +1,36 @@
+# EWP Management Portal V1.10 WEB — Sales Requests release
+
+**Read `PORTAL_HANDOFF.md` and `SALES_EMAIL_SETUP.md` first.** Latest full source built on V1.9 WEB. Adds a new fourth workspace for Sales Requests; no separate iOS recode.
+
+New mandatory form fields: Customer, Project Name/Address, Sales, Phase, at least one Task, Due Date. Optional Drawings/Attachments and Instructions. Saves submissions in Supabase; `schung@griff.ca` is the initial email **recipient**. **Real email delivery requires Supabase SQL migration + Edge Function deployment + verified Resend sending domain/secrets.** Do not assume uploading files to GitHub Pages alone makes email work. Run `v1_10_sales_requests.sql` only after previous database migrations and back up first. The original Tracker/Forecast core logic remains.
+
+---
+
+# EWP Management Portal V1.9 WEB — Full Source
+
+Web-only update from V1.8. In Forecast → Projects & Materials, the project/level **Edit** buttons are removed and dates become clickable. On a **collapsed** project, click its **Next** date to edit the estimated delivery dates of all *undelivered* levels in one dialog. On an **expanded** project, click a level's date to edit *only that level*. Fully delivered levels are read-only. Changed level dates save into existing Supabase records and Entry History; material, inventory, Spruce and delivery quantities are unchanged.
+
+Forecast's material matrix and Tracking's Follow-up project list no longer create nested vertical page scrollbars. The matrix keeps horizontal scrolling for wide materials. UI dialogs and option lists may still scroll internally when needed. Theme, shared settings, portal headers and V1.5–V1.8 workflows remain in place.
+
+**Deploy:** Back up V1.8, then replace all website files in the GitHub Pages root with this package. Hard-refresh each page. **No new SQL is required.** Test dates, dark mode, one vertical scrollbar and shared data live before team rollout. See `PORTAL_HANDOFF.md` for tests, known constraints, version history, and deployment checklist.
+
+---
+
+# EWP Management Portal V1.8 WEB — Full Source
+
+V1.8 continues directly from **V1.7 WEB**, preserving the common Supabase backend and independent task-card/Forecast workflows. This is a **web-only UI and Settings release**; the V1.3 Capacitor iOS demo is not updated.
+
+- **Unified header:** Portal, Tracking and Forecast use the same email/sign-out, database connection indicator, Refresh and Settings actions. Forecast has no redundant header Add Project button (the Add Project tab remains).
+- **Identical typography:** Shared family, header sizes, headings, navigation and control styles on all three routes, with compact data-specific sizing retained for dense tables/cards.
+- **Shared Settings:** All three buttons open `shared-settings.mjs` with Appearance, Sales Names, Assignee Names and Tasks. Editing a list updates the SAME authenticated Supabase `tracker_settings` record already used by Tracker. There is no new SQL or separate Settings data store.
+- **Dark mode:** Repaired Forecast matrix alternating rows, overdue schedule, inventory and purchasing warning cells, date picker icons and other contrast issues. Light mode remains available.
+
+**Deploy:** Back up V1.7, then copy ALL files to the existing GitHub Pages repository root (including the new `shared-settings.mjs` and updated `theme.css`/`theme.js`), commit and push, then hard-refresh. **No Supabase SQL changes for V1.8.** Test a Settings add/remove on both Tracking and Forecast, status pills, dark tables and task/project operations with your live team account.
+
+**Testing:** JavaScript syntax, static HTML IDs, isolated mocked Settings interactions and computed dark contrast were verified. Real Supabase/GitHub Pages tests could not be run in this environment. Full detail and historical migration instructions remain in `PORTAL_HANDOFF.md`.
+
+---
+
 # EWP Management Portal V1.7 WEB — Full Source
 
 V1.7 is derived directly from the canonical V1.6 web source, with **unified Tracker/Forecast headers**, a **Light/Dark setting available in both workspace Settings**, and removal of all redundant Tracker board summary/count bubbles. No database changes or SQL migrations are needed if V1.6 is already deployed.

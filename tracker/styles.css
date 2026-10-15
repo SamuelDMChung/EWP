@@ -1149,3 +1149,7 @@ input:focus,select:focus,textarea:focus{border-color:#747300;box-shadow:0 0 0 3p
 
 .compact-task-arrival { margin: 3px 0 0; color:#27734c; font-size:10px; font-weight:750; }
 .compact-task-arrival.hidden { display:none; }
+
+/* V1.9: Follow-up records scroll with the page; dropdowns and modal dialogs
+   still scroll internally when required to fit the screen. */
+.followup-project-list {max-height:none;overflow:visible;}

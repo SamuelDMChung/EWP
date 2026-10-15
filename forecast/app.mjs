@@ -18,11 +18,11 @@ let spruceImportDraft = null;
 let pdfjsLib = null;
 let activeDelivery = null;
 let activeEditProject = null;
+let activeScheduleDateEdit = null;
 let activeDeleteProject = null;
 let activeMaterialExclusion = null;
 let deliveryActionMode = "spruce";
 let matrixScrollLeft = 0;
-let matrixScrollTop = 0;
 let syncInProgress = false;
 let lastSyncAt = null;
 let uiPrefs = loadUiPrefs();
@@ -1893,14 +1893,14 @@ function levelHeaderHtml(project, level) {
   return `<th class="project-col level-project-col">
     <div class="project-header-card">
       ${projectMetaHtml(project)}
-      <div class="operational-line"><strong>${escapeHtml(level.name)}</strong> · ${escapeHtml(level.estimatedDeliveryDate ? formatDate(level.estimatedDeliveryDate) : "No date")}</div>
+      <div class="operational-line"><strong>${escapeHtml(level.name)}</strong> · ${stats.status !== "delivered" ? `<button type="button" class="matrix-date-link edit-schedule-dates" data-project-id="${escapeHtml(project.id)}" data-level-id="${escapeHtml(level.id)}" aria-label="Edit delivery date for ${escapeHtml(level.name)}" title="Edit this level's estimated delivery date"><span>${escapeHtml(formatDate(level.estimatedDeliveryDate))}</span><span aria-hidden="true" class="matrix-date-pencil">✎</span></button>` : `<span class="matrix-date-readonly">${escapeHtml(formatDate(level.estimatedDeliveryDate))}</span>`}</div>
       ${progressHtml(stats.percent, "level complete")}
       <div class="project-card-actions">
         <span class="status-badge workflow-${workflow}">${workflowStatusLabel(workflow)}</span>
         <div class="project-card-buttons">
           <a class="mini-button tracker-project-link" href="../tracker/?project=${encodeURIComponent(project.projectNumber || '')}" title="Open this project in Tracking">Tracking ↗</a>
           <button class="mini-button primary-mini-button manage-level" data-project-id="${project.id}" data-level-id="${level.id}">Manage</button>
-                    <button class="mini-button edit-project" data-project-id="${project.id}">Edit</button>
+
           ${multiLevel ? `<button class="mini-button toggle-project-collapse" data-project-id="${project.id}">Collapse</button>` : ""}
         </div>
       </div>
@@ -1916,19 +1916,129 @@ function collapsedProjectHeaderHtml(project) {
   return `<th class="project-col collapsed-project-col">
     <div class="project-header-card collapsed-summary-card">
       ${projectMetaHtml(project)}
-      ${next ? `<div class="operational-line"><strong>Next:</strong> ${escapeHtml(next.name)} · ${escapeHtml(formatDate(next.estimatedDeliveryDate))}</div>` : `<div class="operational-line"><strong>Project complete</strong></div>`}
+      ${next ? `<div class="operational-line"><strong>Next:</strong> ${escapeHtml(next.name)} · <button type="button" class="matrix-date-link edit-schedule-dates" data-project-id="${escapeHtml(project.id)}" aria-label="Edit delivery dates for undelivered levels in ${escapeHtml(project.projectNumber)}" title="Edit all outstanding level dates"><span>${escapeHtml(formatDate(next.estimatedDeliveryDate))}</span><span aria-hidden="true" class="matrix-date-pencil">✎</span></button></div>` : `<div class="operational-line"><strong>Project complete</strong></div>`}
       <div class="package-line">${stats.levelsRemaining} ${levelWord} remaining</div>
       ${progressHtml(stats.percent, "overall complete")}
       <div class="project-card-actions">
         <span class="status-badge workflow-${workflow}">${workflowStatusLabel(workflow)}</span>
         <div class="project-card-buttons">
           <a class="mini-button tracker-project-link" href="../tracker/?project=${encodeURIComponent(project.projectNumber || '')}" title="Open this project in Tracking">Tracking ↗</a>
-          <button class="mini-button edit-project" data-project-id="${project.id}">Edit</button>
+
           <button class="mini-button toggle-project-collapse" data-project-id="${project.id}">Expand</button>
         </div>
       </div>
     </div>
   </th>`;
+}
+
+// V1.9: date editing stays scoped to undelivered levels; neither project metadata
+// nor inventory, Spruce, delivery records, or material quantities are modified.
+function openScheduleDateEditor(projectId, levelId = null) {
+  const project = state.projects.find(row => row.id === projectId);
+  if (!project) return;
+  const levels = (project.levels || []).filter(level =>
+    (!levelId || level.id === levelId) && levelStats(level).status !== "delivered"
+  );
+  if (!levels.length) return alert("All selected levels are fully delivered. Their dates cannot be changed here.");
+  activeScheduleDateEdit = {
+    projectId: project.id,
+    items: levels.map(level => ({ id: level.id, version: level.version, originalDate: level.estimatedDeliveryDate || "" }))
+  };
+  $("scheduleDateTitle").textContent = levelId ? "Edit Level Delivery Date" : "Edit Project Delivery Dates";
+  $("scheduleDateProject").textContent = `${project.projectNumber} · ${project.address || "Project"}`;
+  $("scheduleDateDescription").textContent = levelId
+    ? "Change the estimated delivery date for this level only."
+    : "Change the estimated delivery dates for any outstanding level. Delivered levels are excluded.";
+  const list = $("scheduleDateRows");
+  list.replaceChildren();
+  for (const level of levels) {
+    const label = document.createElement("label");
+    label.className = "schedule-date-row";
+    const title = document.createElement("span");
+    title.className = "schedule-date-level-name";
+    title.textContent = level.name || "Level";
+    const input = document.createElement("input");
+    input.type = "date";
+    input.required = true;
+    input.value = level.estimatedDeliveryDate || "";
+    input.dataset.levelId = level.id;
+    input.setAttribute("aria-label", `Estimated delivery date for ${level.name || "Level"}`);
+    label.append(title, input);
+    list.appendChild(label);
+  }
+  $("scheduleDateMessage").textContent = "";
+  $("scheduleDateSave").disabled = false;
+  $("scheduleDateDialog").showModal();
+}
+
+async function saveScheduleDateEdits() {
+  if (!activeScheduleDateEdit) return;
+  const edit = activeScheduleDateEdit;
+  const inputs = [...$("scheduleDateRows").querySelectorAll('input[type="date"]')];
+  if (inputs.some(input => !input.value || !input.checkValidity())) {
+    $("scheduleDateMessage").textContent = "Enter a valid delivery date for every level.";
+    inputs.find(input => !input.value || !input.checkValidity())?.focus();
+    return;
+  }
+  const requested = new Map(inputs.map(input => [input.dataset.levelId, input.value]));
+  const updates = edit.items.filter(item => requested.get(item.id) !== item.originalDate);
+  if (!updates.length) {
+    $("scheduleDateDialog").close("unchanged");
+    activeScheduleDateEdit = null;
+    return;
+  }
+  const saveButton = $("scheduleDateSave");
+  saveButton.disabled = true;
+  saveButton.textContent = "Saving…";
+  $("scheduleDateMessage").textContent = "Checking the latest shared records…";
+  let saved = 0;
+  try {
+    // Re-read first: Spruce/delivery changes do not necessarily bump level
+    // versions, so checking only the level version is insufficient protection.
+    const fresh = mapCloudRows(await loadCloudRows());
+    const project = fresh.projects.find(p => p.id === edit.projectId);
+    if (!project) throw new Error("The project was removed by another user. Refresh and try again.");
+    for (const item of edit.items) {
+      const current = project.levels.find(level => level.id === item.id);
+      if (!current) throw new Error("A level was removed while this window was open. Refresh and try again.");
+      if (levelStats(current).status === "delivered") throw new Error(`${current.name} is now fully delivered and cannot be rescheduled.`);
+      if (current.version !== item.version || (current.estimatedDeliveryDate || "") !== item.originalDate) {
+        throw new Error(`${current.name} was edited by another user. Refresh and review the latest date.`);
+      }
+    }
+    $("scheduleDateMessage").textContent = `Saving ${updates.length} date${updates.length === 1 ? "" : "s"}…`;
+    for (const item of updates) {
+      const nextDate = requested.get(item.id);
+      const result = await updateRows("levels", { id: `eq.${item.id}`, version: `eq.${item.version}`, is_active: "eq.true" }, {
+        estimated_delivery_date: nextDate,
+        updated_at: new Date().toISOString(),
+        version: item.version + 1
+      });
+      if (!result?.length) throw new Error("A level changed while saving. Please review the latest shared dates.");
+      saved++;
+      await recordActivity("level", item.id, "update_forecast_date", {
+        from_date: item.originalDate,
+        to_date: nextDate,
+        source: "projects_materials_date_editor"
+      });
+    }
+    $("scheduleDateDialog").close("saved");
+    activeScheduleDateEdit = null;
+    await syncFromCloud({ silent: true });
+    setTab("matrix");
+  } catch (error) {
+    console.error(error);
+    $("scheduleDateMessage").textContent = saved
+      ? `${saved} date(s) saved before an issue occurred. Refresh and review the remaining dates.`
+      : "No dates were changed. Review the error and refresh.";
+    alert(`Could not finish saving dates.\n\n${error.message}${saved ? `\n\n${saved} change(s) were saved before this error.` : ""}`);
+    $("scheduleDateDialog").close("error");
+    activeScheduleDateEdit = null;
+    await syncFromCloud({ silent: true });
+  } finally {
+    saveButton.disabled = false;
+    saveButton.textContent = "Save Dates";
+  }
 }
 
 function openProjectEdit(projectId) {
@@ -2080,7 +2190,6 @@ function updateMatrixTopScrollbar() {
   const maxLeft = Math.max(0, wrap.scrollWidth - wrap.clientWidth);
   matrixScrollLeft = Math.min(matrixScrollLeft, maxLeft);
   wrap.scrollLeft = matrixScrollLeft;
-  wrap.scrollTop = Math.min(matrixScrollTop, Math.max(0, wrap.scrollHeight - wrap.clientHeight));
   topScroll.scrollLeft = wrap.scrollLeft;
 }
 
@@ -4512,7 +4621,9 @@ function wireEvents() {
     window.location.assign("../");
   });
   document.querySelectorAll(".tab").forEach(button => button.addEventListener("click", () => setTab(button.dataset.tab)));
-  $("addProjectTop").addEventListener("click", () => setTab("intake"));
+  $("forecastHeaderRefresh").addEventListener("click", () => syncFromCloud());
+  window.addEventListener("ewp:settings-saved", () => syncFromCloud({ silent: true }));
+  window.addEventListener("storage", event => { if (event.key === "ewp_tracker_settings_modified_v18" && document.visibilityState === "visible" && !hasOpenDialog()) syncFromCloud({ silent: true }); });
 
   $("pdfFile").addEventListener("change", event => {
     const file = event.target.files?.[0];
@@ -4753,7 +4864,6 @@ function wireEvents() {
   const matrixTopScroll = $("matrixTopScroll");
   matrixWrap.addEventListener("scroll", () => {
     matrixScrollLeft = matrixWrap.scrollLeft;
-    matrixScrollTop = matrixWrap.scrollTop;
     if (Math.abs(matrixTopScroll.scrollLeft - matrixWrap.scrollLeft) > 1) matrixTopScroll.scrollLeft = matrixWrap.scrollLeft;
   });
   matrixTopScroll.addEventListener("scroll", () => {
@@ -4775,8 +4885,8 @@ function wireEvents() {
   matrixWrap.addEventListener("click", event => {
     const manageButton = event.target.closest(".manage-level");
     if (manageButton) return openDelivery(manageButton.dataset.projectId, manageButton.dataset.levelId);
-    const editButton = event.target.closest(".edit-project");
-    if (editButton) return openProjectEdit(editButton.dataset.projectId);
+    const dateButton = event.target.closest(".edit-schedule-dates");
+    if (dateButton) return openScheduleDateEditor(dateButton.dataset.projectId, dateButton.dataset.levelId || null);
     const toggleButton = event.target.closest(".toggle-project-collapse");
     if (toggleButton) {
       const project = state.projects.find(item => item.id === toggleButton.dataset.projectId);
@@ -4786,6 +4896,13 @@ function wireEvents() {
     }
   });
 
+  $("scheduleDateSave").addEventListener("click", saveScheduleDateEdits);
+  $("scheduleDateDialog").addEventListener("close", () => { activeScheduleDateEdit = null; });
+  // Native modal backdrop dismiss remains available; only a confirmed Save
+  // changes a level. Delivered packages never appear as editable rows.
+  $("scheduleDateDialog").addEventListener("click", event => {
+    if (event.target === $("scheduleDateDialog")) $("scheduleDateDialog").close("cancel");
+  });
   $("forecastDateEdit").addEventListener("change", updateForecastDate);
   $("spruceModeEntry").addEventListener("click", async () => {
     if ($("spruceModeEntry").dataset.action === "remove") {

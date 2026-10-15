@@ -86,3 +86,7 @@ body{background:var(--bg);color:var(--ink)}
 .portal-signed-in strong,.portal-signed-in button{color:#595700}
 .portal-login-form input:focus{outline:3px solid #eceac5;border-color:#747300}
 .portal-version{color:#655f57}
+
+/* V1.10 third tool tile */
+.card-icon-sales{background:#f2efd4;color:#747300;font-size:30px;font-weight:800;}
+@media(min-width:1000px){.workspace-grid:has(.card-icon-sales){grid-template-columns:repeat(3,minmax(0,1fr));}.workspace-grid:has(.card-icon-sales) .workspace-card{min-height:290px;}}

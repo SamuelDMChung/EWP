@@ -42,7 +42,20 @@ function setSession(session) {
     verifyConnection();
   } else {connectionAttempt++;setStatus('connecting','Connecting to shared data…');}
 }
+function setWorkspaceView(view) {
+  const selected=view==='sales'?'sales':'all';
+  for(const button of document.querySelectorAll('[data-workspace-view]')) {
+    const active=button.dataset.workspaceView===selected;
+    button.classList.toggle('is-selected',active);
+    button.setAttribute('aria-pressed',String(active));
+  }
+  for(const card of document.querySelectorAll('.workspace-card[data-workspace-role="staff"]'))
+    card.hidden=selected==='sales';
+}
 async function init() {
+  for(const button of document.querySelectorAll('[data-workspace-view]'))
+    button.addEventListener('click',()=>setWorkspaceView(button.dataset.workspaceView));
+  setWorkspaceView('all');
   $("portalLoginEmail").value=getLastEmail();
   $("portalLoginForm").addEventListener('submit',async event=>{
     event.preventDefault();const button=$("portalLoginButton");button.disabled=true;button.textContent='Signing in…';showError('');

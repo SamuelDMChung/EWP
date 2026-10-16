@@ -1,5 +1,5 @@
 /**
- * V1.10 Edge Function: authenticated, retriable Resend email for already saved Sales Requests.
+ * V1.11 Edge Function: authenticated, retriable Resend email for already saved Sales Requests.
  * Requires SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, SUPABASE_PUBLISHABLE_KEY (or SUPABASE_ANON_KEY),
  * RESEND_API_KEY, SALES_EMAIL_FROM (verified sender), SALES_NOTIFY_TO, SALES_PORTAL_URL.
  * Keep verify_jwt=true when using legacy JWT-based platform validation; also performs auth/v1/user check.
@@ -50,7 +50,7 @@ Deno.serve(async(req:Request)=>{
      if(!/^https:\/\//i.test(portal))throw new Error('SALES_PORTAL_URL must be an HTTPS address.');
      const link=new URL(`sales/?request=${encodeURIComponent(id)}`,portal.endsWith('/')?portal:portal+'/').href;
      const subject=`New EWP Request — ${text(r.address).slice(0,110)} — ${text(r.customer).slice(0,75)}`;
-     const fields=[['Submitted by',r.created_by_email],['Sales',r.sales],['Customer',r.customer],['Project',r.address],['Phase',r.phase],['Tasks',r.tasks?.join(', ')],['Requested due',r.due_date],['Instructions',r.instructions||'—'],['Attachment files',r.attachments?.length||0]];
+     const fields=[['Submitted by',r.created_by_email],['Sales',r.sales],['Customer',r.customer],['Spruce Code',r.spruce_code||'— (legacy request)'],['Project',r.address],['Phase',r.phase],['Tasks',r.tasks?.join(', ')],['Requested due',r.due_date],['Instructions',r.instructions||'—'],['Attachment files',r.attachments?.length||0]];
      const plain=fields.map(([k,v])=>`${k}: ${text(v)}`).join('\n')+`\n\nView full request and private attachments (team sign-in required): ${link}`;
      const html=`<h2>New EWP Layout / Quotation Request</h2><table style="border-collapse:collapse">${fields.map(([k,v])=>`<tr><th style="text-align:left;padding:6px 12px;border-bottom:1px solid #ddd">${safe(k)}</th><td style="padding:6px 12px;border-bottom:1px solid #ddd;white-space:pre-wrap">${safe(v)}</td></tr>`).join('')}</table><p><a href="${safe(link)}">Open request and attachments in the EWP Portal</a></p>`;
      const send=await fetch('https://api.resend.com/emails',{method:'POST',headers:{Authorization:`Bearer ${resendKey}`,'Content-Type':'application/json','Idempotency-Key':`ewp-sales-${id}`},body:JSON.stringify({from,to:[to],subject,text:plain,html})});

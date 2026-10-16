@@ -1,3 +1,9 @@
+## V1.11 WEB (October 16, 2026)
+
+- New required Spruce Code and shared ATS task; New EWP Requests name; Portal All/Sales filter preserving identical two-column card sizes.
+- **Deployment:** run `v1_11_sales_spruce_ats.sql` (upgrade from V1.10), redeploy `sales-request-email` Edge Function with included updated `index.ts`, then publish V1.11 web files. See `SALES_EMAIL_SETUP.md` and `PORTAL_HANDOFF.md`.
+- The V1.10 historical SQL is corrected for fresh installs but must NOT be rerun in a live upgraded database. The new migration also incorporates the old SQL validator hotfix.
+
 # EWP Management Portal V1.10 WEB — Sales Requests release
 
 **Read `PORTAL_HANDOFF.md` and `SALES_EMAIL_SETUP.md` first.** Latest full source built on V1.9 WEB. Adds a new fourth workspace for Sales Requests; no separate iOS recode.

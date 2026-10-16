@@ -1,3 +1,31 @@
+# EWP Management Portal — Canonical V1.11 WEB Handoff
+
+**Release:** `EWP_Management_Portal_V1_11_WEB_FULL.zip` (October 16, 2026).  
+**Source:** V1.10 WEB full package, preserving V1.9 Forecast and V1.5 Coordination logic. **Next: V1.12 WEB.** iOS V1.3 Capacitor prototype unchanged.
+
+## V1.11 changes
+
+- **Sales Request form:** mandatory free-text **Spruce Code** (up to 80 characters) immediately after Customer and before Project Name/Address; saved as `sales_requests.spruce_code` and displayed in Submission History and notification emails. Existing pre-V1.11 requests continue to display with a legacy/blank Spruce Code, not deleted or overwritten.
+- **Shared Tasks:** append ATS to `tracker_settings.tasks` JSONB via incremental SQL. Sales request multi-select uses existing Settings-driven checkbox rendering, so ATS appears in the Sales tool and as a work-item choice in Tracker. Existing names are preserved; at least one task still required.
+- **Renaming:** user-visible Sales Requests → **New EWP Requests** across all four navigation bars, Sales page and Portal card. Existing `/sales/` URL, `sales_requests` table, storage bucket and deployed function identifier remain unchanged.
+- **Portal:** All / Sales toggle inside the authenticated homepage. Default All displays two half-width cards on the first row (Tracking, Forecast) and a half-width New EWP Requests card in the first position of the second row, leaving the second slot free for a future fourth workspace. Sales hides just the two non-Sales cards; the remaining Sales card **never stretches** to full width on desktop. Filtering the Portal does not grant/revoke any app permissions or hide navigation links.
+- **Database patch:** **run `v1_11_sales_spruce_ats.sql` after V1.10** and before uploading V1.11 website. Adds nullable `spruce_code` to preserve historical rows; before-insert validation requires it for all NEW submissions. Also repairs earlier JSONB vs ANY validator bug. Original `v1_10_sales_requests.sql` packaged here is corrected for **fresh installation only**; do not rerun on an upgraded production environment.
+- **Function:** redeploy V1.11 `supabase/functions/sales-request-email/index.ts` (same `sales-request-email` function name) to include the Spruce Code in Resend notification body. Four existing secrets remain unchanged. Email has not been independently confirmed delivered in production.
+
+## V1.11 verification (isolated, not live)
+
+- Tested the Portal cards in headless Chromium using locally injected styles/DOM: All view showed 577 × 156 px cards in two columns, with New EWP Requests on the second row; Sales view displayed only New EWP Requests at the exact same width and height. Dark-mode styles were also rendered.
+- Tested Sales form field ordering and mandatory Spruce Code validity in isolated Chromium. Mocked a submission with ATS checked: payload included `spruce_code`, the selected ATS task, Customer, Sales, Phase and due date. Submitting no tasks was correctly rejected. Email response was simulated; no real notification was sent.
+- All `.js` and `.mjs` files passed Node syntax checks; all four HTML pages had unique DOM IDs and V1.11 labels. ZIP integrity tested after packaging. Supabase SQL migration and real Edge Function email were **not executed** in this environment.
+
+## Protected behavior / validation
+
+Preserve existing V1.10 Sales authentication, RLS, private attachments, Submission History, email retry and idempotency; V1.9 date editing, Forecast parsing/purchasing; V1.5 task Coordination; V1.8 shared Settings and light/dark theme. **Test on live Supabase/Resend before employee-wide rollout**. Static/sandbox tests are not proof of production email delivery or SQL correctness on the company's database.
+
+See `SALES_EMAIL_SETUP.md` for the precise upgrade order. No full-schema migration, no changes to Forecast/Tracker calculations.
+
+---
+
 # EWP Management Portal — Canonical V1.10 WEB Handoff
 
 **Release:** `EWP_Management_Portal_V1_10_WEB_FULL.zip` (October 14, 2026).

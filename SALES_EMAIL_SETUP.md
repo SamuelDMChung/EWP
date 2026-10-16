@@ -1,3 +1,13 @@
+# V1.11 live upgrade — new mandatory Spruce Code + ATS
+
+If V1.10 has ALREADY been deployed to Supabase, **do not rerun `v1_10_sales_requests.sql`.** Back up your data, then run `v1_11_sales_spruce_ats.sql` once in Supabase SQL Editor **before** deploying the V1.11 website. It also incorporates the earlier V1.10 JSONB Tasks/Sales validator hotfix, so you need not run that hotfix again. Older submissions keep a blank (legacy) Spruce Code; only newly submitted requests must supply one. The script adds `ATS` to the existing shared Tasks list without discarding any custom tasks.
+
+**Email redeployment required:** In Supabase → Edge Functions → `sales-request-email` → Code, replace `index.ts` with `supabase/functions/sales-request-email/index.ts` from V1.11 and redeploy so the new Spruce Code appears in email. Do not change the four Resend/Supabase secrets. A V1.10 function left running can still send an email but will OMIT Spruce Code. The existing deployed testing sender `onboarding@resend.dev` remains restricted by Resend to recipients permitted on that account.
+
+Upload the V1.11 website to GitHub Pages, including all paths; keep private secrets out of the public repository. Check the Sales form (Customer → Spruce Code → Project Name), History, email, Portal All/Sales toggle and Settings → Tasks ATS. The Portal filter is DISPLAY-ONLY, not a permission system.
+
+---
+
 # V1.10 — Sales Request email and database setup
 
 **This is a new Supabase-backed tool, not merely a web form.** Uploading the website alone will not send email. The business database, private file storage, and Edge Function must be configured before enabling the form for the team.

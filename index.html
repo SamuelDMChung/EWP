@@ -6,10 +6,10 @@
   <meta name="color-scheme" content="light" />
   <meta name="description" content="EWP Management Portal — Project Tracking and EWP Forecast in one place." />
   <title>EWP Management Portal</title>
-  <link rel="stylesheet" href="portal.css?v=1.10" />
-  <link rel="stylesheet" href="portal-nav.css?v=1.10" />
-  <link rel="stylesheet" href="theme.css?v=1.10" />
-  <script src="theme.js?v=1.10"></script>
+  <link rel="stylesheet" href="portal.css?v=1.11" />
+  <link rel="stylesheet" href="portal-nav.css?v=1.11" />
+  <link rel="stylesheet" href="theme.css?v=1.11" />
+  <script src="theme.js?v=1.11"></script>
 </head>
 <body>
   <nav class="ewp-portal-nav" aria-label="EWP Management Portal navigation">
@@ -18,7 +18,7 @@
       <a class="ewp-portal-nav__link" href="./" aria-current="page">Portal</a>
       <a class="ewp-portal-nav__link" href="tracker/">Project Tracking</a>
       <a class="ewp-portal-nav__link" href="forecast/">EWP Forecast</a>
-      <a class="ewp-portal-nav__link" href="sales/">Sales Requests</a>
+      <a class="ewp-portal-nav__link" href="sales/">New EWP Requests</a>
     </div>
     <span class="ewp-portal-nav__account" id="ewpNavAccount" aria-live="polite"></span>
   </nav>
@@ -27,7 +27,7 @@
       <div class="intro">
         <span class="eyebrow">EWP MANAGEMENT</span>
         <h1>EWP Management Portal</h1>
-        <p class="portal-version">Version V1.10 · Developed by Samuel Chung</p>
+        <p class="portal-version">Version V1.11 · Developed by Samuel Chung</p>
       </div>
       <div class="ewp-header-actions" id="portalHeaderActions" hidden>
         <div class="user-chip ewp-account-chip" title="Signed-in Supabase account">
@@ -43,7 +43,7 @@
       <section id="portalAuthLoading" class="portal-auth-loading" role="status" aria-live="polite">Restoring your EWP Management session…</section>
       <section id="portalLogin" class="portal-login" hidden aria-labelledby="portalLoginTitle">
         <div class="portal-login-copy"><span class="eyebrow">SHARED ACCESS</span><h2 id="portalLoginTitle">Sign in once. Work across the team.</h2>
-          <p>Use your existing EWP Forecast Supabase account for Project Tracking, Forecast and Sales Requests. Your session stays signed in across normal refreshes.</p></div>
+          <p>Use your existing EWP Forecast Supabase account for Project Tracking, Forecast and New EWP Requests. Your session stays signed in across normal refreshes.</p></div>
         <form id="portalLoginForm" class="portal-login-form">
           <label for="portalLoginEmail">Email</label><input id="portalLoginEmail" type="email" autocomplete="username" required />
           <label for="portalLoginPassword">Password</label><input id="portalLoginPassword" type="password" autocomplete="current-password" required />
@@ -52,28 +52,35 @@
         </form>
       </section>
       <div id="portalWorkspace" hidden>
+        <div class="workspace-choice-bar">
+          <h2 class="workspace-choice-title">Workspaces</h2>
+          <div class="workspace-view-toggle" role="group" aria-label="Show workspaces">
+            <button type="button" class="workspace-view-option is-selected" data-workspace-view="all" aria-pressed="true">All</button>
+            <button type="button" class="workspace-view-option" data-workspace-view="sales" aria-pressed="false">Sales</button>
+          </div>
+        </div>
         <div class="workspace-grid" aria-label="Choose a workspace">
-          <a class="workspace-card" href="tracker/" aria-label="Open Project Tracking">
+          <a class="workspace-card" data-workspace-role="staff" href="tracker/" aria-label="Open Project Tracking">
             <span class="card-icon card-icon-tracker" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="4" width="17" height="16" rx="2.5"/><path d="M3.5 9h17M9.25 9v11M15.2 9v11"/></svg></span>
             <span class="card-title">Project Tracking</span>
             <span class="workspace-arrow" aria-hidden="true">↗</span>
           </a>
-          <a class="workspace-card" href="forecast/" aria-label="Open EWP Forecast">
+          <a class="workspace-card" data-workspace-role="staff" href="forecast/" aria-label="Open EWP Forecast">
             <span class="card-icon card-icon-forecast" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V4M4 20h16"/><rect x="7.5" y="11" width="3.5" height="7" rx=".6"/><rect x="12" y="7.5" width="3.5" height="10.5" rx=".6"/><rect x="16.5" y="4" width="3.5" height="14" rx=".6"/></svg></span>
             <span class="card-title">EWP Forecast</span>
             <span class="workspace-arrow" aria-hidden="true">↗</span>
           </a>
-          <a class="workspace-card" href="sales/" aria-label="Open Sales Requests">
+          <a class="workspace-card" href="sales/" aria-label="Open New EWP Requests">
             <span class="card-icon card-icon-sales" aria-hidden="true">✉</span>
-            <span class="card-title">Sales Requests</span>
+            <span class="card-title">New EWP Requests</span>
             <span class="workspace-arrow" aria-hidden="true">↗</span>
           </a>
         </div>
       </div>
     </main>
-    <footer><span>EWP Management Portal</span><span>Version V1.10 · Developed by Samuel Chung</span></footer>
+    <footer><span>EWP Management Portal</span><span>Version V1.11 · Developed by Samuel Chung</span></footer>
   </div>
-  <script type="module" src="portal-auth.mjs?v=1.10"></script>
-  <script type="module" src="./shared-settings.mjs?v=1.10"></script>
+  <script type="module" src="portal-auth.mjs?v=1.11"></script>
+  <script type="module" src="./shared-settings.mjs?v=1.11"></script>
 </body>
 </html>

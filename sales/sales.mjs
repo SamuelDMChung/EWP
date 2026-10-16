@@ -1,7 +1,7 @@
-/* V1.10 — Sales requests: shared Supabase auth, private attachments, durable email state. */
+/* V1.11 — Sales requests: shared Supabase auth, private attachments, durable email state. */
 import { restoreSession,getAccessToken,getCurrentSession,signOut,EWP_AUTH_STORAGE_KEY } from '../forecast/auth.mjs?v=1.0-p3';
 import { SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY } from '../forecast/config.mjs';
-import { loadTrackerSettings } from '../tracker/cloud.mjs?v=1.10';
+import { loadTrackerSettings } from '../tracker/cloud.mjs?v=1.11';
 const $=id=>document.getElementById(id);
 const ORIGIN=SUPABASE_URL.replace(/\/$/,'');
 const BUCKET='ewp-sales-request-files';
@@ -45,7 +45,7 @@ async function submit(event){
   try{
     textStatus(files.length?'Uploading private attachments…':'Saving your request…');
     const attachments=await uploadFiles(files,requestId,user.id);
-    const row=await storeRequest({id:requestId,created_by:user.id,created_by_email:user.email||'',customer:form.elements.customer.value.trim(),address:form.elements.address.value.trim(),sales,phase,tasks:selected,due_date:form.elements.due_date.value,instructions:form.elements.instructions.value.trim(),attachments,email_status:'pending'});
+    const row=await storeRequest({id:requestId,created_by:user.id,created_by_email:user.email||'',customer:form.elements.customer.value.trim(),spruce_code:form.elements.spruce_code.value.trim(),address:form.elements.address.value.trim(),sales,phase,tasks:selected,due_date:form.elements.due_date.value,instructions:form.elements.instructions.value.trim(),attachments,email_status:'pending'});
     saved=true;
     textStatus('Request saved. Notifying the design team…');
     try{
@@ -61,14 +61,14 @@ async function signedDownload(path,tab){const response=await fetch(`${STORAGE}/o
 function renderHistory(rows){const root=$('salesHistory');root.replaceChildren();if(!rows.length){root.textContent='No requests yet.';return;}
   for(const record of rows){const article=document.createElement('article');article.className='sales-history-card';
     const content=document.createElement('div');content.className='sales-history-detail';const title=document.createElement('h3');title.textContent=`${record.address} — ${record.customer}`;content.append(title);
-    for(const detail of [`${record.sales} · ${record.phase} · Due ${record.due_date}`,`Tasks: ${(record.tasks||[]).join(', ')}`,`Submitted ${new Date(record.created_at).toLocaleString()} by ${record.created_by_email||'staff'}`,record.instructions?`Instructions: ${record.instructions}`:''])if(detail){const line=document.createElement('p');line.textContent=detail;content.append(line);}
+    for(const detail of [`Spruce Code: ${record.spruce_code||"— (legacy request)"}`,`${record.sales} · ${record.phase} · Due ${record.due_date}`,`Tasks: ${(record.tasks||[]).join(', ')}`,`Submitted ${new Date(record.created_at).toLocaleString()} by ${record.created_by_email||'staff'}`,record.instructions?`Instructions: ${record.instructions}`:''])if(detail){const line=document.createElement('p');line.textContent=detail;content.append(line);}
     if(Array.isArray(record.attachments)&&record.attachments.length){const wrap=document.createElement('div');wrap.className='sales-history-files';for(const file of record.attachments){const btn=document.createElement('button');btn.type='button';btn.textContent=`📎 ${file.name}`;btn.addEventListener('click',()=>{const tab=window.open('about:blank','_blank');if(tab)tab.opener=null;signedDownload(file.path,tab).catch(e=>{tab?.close();alert(e.message);});});wrap.append(btn);}content.append(wrap);}
     const meta=document.createElement('div');const state=document.createElement('div');state.className=`sales-email-state ${record.email_status||'pending'}`;state.textContent=record.email_status==='sent'?'Email sent':record.email_status==='failed'?'Email failed':record.email_status==='sending'?'Sending…':'Email queued';meta.append(state);
     if(record.email_status!=='sent'){const retry=document.createElement('button');retry.className='sales-retry';retry.type='button';retry.textContent='Retry email';retry.disabled=record.email_status==='sending';retry.addEventListener('click',async()=>{retry.disabled=true;try{const r=await notifyTeam(record.id);alert(r?.status==='sent'?'Email accepted for delivery.':`Status: ${r?.status||'pending'}`);}catch(e){alert(`Email not sent: ${e.message}`);}finally{await loadHistory();}});meta.append(retry);}
     article.append(content,meta);root.append(article);
   }
 }
-async function loadHistory(){const response=await fetch(`${REST}/sales_requests?select=id,created_at,created_by_email,customer,address,sales,phase,tasks,due_date,instructions,attachments,email_status&order=created_at.desc&limit=100`,{headers:await headers()});const rows=await parseResponse(response);renderHistory(rows||[]);cloud('Shared data connected','connected');}
+async function loadHistory(){const response=await fetch(`${REST}/sales_requests?select=id,created_at,created_by_email,customer,spruce_code,address,sales,phase,tasks,due_date,instructions,attachments,email_status&order=created_at.desc&limit=100`,{headers:await headers()});const rows=await parseResponse(response);renderHistory(rows||[]);cloud('Shared data connected','connected');}
 async function refresh(){cloud('Connecting to shared data…');try{await loadSettings();if(!$('historyPanel').hidden)await loadHistory();cloud('Shared data connected','connected');}catch(e){cloud('Shared data connection issue','error');textStatus(e.message,'error');}}
 async function init(){const session=await restoreSession();if(!session?.user){location.replace(new URL('../?next=sales/',location.href).href);return;}authenticated=true;$('salesLoading').hidden=true;$('salesWorkspace').hidden=false;$('salesEmail').textContent=session.user.email||'';$('ewpNavAccount').textContent=session.user.email||'';
   $('salesSignOut').addEventListener('click',async()=>{if(!confirm('Sign out of EWP Management on this browser?'))return;await signOut();location.replace('../');});
@@ -79,4 +79,4 @@ async function init(){const session=await restoreSession();if(!session?.user){lo
   if(new URLSearchParams(location.search).has('request'))switchTab('history');
   await refresh();
 }
-init().catch(e=>{cloud('Could not load Sales Requests','error');$('salesLoading').textContent=e.message;});
+init().catch(e=>{cloud('Could not load New EWP Requests','error');$('salesLoading').textContent=e.message;});

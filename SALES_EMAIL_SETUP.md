@@ -1,3 +1,18 @@
+# V1.12 WEB Deployment — New EWP Requests + EWP Order
+
+This section supersedes V1.11 deployment steps when upgrading an existing V1.10 installation. **Your V1.11 SQL/email/site deployment was not confirmed**; do not assume it happened.
+
+1. Back up current Supabase and GitHub Pages. Prerequisite: V1.10 `sales_requests` is installed and the original sales email secrets are configured.
+2. Run `v1_12_ewp_orders.sql` from this ZIP in Supabase SQL Editor. **Run V1.12 directly after V1.10 even if V1.11 was never applied.** It adds ATS when missing, removes the server's Spruce Code requirement for New EWP Requests, and creates independent `ewp_orders` plus secure team access and email-claim RPC. If V1.11 was already applied, V1.12 preserves historical Spruce Code values. Do not rerun V1.10 initial schema or run V1.11 *after* V1.12 (which would reimpose the obsolete requirement).
+3. Redeploy `supabase/functions/sales-request-email/index.ts` as existing function `sales-request-email` and deploy `supabase/functions/ewp-order-email/index.ts` as new function `ewp-order-email`. CLI commands: `supabase functions deploy sales-request-email` and `supabase functions deploy ewp-order-email`. `supabase/config.toml` declares both functions JWT-verified.
+4. No new Resend secrets are required. Both functions use the current `RESEND_API_KEY`, `SALES_EMAIL_FROM`, `SALES_NOTIFY_TO` (currently intended `schung@griff.ca`), `SALES_PORTAL_URL` and optional `SALES_ALLOWED_ORIGIN`. Maintain all secret values on Supabase only. When sending from `onboarding@resend.dev`, provider restrictions on verified recipients can prevent real delivery.
+5. Upload all V1.12 static files to `https://samueldmchung.github.io/EWP-Forecast/`, including `orders/index.html`, `orders/orders.mjs`, `orders/orders.css`, and navigation changes. Hard-refresh site. This ZIP is **not a live deployment**.
+6. Verify authenticated New EWP Request submission without Spruce Code succeeds. Test the new order with all 8 required fields, optional PO#/notes blank, 30-minute ship times 6:00 AM–5:00 PM, preview, submission, email to `schung@griff.ca`, history, retry and dark mode. Test old Tracker/Forecast functions after site release.
+
+See `PORTAL_HANDOFF.md` for acceptance criteria, rollback notes and predecessor history.
+
+---
+
 # V1.11 live upgrade — new mandatory Spruce Code + ATS
 
 If V1.10 has ALREADY been deployed to Supabase, **do not rerun `v1_10_sales_requests.sql`.** Back up your data, then run `v1_11_sales_spruce_ats.sql` once in Supabase SQL Editor **before** deploying the V1.11 website. It also incorporates the earlier V1.10 JSONB Tasks/Sales validator hotfix, so you need not run that hotfix again. Older submissions keep a blank (legacy) Spruce Code; only newly submitted requests must supply one. The script adds `ATS` to the existing shared Tasks list without discarding any custom tasks.

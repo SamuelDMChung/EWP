@@ -1,3 +1,38 @@
+# EWP Management Portal — Canonical V1.12 WEB Handoff
+
+**Release:** `EWP_Management_Portal_V1_12_WEB_FULL.zip` (October 19, 2026).  
+**Canonical source:** V1.11 WEB full ZIP supplied by user. **Next:** V1.13 WEB.  
+**Scope:** WEB only. V1.3 Capacitor iOS remains a separate prototype and was not changed.
+
+## V1.12 changes
+
+1. **New EWP Requests:** Remove mandatory Spruce Code field from its form, payload, Submission History and Resend notification. Preserve existing `sales_requests.spruce_code` values/column if V1.11 SQL had been deployed. No other request requirements, attachment storage, task selection or history/email retry behavior should change. Its server-side `sales_validate_request()` no longer requires Spruce Code.
+2. **Fourth Portal workspace: EWP Order** (`orders/`) fills the reserved bottom-right Portal slot. **All** shows Tracking, Forecast, New EWP Requests and EWP Order (two columns); **Sales** shows the two Sales workspaces in equal half-width cards on desktop. Shared navigation added on all five routes. Shared Supabase sign-in, header, Settings and light/dark styling continue.
+3. **EWP Order fields in required order:** Layout Status (Reviewed / Not Reviewed - Proceed with liability on Customer), Spruce Code, Jobsite Address, Level, Ship Date (calendar), Ship Time (every 30 minutes 6:00 AM through 5:00 PM inclusive), Truck Type (COS / LR HIAB / Regular HIAB / Customer Pick-up), PO# (optional), Authorized Buyer, Special Notes (optional). All others mandatory; **Layout Status has no preselected default**. Special Notes placeholder is exactly `Enter floor sheathing, glue, exclude dropped header/posts here. Please be explicit.`
+4. **EWP Order submission:** Browser required-field checks plus database CHECK constraints, modal confirmation preview with Back to Edit and Confirm & Submit, then INSERT to new `ewp_orders` table and POST to new `ewp-order-email` Edge Function. Email to existing `SALES_NOTIFY_TO` (`schung@griff.ca` intended). Confirmation modal cannot send twice; if email fails after a saved row, do not resubmit — use Submission History → Retry Email. Order history shows team submissions, email states and retry. Plain-text and escaped-HTML Resend messages contain exactly those ten fields plus verified submitter email and a protected Portal deep link. No attached files for EWP Order.
+5. **No project linking:** Do NOT create a Tracker project, Forecast level, delivery or Spruce order automatically. `ewp_orders` is independent by agreement. Future integration is deferred.
+6. **Backend migration:** `v1_12_ewp_orders.sql` is incremental over V1.10 and is safe **whether V1.11 SQL ran or not**. It adds shared ATS if absent, fixes original V1.10 JSONB choice validation by replacing `sales_validate_request()` with version *without* mandatory Spruce Code; preserves the optional V1.11 spruce column and older request values if present. Creates an independent RLS-protected `ewp_orders` table, insert attribution, and atomic `ewp_order_claim_email` retry RPC. Do not rerun V1.10 initial schema or require V1.11 patch before V1.12.
+7. **Email function deployment:** **Redeploy** `sales-request-email` to omit Spruce Code from new request emails; **deploy** new `ewp-order-email`. Both use the same four already configured Resend-related secrets (`RESEND_API_KEY`, `SALES_EMAIL_FROM`, `SALES_NOTIFY_TO`, `SALES_PORTAL_URL`) plus existing Supabase Auth credentials. `supabase/config.toml` now includes both functions with JWT verification enabled. Orders use distinct provider idempotency keys `ewp-order-<uuid>`.
+
+## V1.12 deployment order (company account; not done in this source build)
+
+1. Back up GitHub Pages source and Supabase database. Verify original V1.10 sales table and email function are installed. If V1.11 was not deployed, **skip V1.11 SQL** and use V1.12 SQL directly; V1.12 carries forward its needed ATS/validation fixes. If V1.11 was already applied, run V1.12 as normal.
+2. **Run** `v1_12_ewp_orders.sql` in the existing Supabase SQL Editor once. Confirm `ewp_orders` exists, `ewp_order_claim_email` exists, and shared Tasks still include ATS. Legacy sales requests and legacy spruce values must remain available. The SQL is idempotent for normal repeat execution.
+3. Using the configured Supabase CLI/project, deploy BOTH functions from this complete ZIP: `supabase functions deploy sales-request-email` and `supabase functions deploy ewp-order-email`. Maintain `verify_jwt=true`, verify Resend sender/test restrictions and `SALES_NOTIFY_TO=schung@griff.ca` (email is accepted by Resend, not guaranteed delivered). Verify `SALES_PORTAL_URL` is the GitHub Pages site root ending in `/`.
+4. Publish all web files to the existing GitHub Pages root, including new `orders/` and changed navigation and cache-busters. Hard-refresh **all five routes**; verify shared authentication and no redirect loop from `orders/` after sign-in.
+5. New EWP Request test: submit a request **without Spruce Code**, select ATS, verify database insert and email content (no Spruce Code), optional PDF, Submission History and retry. If V1.11 SQL ran, verify old spruce values still stored.
+6. EWP Order test: all eight mandatory fields required, no auto-default Layout Status, optional PO#/notes blank accepted, dropdown values exact, calendar and 23 time options inclusive, preview back/edit/outside close, confirmation inserts *one* row and sends one email. Inspect `schung@griff.ca` inbox and email subject/body. Test failed notification + history Retry; check another signed-in team member can see order history. Test light/dark and mobile.
+7. Regression-test Forecast (quantities/dates/delivery/purchasing), Tracking (task cards/Coordination/filters), shared Settings, authentication, All/Sales portal cards, and New EWP Request private attachments. Live production Supabase/Resend QA not claimed in this source build.
+
+## Verification and known limits
+
+- **Completed isolated checks:** Node parsed every JS/MJS module; TypeScript transpilation parsed both Edge Functions; all five HTML pages have unique element IDs and navigation links; Chromium mocked-DOM tests passed Portal All (4 cards) / Sales (2 cards), all 10 ordered form fields, exact 23 Ship Time choices, blank required-field block, modal review/Back to Edit, exactly one mocked order save/email, Submission History, and New EWP Requests submission with ATS **without Spruce Code**. Original Tracker and Forecast calculation files checked byte-for-byte identical against V1.11. ZIP CRC tested after packaging.
+- The Chromium test uses isolated in-page module mocks rather than live HTTP navigation, because the container browser blocks localhost/public navigation. None of these checks proves production Supabase SQL migration, RLS behavior with multiple accounts, Resend receipt or GitHub Pages deployment.
+- `ewp_orders` is not tied to existing project data and does not reserve actual shipping capacity. Layout Status text is captured verbatim; the option mentioning customer liability does not automatically create legal indemnification.
+- Email functions protect credentials server-side, verify Supabase Auth users, atomically claim rows and retry up to 5 attempts; exactly-once email delivery cannot be guaranteed across all provider failures. Same team-wide read access design as current New EWP Requests; assess permissions before inviting external accounts.
+
+---
+
 # EWP Management Portal — Canonical V1.11 WEB Handoff
 
 **Release:** `EWP_Management_Portal_V1_11_WEB_FULL.zip` (October 16, 2026).  

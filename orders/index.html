@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EWP Order — EWP Management</title>
+<link rel="stylesheet" href="../portal-nav.css?v=1.12"><link rel="stylesheet" href="../theme.css?v=1.12">
+<link rel="stylesheet" href="../sales/sales.css?v=1.12"><link rel="stylesheet" href="orders.css?v=1.12">
+<script src="../theme.js?v=1.12"></script></head>
+<body>
+<nav class="ewp-portal-nav" aria-label="EWP Management navigation">
+<a class="ewp-portal-nav__brand" href="../"><img class="ewp-portal-nav__mark" src="../assets/griff-nav-icon.png" alt="">EWP Management</a>
+<div class="ewp-portal-nav__links"><a class="ewp-portal-nav__link" href="../">Portal</a><a class="ewp-portal-nav__link" href="../tracker/">Project Tracking</a><a class="ewp-portal-nav__link" href="../forecast/">EWP Forecast</a><a class="ewp-portal-nav__link" href="../sales/">New EWP Requests</a><a class="ewp-portal-nav__link" href="./" aria-current="page">EWP Order</a></div>
+<span class="ewp-portal-nav__account" id="ewpNavAccount"></span></nav>
+<div id="orderLoading" class="sales-loading">Restoring your EWP Management session…</div>
+<div id="orderWorkspace" hidden>
+<header class="sales-masthead"><div><span class="eyebrow">EWP SALES</span><h1>EWP Order</h1><p class="version-line">Version V1.12 · Developed by Samuel Chung</p></div>
+<div class="ewp-header-actions"><div class="ewp-account-chip"><span class="user-chip-label">Signed in</span><strong id="orderEmail"></strong><button type="button" id="orderSignOut" class="user-change-button">Sign out</button></div>
+<span class="cloud-pill connecting" id="orderCloudPill" role="status">Connecting to shared data…</span><button class="ewp-header-button" id="orderRefresh" type="button">↻ Refresh</button><button class="ewp-header-button ewp-settings-trigger" type="button" id="orderSettingsButton">⚙ Settings</button></div></header>
+<main class="sales-main">
+<div class="sales-tabs"><button type="button" class="sales-tab active" id="orderNewTab">New Order</button><button type="button" class="sales-tab" id="orderHistoryTab">Submission History</button></div>
+<section id="orderNewPanel" class="sales-panel"><div class="sales-panel-heading"><h2>Submit an EWP Order</h2><p>All fields are required except PO# and Special Notes. This submission does not link to Project Tracking or EWP Forecast.</p></div>
+<form id="ewpOrderForm" novalidate>
+<div class="sales-form-grid">
+<label class="sales-full">1. Layout Status *<select name="layout_status" required><option value="">Choose layout status…</option><option value="Reviewed">Reviewed</option><option value="Not Reviewed - Proceed with liability on Customer">Not Reviewed - Proceed with liability on Customer</option></select></label>
+<label>2. Spruce Code *<input name="spruce_code" type="text" maxlength="80" required placeholder="Enter Spruce Code" autocomplete="off"></label>
+<label class="sales-full">3. Jobsite Address *<input name="jobsite_address" type="text" maxlength="240" required placeholder="Enter full jobsite address" autocomplete="street-address"></label>
+<label>4. Level *<input name="level" type="text" maxlength="120" required placeholder="e.g. L3 or L3D2" autocomplete="off"></label>
+<label>5. Ship Date *<input name="ship_date" type="date" required></label>
+<label>6. Ship Time *<select name="ship_time" id="orderShipTime" required><option value="">Select ship time…</option></select></label>
+<label>7. Truck Type *<select name="truck_type" required><option value="">Choose truck type…</option><option>COS</option><option>LR HIAB</option><option>Regular HIAB</option><option>Customer Pick-up</option></select></label>
+<label>8. PO# <span class="optional">(Optional)</span><input name="po_number" type="text" maxlength="120" placeholder="Purchase order #" autocomplete="off"></label>
+<label>9. Authorized Buyer *<input name="authorized_buyer" type="text" maxlength="160" required placeholder="Authorized buyer name" autocomplete="off"></label>
+<label class="sales-full">10. Special Notes <span class="optional">(Optional)</span><textarea name="special_notes" rows="4" maxlength="5000" placeholder="Enter floor sheathing, glue, exclude dropped header/posts here. Please be explicit."></textarea></label>
+</div>
+<p id="orderFormMessage" class="sales-message" role="status" aria-live="polite"></p><button id="orderReviewButton" class="sales-primary" type="submit">Review EWP Order</button>
+</form></section>
+<section id="orderHistoryPanel" class="sales-panel" hidden><div class="sales-panel-heading"><h2>Submission History</h2><p>Saved EWP orders and their email status. If email delivery fails, retry from here rather than submitting a duplicate order.</p></div><div id="orderHistory"></div></section>
+</main></div>
+<dialog id="orderReviewDialog" class="order-dialog" aria-labelledby="orderReviewTitle">
+  <div class="order-dialog-head"><div><span class="eyebrow">CONFIRM SUBMISSION</span><h2 id="orderReviewTitle">Review EWP Order</h2></div><button type="button" class="order-close" id="orderClosePreview" aria-label="Close review">×</button></div>
+  <p class="order-preview-note">Check all order details before sending to schung@griff.ca.</p>
+  <dl id="orderPreviewFields" class="order-preview-fields"></dl>
+  <div class="order-dialog-actions"><button type="button" id="orderEditButton" class="ewp-header-button">Back to Edit</button><button type="button" id="orderConfirmButton" class="sales-primary">Confirm &amp; Submit Order</button></div>
+</dialog>
+<script type="module" src="../shared-settings.mjs?v=1.12"></script>
+<script type="module" src="orders.mjs?v=1.12"></script>
+</body></html>

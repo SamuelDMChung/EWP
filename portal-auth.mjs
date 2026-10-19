@@ -5,7 +5,7 @@ let authenticated = false;
 let connectionAttempt = 0;
 function safeNext() {
   const requested = new URLSearchParams(location.search).get("next") || "";
-  return /^(?:tracker|forecast|sales)\/(?:\?[^#]*)?$/.test(requested) ? requested : "";
+  return /^(?:tracker|forecast|sales|orders)\/(?:\?[^#]*)?$/.test(requested) ? requested : "";
 }
 function showError(message) { $("portalLoginError").textContent=message || "Could not sign in."; $("portalLoginError").hidden=!message; }
 function setStatus(state,label) {

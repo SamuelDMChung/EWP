@@ -1,5 +1,5 @@
-/* V1.8: exactly one Settings interface and Supabase writer for Portal, Tracker, Forecast and New EWP Requests. */
-import { loadTrackerSettings, saveTrackerSettings } from './tracker/cloud.mjs?v=1.11';
+/* V1.8: exactly one Settings interface and Supabase writer for Portal, Tracker, Forecast, New EWP Requests and EWP Order. */
+import { loadTrackerSettings, saveTrackerSettings } from './tracker/cloud.mjs?v=1.12';
 const CHANGE_SIGNAL='ewp_tracker_settings_modified_v18';
 const categories=[
   { key:'sales',title:'Sales Names',placeholder:'Add sales name',description:'Used in the Sales dropdown throughout Tracking and Forecast.' },
@@ -20,7 +20,7 @@ dialog.innerHTML=`
   </header>
   <div class="ewp-shared-settings-scroll">
     <section class="ewp-settings-section ewp-settings-appearance">
-      <div><h3>Appearance</h3><p>Display theme for the Portal, Project Tracking, Forecast and New EWP Requests in this browser.</p></div>
+      <div><h3>Appearance</h3><p>Display theme for the Portal, Project Tracking, Forecast, New EWP Requests and EWP Order in this browser.</p></div>
       <label>Theme<select id="ewpSharedThemeSelect" aria-label="Theme"><option value="light">Light</option><option value="dark">Dark</option></select></label>
     </section>
     <div class="ewp-settings-status" id="ewpSettingsStatus" role="status" aria-live="polite"></div>

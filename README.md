@@ -1,3 +1,16 @@
+## V1.12 WEB — EWP Order release (October 19, 2026)
+
+**Canonical complete WEB source:** V1.12 from uploaded V1.11. Next V1.13. Read `PORTAL_HANDOFF.md` first.
+
+- Fourth Portal card **EWP Order** at `/orders/`; independent form and order history, preview before submitting, 8 required fields / 2 optional, automated email to `SALES_NOTIFY_TO` via Resend.
+- **New EWP Requests:** Spruce Code removed; existing request and historical database values preserved. ATS remains shared with Tracking.
+- **Deployment prerequisite:** run **`v1_12_ewp_orders.sql`** after V1.10 SQL. It works with or without previously running V1.11 SQL, so do **not** run V1.11 now just because it remains packaged. Deploy/redeploy **both** Edge Functions: `sales-request-email` and `ewp-order-email`. Then publish the entire web directory to GitHub Pages root.
+- Shared authentication, Supabase database, Settings, light/dark theme and Tracker/Forecast algorithms unchanged. V1.3 Capacitor iOS prototype remains separate. Source build does not prove live email delivery or migration success.
+
+See `SALES_EMAIL_SETUP.md` for step-by-step deployment and test plan.
+
+---
+
 ## V1.11 WEB (October 16, 2026)
 
 - New required Spruce Code and shared ATS task; New EWP Requests name; Portal All/Sales filter preserving identical two-column card sizes.

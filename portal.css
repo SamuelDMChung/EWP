@@ -103,3 +103,6 @@ html[data-ewp-theme="dark"] .workspace-view-toggle{background:#2b3029;border-col
 html[data-ewp-theme="dark"] .workspace-choice-title{color:#f0eee7}
 html[data-ewp-theme="dark"] .workspace-view-option{color:#f0eee7}
 html[data-ewp-theme="dark"] .workspace-view-option.is-selected{background:#777600;color:#fff}
+
+/* V1.12 fourth workspace: EWP Order shares the reserved second-row slot. */
+.card-icon-order{background:#f2efd4;color:#747300}

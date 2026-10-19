@@ -1,0 +1,11 @@
+/* V1.12 EWP Order — shares existing Sales light/dark design tokens. */
+#ewpOrderForm .sales-form-grid{gap:18px}
+#ewpOrderForm .sales-form-grid label{min-width:0}
+#ewpOrderForm .sales-form-grid label.sales-full{grid-column:1/-1}
+#ewpOrderForm .optional{font-size:12px}
+.order-dialog{box-sizing:border-box;width:min(620px,calc(100% - 30px));max-height:min(85vh,820px);overflow-y:auto;border:1px solid var(--sales-border);border-radius:14px;padding:25px;background:var(--sales-panel);color:var(--sales-ink);box-shadow:0 30px 80px rgba(0,0,0,.28);font:14px/1.55 var(--ewp-font,Inter,system-ui,sans-serif)}
+.order-dialog::backdrop{background:rgba(12,18,14,.55)}
+.order-dialog-head{display:flex;align-items:flex-start;justify-content:space-between;gap:15px}.order-dialog-head h2{font-size:24px;margin:4px 0}.order-close{background:transparent;color:var(--sales-ink);border:0;font:30px/1 sans-serif;cursor:pointer;padding:0 4px}
+.order-preview-note{color:var(--sales-muted);font-size:13px;margin:3px 0 20px}.order-preview-fields{display:grid;grid-template-columns:minmax(105px,34%) 1fr;gap:0;margin:0}.order-preview-fields dt,.order-preview-fields dd{border-bottom:1px solid var(--sales-border);padding:9px 10px;margin:0;overflow-wrap:anywhere;white-space:pre-wrap}.order-preview-fields dt{font-weight:800}.order-preview-fields dd{color:var(--sales-ink)}
+.order-dialog-actions{display:flex;justify-content:flex-end;flex-wrap:wrap;align-items:center;gap:12px;margin-top:20px}.order-dialog-actions .sales-primary{margin-top:0}
+@media(max-width:720px){.order-dialog{padding:17px}.order-preview-fields{grid-template-columns:1fr}.order-preview-fields dt{border-bottom:0;padding-bottom:2px}.order-preview-fields dd{padding-top:0}.order-dialog-actions button{flex:1}}

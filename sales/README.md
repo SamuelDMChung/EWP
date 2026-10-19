@@ -1,3 +1,11 @@
+## V1.12 — New EWP Requests
+
+Spruce Code is **no longer requested or required**. Server-side V1.12 migration removes the requirement even when V1.11 SQL was already installed. Old column/data remain in Supabase if previously created. Request history, shared ATS Tasks, attachments and email retry remain supported.
+
+Do not publish frontend changes without first running `../v1_12_ewp_orders.sql` and redeploying `sales-request-email` from this release. See root `SALES_EMAIL_SETUP.md`.
+
+---
+
 ## V1.11 WEB (October 16, 2026)
 
 - New required Spruce Code and shared ATS task; New EWP Requests name; Portal All/Sales filter preserving identical two-column card sizes.

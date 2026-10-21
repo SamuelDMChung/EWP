@@ -1,3 +1,5 @@
+**Current Portal V1.13 WEB:** Purchasing grouped by PO with bulk receive, receipt history/undo, reversible PO removal/cancellation and a separate Manual/Transfer section. **Run `../v1_13_purchasing_receipts.sql` before deploying the V1.13 website.** No changes to project forecast calculation or Spruce delivery workflows. See root `PORTAL_HANDOFF.md`.
+
 **V1.10:** Adds a fourth Sales Requests tool (separate from Forecast); core Forecast logic is unchanged. The portal now shares an editable Phase options list across Sales and Tracking. See root `PORTAL_HANDOFF.md` and `SALES_EMAIL_SETUP.md`.
 
 > **Portal V1.9 WEB (Oct 14, 2026):** Forecast matrix Edit buttons are replaced with clickable estimated delivery dates for undelivered levels, using either a project-wide outstanding-level dialog or single-level dialog. Fixed-height matrix vertical scrolling is removed; Tracker Follow-up project list now scrolls with page. No SQL changes, underlying database/calculations preserved. Root `PORTAL_HANDOFF.md` is authoritative.

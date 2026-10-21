@@ -1,3 +1,11 @@
+# Current WEB SQL migration — V1.13
+
+Run **`../v1_13_purchasing_receipts.sql`** exactly on top of the existing V1.12 database *before* V1.13 GitHub Pages deployment. Back up first. It adds the atomic purchasing ledger and RPCs without deleting historical records.
+
+All files in `archive/` are historical only. Do **not** rerun them during this upgrade. See `../PORTAL_HANDOFF.md`.
+
+---
+
 # SQL — V1.6 WEB
 
 - **Only apply `../v1_6_forecast_coordination_intake.sql` for the V1.6 update**, on an existing V1.5-compatible Supabase database. Make a backup before running.

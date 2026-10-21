@@ -1,3 +1,40 @@
+# EWP Management Portal — V1.13 WEB Purchasing Upgrade
+
+**Release:** `EWP_Management_Portal_V1_13_WEB_FULL.zip` (October 21, 2026).  
+**Canonical input:** V1.12 WEB full source ZIP. **Next WEB version:** V1.14.  
+**Scope:** WEB only; no changes to EWP Connect iOS, existing iOS prototype, shared sales workflows, Tracking, or Forecast material/delivery algorithms.
+
+## V1.13 approved improvements implemented
+
+1. **PO-grouped Purchasing view:** Imported purchase orders appear as expandable parent cards with all their material lines. Open, Partially Received, Received, Cancelled Remaining, and Removed are clearly distinguished. Filter between Open (default), All, Received, and Cancelled/Removed. Fully received POs remain accessible with their receipt history. Manual/Transfer incoming is kept in a separate group.
+2. **Remove/Cancel PO:** When no quantities have been received, *Remove PO* soft-removes the full imported PO, cancelling all its remaining lines without deleting the historical header/material metadata. When a PO has receipts, *Cancel Remaining* closes only the outstanding incoming; already-received amounts and On Hand remain intact. A fully received PO cannot be removed without first undoing receipts. A *Restore PO* action returns cancelled incoming LF to Open without modifying On Hand. This is intentional audit-preserving 'remove', not irreversible database row deletion. The PO number remains reserved to prevent accidental duplicate imports. To re-import, restore the PO first.
+3. **Receive All Remaining:** One confirmation previews each outstanding material and its LF; one Postgres RPC transaction receives every open line and atomically increases each inventory On Hand balance. Receiving one line also uses an atomic RPC, replacing the fragile V1.12 two-step browser writes.
+4. **Receipt ledger and undo:** New `purchase_receipt_batches` and `purchase_receipt_lines` tables record each new receipt and its lines. Undo individual lines or all remaining lines in a batch; reversal deducts On Hand, reduces received LF, records a reason, and fails/rolls back entirely if there is insufficient On Hand or another invariant fails. Receipt history remains visible even for completed POs. Same flow supports Manual/Transfer receipts.
+5. **Historical receipts:** Any received LF created BEFORE V1.13 has no per-batch ledger, so it is identified separately as *Undo Legacy*; a guarded adjustment accepts LF and reason, can never subtract new ledger-tracked receipts, and checks On Hand. It is recorded in existing activity history. The old receipt's original exact time/batch cannot be reconstructed.
+6. **Forecast integration:** Open incoming LF excludes cancelled LF. Existing Stock Owed, Projected Balance, and incoming-by-lead-time calculations continue to recalculate using this corrected Open LF. No project-level delivery or Spruce figures are altered.
+7. **Preserved:** Portal, Tracking/Coordination, Forecast project imports/levels, shared Supabase RLS and sign-in, Sales requests, EWP Order, Edge Functions/Resend, and light/dark appearance. Only `forecast/app.mjs`, `forecast/db.mjs`, `forecast/index.html`, `forecast/styles.css`, HTML version/cache markers and release docs are touched by this update. No email Edge Function redeployment or iOS rebuild required for the Purchasing feature.
+
+## Mandatory deployment order
+
+**Back up the existing Supabase database and GitHub Pages repository first.** Ensure your **V1.12** schema/workspaces are in place; V1.13 is an *incremental* migration, not a replacement for prior setup. Never run archived cumulative SQL against the active database.
+
+1. Run **`v1_13_purchasing_receipts.sql`** in the **existing Supabase project** via SQL Editor **before publishing the V1.13 site**. It adds PO status and cancelled LF columns, receipt history tables, authenticated read policies, and 5 atomic RPCs (`purchase_receive`, `purchase_reverse_receipt`, `purchase_reverse_legacy`, `purchase_close_po`, `purchase_restore_po`). Does not erase existing POs, receipts or inventory. SQL transaction rolls back if a statement fails.
+2. Confirm the SQL succeeds: `select to_regclass('public.purchase_receipt_batches'), to_regclass('public.purchase_receipt_lines');` Verify both populated with table names. Optionally confirm new columns in Table Editor and RPCs via Supabase Dashboard. Do not manually edit new receipt tables.
+3. Publish **all V1.13 WEB source files** to the existing GitHub Pages root, including new `forecast/` assets and updated cache-busting references. Hard-refresh the site.
+4. With TEST material/PO data: (a) import PO with two or more materials; receive one line then use Receive All for remaining; (b) verify On Hand and received/open LF match; (c) undo one receipt line, then undo the rest of its batch; (d) verify On Hand and open incoming return; (e) remove a never-received PO, confirm it disappears from Open but appears under Cancelled/Removed; restore it; (f) partially receive another PO then Cancel Remaining, verify received On Hand is preserved; (g) verify historic pre-V1.13 Undo Legacy and nonnegative-stock protection with safe test data; (h) verify Received filter and Entry History.
+5. Regression: Inventory availability and Stock Owed; project Forecast PDF import/level dates/deliveries; Tracking task-card flow and shared Settings; two Sales forms plus Resend notifications; light/dark and mobile. If new receipt tables fail to load, ensure you ran SQL first and hard refreshed the frontend. Supabase Edge Functions do **not** change in V1.13.
+
+## Concurrency and limits
+
+- Receipt, reversal, close and restore are single-server Postgres transactions with authenticated RPC access, row locks and quantity checks. Any failure rolls back its entire transaction, including inventory updates and receipt lines.
+- Existing unrestricted authenticated direct PATCH capability on inventory and purchase rows remains from the old app to preserve manual inventory editing and legacy compatibility; therefore the new ledger does not eliminate the need to coordinate manual stock adjustments with incoming receipt reversals. Receipt reversal is intentionally refused if available On Hand would go negative.
+- Import/update of an *existing* PO still uses the preserved V1.12 browser-side revision path (non-transactional across multiple rows), and should not run concurrently with receiving the same PO. The new bulk receive and undo paths are atomic; revision imports are not changed in this release.
+- Legacy receipts are not backfilled into guessed per-batch records. The guarded legacy adjustment can be used only after checking original stock history and available On Hand.
+- PO removal means reversible soft-archive. No existing PO/source file or historical receipts are physically purged. Cancelled/removed PO numbers cannot be reused as a new PO until restored.
+- SQL and new Supabase RPCs have **not** been executed on the user's production database in this release; browser tests were isolated with mocked data. Live multi-user concurrency / RLS / data migration must be tested during deployment. Treat V1.13 as complete WEB source **pending production validation**.
+
+---
+
 # EWP Management Portal — Canonical V1.12 WEB Handoff
 
 **Release:** `EWP_Management_Portal_V1_12_WEB_FULL.zip` (October 19, 2026).  

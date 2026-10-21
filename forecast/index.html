@@ -5,10 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="color-scheme" content="light" />
   <title>EWP Material Forecast</title>
-  <link rel="stylesheet" href="styles.css?v=1.12" />
-  <link rel="stylesheet" href="../portal-nav.css?v=1.12" />
-  <link rel="stylesheet" href="../theme.css?v=1.12" />
-  <script src="../theme.js?v=1.12"></script>
+  <link rel="stylesheet" href="styles.css?v=1.13" />
+  <link rel="stylesheet" href="../portal-nav.css?v=1.13" />
+  <link rel="stylesheet" href="../theme.css?v=1.13" />
+  <script src="../theme.js?v=1.13"></script>
 </head>
 <body>
   <nav class="ewp-portal-nav" aria-label="EWP Management Portal navigation">
@@ -26,7 +26,7 @@
     <div>
       <p class="eyebrow">EWP PURCHASING</p>
       <h1>EWP Material Forecast</h1>
-      <p class="subtitle">Version V1.12 · Developed by Samuel Chung</p>
+      <p class="subtitle">Version V1.13 · Developed by Samuel Chung</p>
     </div>
     <div class="header-actions ewp-header-actions">
       <div class="user-chip ewp-account-chip" title="Signed-in Supabase account used for database access and edit history.">
@@ -315,12 +315,13 @@
       <article class="card inventory-card">
         <div class="section-heading-row">
           <div>
-            <h3>Open Purchase Orders &amp; Incoming</h3>
-            <p class="small-note">Receiving a line adds its remaining LF to On Hand. Imported PO length/package detail is retained for reference.</p>
+            <h3>Purchase Orders &amp; Incoming</h3>
+            <p class="small-note">Manage entire imported POs, receive all remaining items, and undo individual or bulk receipts. Completed, cancelled and removed orders remain in history.</p>
           </div>
         </div>
         <div id="purchasingSummary" class="inventory-summary"></div>
-        <div id="incomingOrdersEmpty" class="empty-state compact-empty">No open purchase orders or incoming material.</div>
+        <div class="po-filter-bar"><label for="purchasingPoFilter">Show purchase orders</label><select id="purchasingPoFilter"><option value="open" selected>Open / Partially Received</option><option value="all">All</option><option value="received">Received</option><option value="cancelled">Cancelled / Removed</option></select></div>
+        <div id="incomingOrdersEmpty" class="empty-state compact-empty">No purchase orders match this filter.</div>
         <div id="incomingOrdersWrap" class="table-wrap hidden"></div>
       </article>
     </section>
@@ -631,8 +632,8 @@
     </div>
   </div>
 
-  <script type="module" src="app.mjs?v=1.12"></script>
-  <script type="module" src="../workspace-auth.mjs?v=1.12"></script>
-  <script type="module" src="../shared-settings.mjs?v=1.12"></script>
+  <script type="module" src="app.mjs?v=1.13"></script>
+  <script type="module" src="../workspace-auth.mjs?v=1.13"></script>
+  <script type="module" src="../shared-settings.mjs?v=1.13"></script>
 </body>
 </html>

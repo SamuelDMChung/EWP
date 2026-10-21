@@ -1,3 +1,11 @@
+## Portal V1.13 WEB (Oct 21, 2026) — Purchasing only
+
+- Imported purchase orders now have grouped expandable cards, Receive All, reversible receipt batches, Remove PO / Cancel Remaining / Restore PO, and Completed/Cancelled filters.
+- **Mandatory new incremental SQL:** `../v1_13_purchasing_receipts.sql` before publishing website files. All receipt + On Hand updates for new receiving/undoing use PostgreSQL RPC transactions. Open incoming excludes cancelled LF.
+- Project/level/material forecasting, Spruce and delivery algorithms have not been modified. See root `PORTAL_HANDOFF.md` for the canonical V1.13 behavior, limits, and test plan.
+
+---
+
 > **Portal V1.9 WEB (Oct 14, 2026):** Forecast matrix Edit buttons are replaced with clickable estimated delivery dates for undelivered levels, using either a project-wide outstanding-level dialog or single-level dialog. Fixed-height matrix vertical scrolling is removed; Tracker Follow-up project list now scrolls with page. No SQL changes, underlying database/calculations preserved. Root `PORTAL_HANDOFF.md` is authoritative.
 
 ## Portal V1.8 WEB integration note

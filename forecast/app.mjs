@@ -1,7 +1,7 @@
 import { extractPdfLines, parseMaterialReportLines, normalizeSpaces } from "./parser.mjs";
 import { parsePurchaseWorkbook, normalizePoMaterialDescription } from "./purchase_parser.mjs";
 import { parseDeliveryMaterialReportLines } from "./delivery_parser.mjs";
-import { loadCloudRows, loadActivityRows, findSharedProjectByNumber, insertRows, updateRows, deleteRows, logActivity, rpc } from "./db.mjs?v=1.6";
+import { loadCloudRows, loadActivityRows, findSharedProjectByNumber, insertRows, updateRows, deleteRows, logActivity, rpc } from "./db.mjs?v=1.13";
 import { restoreSession, signInWithPassword, signOut, getCurrentUser, getLastEmail } from "./auth.mjs?v=1.0-p3";
 import { startRealtime, stopRealtime, refreshRealtimeAuth } from "./realtime.mjs?v=1.0-p3";
 
@@ -11,7 +11,8 @@ const SCHEMA_VERSION = 20;
 const EPSILON = 0.0001;
 const HISTORY_PAGE_SIZE = 100;
 
-let state = { version: SCHEMA_VERSION, projects: [], inventoryMaterials: [], purchaseOrders: [], incomingOrders: [] };
+let state = { version: SCHEMA_VERSION, projects: [], inventoryMaterials: [], purchaseOrders: [], incomingOrders: [], receiptBatches: [], receiptLines: [] };
+let purchasingFilter = "open";
 let draft = null;
 let purchaseDraft = null;
 let spruceImportDraft = null;
@@ -425,6 +426,9 @@ function mapCloudRows(rows) {
     orderDate: row.order_date || "",
     expectedDate: row.expected_date || "",
     sourceFileName: row.source_file_name || "",
+    status: row.status || "active",
+    closedAt: row.closed_at || "",
+    closeReason: row.close_reason || "",
     note: row.note || "",
     createdAt: row.created_at || "",
     updatedAt: row.updated_at || "",
@@ -437,6 +441,7 @@ function mapCloudRows(rows) {
     material: row.material_name || "",
     quantityLf: Number(row.quantity_lf || 0),
     receivedLf: Number(row.received_lf || 0),
+    cancelledLf: Number(row.cancelled_lf || 0),
     expectedDate: row.expected_date || "",
     reference: row.reference || "",
     note: row.note || "",
@@ -450,7 +455,16 @@ function mapCloudRows(rows) {
   projects.forEach(project => project.levels.sort((a, b) => a.displayOrder - b.displayOrder || a.name.localeCompare(b.name, undefined, { numeric: true })));
   inventoryMaterials.sort((a, b) => a.material.localeCompare(b.material, undefined, { numeric: true }));
   purchaseOrders.sort((a, b) => (b.createdAt || "").localeCompare(a.createdAt || ""));
-  return { version: SCHEMA_VERSION, projects, inventoryMaterials, purchaseOrders, incomingOrders };
+  const receiptBatches = (rows.receiptBatches || []).map(row => ({
+    id: row.id, purchaseOrderId: row.purchase_order_id || "", createdAt: row.created_at || "",
+    createdBy: row.created_by || "", receiptType: row.receipt_type || "single"
+  }));
+  const receiptLines = (rows.receiptLines || []).map(row => ({
+    id: row.id, batchId: row.batch_id, incomingOrderId: row.incoming_order_id || "",
+    material: row.material_name || "", quantityLf: Number(row.quantity_lf || 0),
+    reversedAt: row.reversed_at || "", reverseReason: row.reverse_reason || ""
+  }));
+  return { version: SCHEMA_VERSION, projects, inventoryMaterials, purchaseOrders, incomingOrders, receiptBatches, receiptLines };
 }
 function hasOpenDialog() {
   return $("deliveryDialog")?.open || $("spruceImportReviewDialog")?.open || $("materialExclusionDialog")?.open || $("projectEditDialog")?.open || $("deleteProjectDialog")?.open || $("projectReviewDialog")?.open;
@@ -2411,7 +2425,7 @@ function renderForecast() {
 }
 
 function incomingRemaining(order) {
-  return Math.max(0, Number(order.quantityLf || 0) - Number(order.receivedLf || 0));
+  return Math.max(0, Number(order.quantityLf || 0) - Number(order.receivedLf || 0) - Number(order.cancelledLf || 0));
 }
 
 function allKnownMaterialNames() {
@@ -2671,52 +2685,76 @@ function formatLengthBreakdown(order) {
   }).join(" | ");
 }
 
+function receiptRowsForOrder(orderId) {
+  return (state.receiptLines || []).filter(line => line.incomingOrderId === orderId);
+}
+
+function legacyReceivedLf(order) {
+  const tracked = receiptRowsForOrder(order.id)
+    .filter(line => !line.reversedAt)
+    .reduce((sum, line) => sum + line.quantityLf, 0);
+  return Math.max(0, Number(order.receivedLf || 0) - tracked);
+}
+
+function renderReceiptHistory(orders, poId = "") {
+  const ids = new Set(orders.map(order => order.id));
+  const relevant = (state.receiptBatches || []).filter(batch =>
+    (poId && batch.purchaseOrderId === poId) ||
+    (!poId && (state.receiptLines || []).some(line => line.batchId === batch.id && ids.has(line.incomingOrderId)))
+  ).sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+  const batchRows = relevant.map(batch => {
+    const lines = (state.receiptLines || []).filter(line => line.batchId === batch.id && ids.has(line.incomingOrderId));
+    const active = lines.filter(line => !line.reversedAt);
+    return `<div class="po-receipt-row">
+      <div><strong>${escapeHtml(formatDateTime(batch.createdAt))}</strong><span class="cell-subnote">${batch.receiptType === "bulk" ? "Bulk receipt" : "Single receipt"} · ${formatNumber(lines.reduce((n, l) => n + l.quantityLf, 0))} LF · ${active.length ? "Active" : "Reversed"}</span></div>
+      <div class="po-receipt-items">${lines.map(line => `<div class="po-receipt-line"><span>${escapeHtml(line.material)} · ${formatNumber(line.quantityLf)} LF${line.reversedAt ? " · Reversed" : ""}${line.reverseReason ? ` · ${escapeHtml(line.reverseReason)}` : ""}</span>${!line.reversedAt ? `<button type="button" class="mini-button undo-receipt-line" data-batch-id="${escapeHtml(batch.id)}" data-receipt-line-id="${escapeHtml(line.id)}">Undo Line</button>` : ""}</div>`).join("")}</div>
+      ${active.length ? `<button type="button" class="mini-button undo-receipt-batch" data-batch-id="${escapeHtml(batch.id)}">Undo ${active.length > 1 ? "Batch" : "Receipt"}</button>` : ""}
+    </div>`;
+  });
+  const legacy = orders.filter(order => legacyReceivedLf(order) > EPSILON);
+  if (legacy.length) batchRows.push(`<div class="po-legacy-note"><strong>Before V1.13</strong><span>Older receipts have no individual batch history. Undo only the untracked quantity using a guarded correction.</span>${legacy.map(order => `<div class="po-receipt-line"><span>${escapeHtml(order.material)} · ${formatNumber(legacyReceivedLf(order))} LF</span><button type="button" class="mini-button undo-legacy-receipt" data-order-id="${escapeHtml(order.id)}">Undo Legacy</button></div>`).join("")}</div>`);
+  return batchRows.length ? `<details class="po-history"><summary>Receiving History (${relevant.length} batch${relevant.length === 1 ? "" : "es"}${legacy.length ? " + legacy" : ""})</summary><div class="po-history-body">${batchRows.join("")}</div></details>` : "";
+}
+
 function renderIncomingOrders() {
   const wrap = $("incomingOrdersWrap");
   const empty = $("incomingOrdersEmpty");
   const summary = $("purchasingSummary");
   if (!wrap || !empty) return;
-  const orders = (state.incomingOrders || []).filter(order => incomingRemaining(order) > EPSILON).sort((a, b) => {
-    const dateCompare = (a.expectedDate || "9999-12-31").localeCompare(b.expectedDate || "9999-12-31");
-    if (dateCompare) return dateCompare;
-    return (a.reference || "").localeCompare(b.reference || "", undefined, { numeric: true });
-  });
-
-  const openLf = orders.reduce((sum, order) => sum + incomingRemaining(order), 0);
-  const poIds = new Set(orders.map(order => order.purchaseOrderId).filter(Boolean));
-  const manualCount = orders.filter(order => !order.purchaseOrderId).length;
-  if (summary) summary.innerHTML = `
-    <div class="summary-metric"><span>Open PO Files</span><strong>${poIds.size}</strong></div>
+  const allLines = state.incomingOrders || [];
+  const poLines = allLines.filter(line => line.purchaseOrderId);
+  const manualLines = allLines.filter(line => !line.purchaseOrderId);
+  const openLines = allLines.filter(line => incomingRemaining(line) > EPSILON);
+  const openPoCount = new Set(poLines.filter(line => incomingRemaining(line) > EPSILON).map(line => line.purchaseOrderId)).size;
+  const openLf = openLines.reduce((sum, item) => sum + incomingRemaining(item), 0);
+  if (summary) summary.innerHTML = `<div class="summary-metric"><span>Open PO Files</span><strong>${openPoCount}</strong></div>
     <div class="summary-metric"><span>Open Incoming</span><strong>${formatNumber(openLf)} LF</strong></div>
-    <div class="summary-metric"><span>Manual / Transfer Lines</span><strong>${manualCount}</strong></div>`;
+    <div class="summary-metric"><span>Manual / Transfer Lines</span><strong>${manualLines.filter(line => incomingRemaining(line) > EPSILON).length}</strong></div>`;
 
-  if (!orders.length) {
-    empty.classList.remove("hidden");
-    wrap.classList.add("hidden");
-    wrap.innerHTML = "";
-    return;
-  }
+  const html = (state.purchaseOrders || []).map(po => {
+    const lines = poLines.filter(line => line.purchaseOrderId === po.id);
+    const received = lines.reduce((sum, line) => sum + line.receivedLf, 0);
+    const remaining = lines.reduce((sum, line) => sum + incomingRemaining(line), 0);
+    const ordered = lines.reduce((sum, line) => sum + line.quantityLf, 0);
+    const status = po.status !== "active" ? po.status : remaining > EPSILON ? (received > EPSILON ? "partial" : "open") : received > EPSILON ? "received" : "empty";
+    const matches = purchasingFilter === "all" || (purchasingFilter === "open" && ["open", "partial", "empty"].includes(status)) || (purchasingFilter === "received" && status === "received") || (purchasingFilter === "cancelled" && ["cancelled", "removed"].includes(status));
+    if (!matches) return "";
+    const badge = { open: "Open", partial: "Partially Received", received: "Received", cancelled: "Cancelled Remaining", removed: "Removed", empty: "No Materials" }[status];
+    const details = lines.map(line => `<tr data-order-id="${escapeHtml(line.id)}"><td>${escapeHtml(line.material)}</td><td>${formatNumber(line.quantityLf)}</td><td>${formatNumber(line.receivedLf)}</td><td>${formatNumber(line.cancelledLf)}</td><td><strong>${formatNumber(incomingRemaining(line))}</strong></td><td class="purchase-breakdown-cell">${escapeHtml(formatLengthBreakdown(line))}</td><td class="incoming-note-cell">${escapeHtml(line.note || "—")}</td><td>${status === "open" || status === "partial" ? `<button type="button" class="mini-button receive-incoming" ${incomingRemaining(line) <= EPSILON ? "disabled" : ""}>Receive</button>` : ""}</td></tr>`).join("");
+    return `<details class="po-group" data-po-id="${escapeHtml(po.id)}" ${["open", "partial"].includes(status) ? "open" : ""}>
+      <summary class="po-group-heading"><div class="po-header-reference"><strong>${escapeHtml(po.poNumber)}</strong><span class="cell-subnote">${escapeHtml(po.sourceFileName || "Imported PO")} · Expected ${escapeHtml(formatDate(po.expectedDate))}</span></div><span class="po-status ${status}">${badge}</span><span class="po-totals">${formatNumber(received)} / ${formatNumber(ordered)} LF received · ${formatNumber(remaining)} LF open</span></summary>
+      <div class="po-group-content"><div class="po-group-actions">
+      ${po.status === "active" ? `<button type="button" class="button primary receive-all-po" data-po-id="${escapeHtml(po.id)}" ${remaining <= EPSILON ? "disabled" : ""}>Receive All Remaining</button><button type="button" class="button secondary close-po danger-text" data-po-id="${escapeHtml(po.id)}" ${remaining <= EPSILON && received > EPSILON ? "disabled" : ""}>${received > EPSILON ? "Cancel Remaining" : "Remove PO"}</button>` : `<button type="button" class="button secondary restore-po" data-po-id="${escapeHtml(po.id)}">Restore PO</button>`}
+      </div>${po.closeReason ? `<p class="small-note">Closure reason: ${escapeHtml(po.closeReason)}</p>` : ""}
+      <div class="table-wrap"><table class="incoming-table purchasing-table"><thead><tr><th>Material</th><th>Ordered LF</th><th>Received LF</th><th>Cancelled LF</th><th>Open LF</th><th>Length / Package Detail</th><th>Note</th><th></th></tr></thead><tbody>${details}</tbody></table></div>
+      ${renderReceiptHistory(lines, po.id)}</div></details>`;
+  }).filter(Boolean);
 
-  const rows = orders.map(order => {
-    const po = order.purchaseOrderId ? purchaseOrderForId(order.purchaseOrderId) : null;
-    const reference = po?.poNumber || order.reference || "Manual";
-    const source = po?.sourceFileName ? `<span class="cell-subnote">${escapeHtml(po.sourceFileName)}</span>` : (!order.purchaseOrderId ? `<span class="cell-subnote">manual / transfer</span>` : "");
-    return `<tr data-order-id="${escapeHtml(order.id)}">
-      <td class="purchase-reference-cell"><strong>${escapeHtml(reference)}</strong>${source}</td>
-      <td class="incoming-material-cell">${escapeHtml(order.material)}</td>
-      <td>${formatNumber(order.quantityLf)}</td>
-      <td>${formatNumber(order.receivedLf)}</td>
-      <td><strong>${formatNumber(incomingRemaining(order))}</strong></td>
-      <td>${escapeHtml(order.expectedDate ? formatDate(order.expectedDate) : "No date")}</td>
-      <td class="purchase-breakdown-cell">${escapeHtml(formatLengthBreakdown(order))}</td>
-      <td class="incoming-note-cell">${escapeHtml(order.note || po?.note || "—")}</td>
-      <td><button type="button" class="mini-button receive-incoming">Receive Remaining</button></td>
-      <td><button type="button" class="mini-button delete-incoming danger-text">Delete Open</button></td>
-    </tr>`;
-  }).join("");
-  wrap.innerHTML = `<table class="incoming-table purchasing-table"><thead><tr><th>PO / Ref</th><th>Material</th><th>Ordered LF</th><th>Received LF</th><th>Open LF</th><th>Expected</th><th>Length / Package Detail</th><th>Note</th><th></th><th></th></tr></thead><tbody>${rows}</tbody></table>`;
-  wrap.classList.remove("hidden");
-  empty.classList.add("hidden");
+  const visibleManual = manualLines.filter(line => purchasingFilter === "all" || (purchasingFilter === "open" && incomingRemaining(line) > EPSILON) || (purchasingFilter === "received" && incomingRemaining(line) <= EPSILON && line.receivedLf > EPSILON));
+  if (visibleManual.length) html.push(`<details class="po-group po-manual" open><summary class="po-group-heading"><strong>Manual / Transfer Incoming</strong><span class="po-totals">${visibleManual.length} material line${visibleManual.length === 1 ? "" : "s"}</span></summary><div class="po-group-content"><div class="table-wrap"><table class="incoming-table purchasing-table"><thead><tr><th>Reference / Material</th><th>Ordered LF</th><th>Received LF</th><th>Open LF</th><th>Expected</th><th>Note</th><th>Actions</th></tr></thead><tbody>${visibleManual.map(line => `<tr data-order-id="${escapeHtml(line.id)}"><td><strong>${escapeHtml(line.reference || "Manual")}</strong><span class="cell-subnote">${escapeHtml(line.material)}</span></td><td>${formatNumber(line.quantityLf)}</td><td>${formatNumber(line.receivedLf)}</td><td>${formatNumber(incomingRemaining(line))}</td><td>${escapeHtml(formatDate(line.expectedDate))}</td><td>${escapeHtml(line.note || "—")}</td><td><div class="po-inline-actions"><button type="button" class="mini-button receive-incoming" ${incomingRemaining(line) <= EPSILON ? "disabled" : ""}>Receive</button><button type="button" class="mini-button delete-incoming danger-text" ${incomingRemaining(line) <= EPSILON ? "disabled" : ""}>Delete Open</button></div></td></tr>`).join("")}</tbody></table></div>${renderReceiptHistory(visibleManual)}</div></details>`);
+  if (!html.length) { empty.classList.remove("hidden"); wrap.classList.add("hidden"); wrap.innerHTML = ""; return; }
+  wrap.innerHTML = html.join("");
+  wrap.classList.remove("hidden"); empty.classList.add("hidden");
 }
 
 function renderPurchasing() {
@@ -2740,7 +2778,7 @@ function updatePurchaseDuplicateNotice() {
   const poNumber = normalizeSpaces($("purchasePoNumber")?.value || purchaseDraft?.poNumber || "").toUpperCase();
   const existing = purchaseOrderForNumber(poNumber);
   notice.classList.toggle("hidden", !existing);
-  notice.textContent = existing ? `PO ${existing.poNumber} already exists. Confirming this import will reconcile the existing PO instead of adding the footage twice.` : "";
+  notice.textContent = existing ? (existing.status !== "active" ? `PO ${existing.poNumber} is ${existing.status}. Restore it from the Purchasing list before updating the imported materials.` : `PO ${existing.poNumber} already exists. Confirming this import will reconcile the existing PO instead of adding the footage twice.`) : "";
   if (saveButton) saveButton.textContent = existing ? "Update Existing PO" : "Add Purchase Order";
 }
 
@@ -2890,6 +2928,7 @@ async function persistPurchaseOrderDraft() {
   const now = new Date().toISOString();
 
   if (existing) {
+    if (existing.status !== "active") return showPurchaseValidation(`PO ${existing.poNumber} is ${existing.status}. Restore the PO in Purchasing before updating it.`);
     const existingItems = (state.incomingOrders || []).filter(order => order.purchaseOrderId === existing.id);
     const message = `PO ${existing.poNumber} already exists.\n\nUpdate it to the reviewed ${items.length} material${items.length === 1 ? "" : "s"} / ${formatNumber(totalLf)} LF? Existing received quantities will be preserved.`;
     if (!confirm(message)) return;
@@ -3047,7 +3086,12 @@ const ACTIVITY_LABELS = {
   update_purchase_order: "Purchase order updated",
   add_incoming: "Incoming material added",
   receive_incoming: "Incoming material received",
-  delete_incoming: "Incoming material deleted"
+  delete_incoming: "Incoming material deleted",
+  receive_purchase_order: "PO received in one transaction",
+  reverse_purchase_receipt: "PO receipt reversed",
+  reverse_legacy_receipt: "Legacy receipt corrected",
+  close_purchase_order: "Purchase order removed / cancelled",
+  restore_purchase_order: "Purchase order restored"
 };
 
 function actionLabel(action) {
@@ -4176,59 +4220,87 @@ async function addIncomingOrder() {
 async function receiveIncomingOrder(orderId) {
   await syncFromCloud({ silent: true });
   const order = (state.incomingOrders || []).find(item => item.id === orderId);
-  if (!order) return alert("This incoming order no longer exists.");
+  if (!order || incomingRemaining(order) <= EPSILON) return alert("Nothing remains to receive.");
   const remaining = incomingRemaining(order);
-  if (remaining <= EPSILON) return;
-  if (!confirm(`Receive ${formatNumber(remaining)} LF of ${order.material}?\n\nThe remaining quantity will be added to On Hand.`)) return;
+  if (!confirm(`Receive ${formatNumber(remaining)} LF of ${order.material}?\n\nOn Hand will increase by the same amount.`)) return;
+  const result = await rpc("purchase_receive", { p_incoming_id: orderId });
+  await recordActivity("incoming", orderId, "receive_incoming", { material_name: order.material, received_lf: result.received_lf, reference: order.reference || "", receipt_batch_id: result.batch_id });
+  await syncFromCloud({ silent: true });
+}
 
-  const claimed = await updateRows("incoming_orders", { id: `eq.${order.id}`, version: `eq.${order.version}` }, {
-    received_lf: Number(order.quantityLf || 0),
-    updated_at: new Date().toISOString(),
-    version: order.version + 1
-  });
-  if (!claimed?.length) throw new Error("This incoming order was changed by another user. Refresh and try again.");
+async function receiveAllPurchaseOrder(poId) {
+  await syncFromCloud({ silent: true });
+  const po = purchaseOrderForId(poId);
+  if (!po || po.status !== "active") return alert("This PO is not open.");
+  const lines = state.incomingOrders.filter(line => line.purchaseOrderId === poId && incomingRemaining(line) > EPSILON);
+  const total = lines.reduce((sum, line) => sum + incomingRemaining(line), 0);
+  if (!lines.length) return alert("Nothing remains to receive on this PO.");
+  const preview = lines.map(line => `${line.material}: ${formatNumber(incomingRemaining(line))} LF`).join("\n");
+  if (!confirm(`Receive ALL remaining items on PO ${po.poNumber}?\n\n${preview}\n\nTOTAL: ${formatNumber(total)} LF added to On Hand.\n\nAll items post together in one transaction.`)) return;
+  const result = await rpc("purchase_receive", { p_purchase_order_id: poId });
+  await recordActivity("purchase_order", poId, "receive_purchase_order", { po_number: po.poNumber, received_lf: result.received_lf, line_count: result.line_count, receipt_batch_id: result.batch_id });
+  await syncFromCloud({ silent: true });
+}
 
-  let createdInventoryId = "";
-  try {
-    const profile = inventoryProfileFor(order.material);
-    if (profile) {
-      const updated = await updateRows("inventory_materials", { id: `eq.${profile.id}`, version: `eq.${profile.version}` }, {
-        on_hand_lf: Number(profile.onHandLf || 0) + remaining,
-        updated_at: new Date().toISOString(),
-        version: profile.version + 1
-      });
-      if (!updated?.length) throw new Error("The inventory row changed while this receipt was being posted.");
-    } else {
-      createdInventoryId = uid();
-      await insertRows("inventory_materials", {
-        id: createdInventoryId,
-        material_name: order.material,
-        on_hand_lf: remaining,
-        lead_time_weeks: 6,
-        version: 1
-      });
-    }
-  } catch (error) {
-    try {
-      await updateRows("incoming_orders", { id: `eq.${order.id}`, version: `eq.${order.version + 1}` }, {
-        received_lf: order.receivedLf,
-        updated_at: new Date().toISOString(),
-        version: order.version + 2
-      });
-      if (createdInventoryId) await deleteRows("inventory_materials", { id: `eq.${createdInventoryId}` });
-    } catch (rollbackError) {
-      console.error("Incoming receipt rollback failed", rollbackError);
-    }
-    throw error;
-  }
+async function reverseReceipt(batchId, lineId = null) {
+  const lines = state.receiptLines.filter(line => line.batchId === batchId && !line.reversedAt && (!lineId || line.id === lineId));
+  if (!lines.length) return alert("This receipt has already been reversed. Refresh and try again.");
+  const total = lines.reduce((sum, line) => sum + line.quantityLf, 0);
+  const reason = prompt(`Undo ${lines.length} receipt item(s) / ${formatNumber(total)} LF?\n\nOn Hand will decrease and the PO received amounts will be reverted.\n\nEnter the reversal reason:`);
+  if (reason === null) return;
+  if (reason.trim().length < 3) return alert("Enter a reason of at least 3 characters.");
+  const result = await rpc("purchase_reverse_receipt", { p_batch_id: batchId, p_receipt_line_id: lineId, p_reason: reason.trim() });
+  await recordActivity("purchase_receipt", batchId, "reverse_purchase_receipt", { line_id: lineId || null, reversed_lf: result.reversed_lf, line_count: result.line_count, reason: reason.trim() });
+  await syncFromCloud({ silent: true });
+}
 
-  await recordActivity("incoming", order.id, "receive_incoming", { material_name: order.material, received_lf: remaining, reference: order.reference || "" });
+async function reverseLegacyReceipt(orderId) {
+  await syncFromCloud({ silent: true });
+  const order = state.incomingOrders.find(line => line.id === orderId);
+  if (!order) return alert("Incoming line no longer exists.");
+  const available = legacyReceivedLf(order);
+  if (available <= EPSILON) return alert("No pre-V1.13 receipts remain for correction.");
+  const raw = prompt(`Pre-V1.13 receipt correction for ${order.material}.\nUp to ${formatNumber(available)} LF can be undone.\n\nEnter LF to reverse:`, String(available));
+  if (raw === null) return;
+  const qty = Number(raw);
+  if (!Number.isFinite(qty) || qty <= EPSILON || qty > available + EPSILON) return alert("Enter a valid quantity no greater than the legacy received amount.");
+  const reason = prompt("Reason for legacy receipt reversal (required):");
+  if (reason === null) return;
+  if (reason.trim().length < 3) return alert("Enter a reason of at least 3 characters.");
+  if (!confirm(`Reverse ${formatNumber(qty)} LF of ${order.material}? This will subtract the same amount from On Hand.`)) return;
+  await rpc("purchase_reverse_legacy", { p_incoming_id: orderId, p_quantity_lf: qty, p_reason: reason.trim() });
+  await syncFromCloud({ silent: true });
+}
+
+async function closePurchaseOrder(poId) {
+  await syncFromCloud({ silent: true });
+  const po = purchaseOrderForId(poId);
+  if (!po || po.status !== "active") return alert("This PO is no longer active.");
+  const lines = state.incomingOrders.filter(line => line.purchaseOrderId === poId);
+  const received = lines.reduce((sum, line) => sum + line.receivedLf, 0);
+  const open = lines.reduce((sum, line) => sum + incomingRemaining(line), 0);
+  const description = received > EPSILON ? "CANCEL remaining incoming" : "REMOVE this imported PO";
+  const reason = prompt(`${description}: ${po.poNumber}\n\nRemaining: ${formatNumber(open)} LF\nAlready received: ${formatNumber(received)} LF (preserved)\n\nThe PO stays in history, and inventory is NOT deducted.\n\nOptional reason:`, "");
+  if (reason === null) return;
+  if (!confirm(`Confirm: ${description} ${po.poNumber}?\n\nThis action does not reverse existing receipts.`)) return;
+  const result = await rpc("purchase_close_po", { p_purchase_order_id: poId, p_reason: reason.trim() });
+  await recordActivity("purchase_order", poId, "close_purchase_order", { po_number: po.poNumber, status: result.status, cancelled_lf: result.cancelled_lf, received_lf: result.received_lf, reason: reason.trim() });
+  await syncFromCloud({ silent: true });
+}
+
+async function restorePurchaseOrder(poId) {
+  const po = purchaseOrderForId(poId);
+  if (!po || po.status === "active") return;
+  if (!confirm(`Restore PO ${po.poNumber}?\n\nCancelled amounts become Open Incoming again. No inventory amounts will change.`)) return;
+  await rpc("purchase_restore_po", { p_purchase_order_id: poId });
+  await recordActivity("purchase_order", poId, "restore_purchase_order", { po_number: po.poNumber });
   await syncFromCloud({ silent: true });
 }
 
 async function deleteIncomingOrder(orderId) {
   const order = (state.incomingOrders || []).find(item => item.id === orderId);
   if (!order) return;
+  if (order.purchaseOrderId) return alert("Use Remove PO / Cancel Remaining for imported purchase orders.");
   const openLf = incomingRemaining(order);
   if (!confirm(`Remove the remaining ${formatNumber(openLf)} LF incoming for ${order.material}?${Number(order.receivedLf || 0) > EPSILON ? "\n\nAlready received footage will be kept in the PO record." : ""}`)) return;
   if (Number(order.receivedLf || 0) > EPSILON) {
@@ -5114,25 +5186,31 @@ function wireEvents() {
     catch (error) { console.error(error); alert(error.message); }
     finally { button.disabled = false; button.textContent = "+ Add Incoming"; }
   });
+  $("purchasingPoFilter").addEventListener("change", event => {
+    purchasingFilter = event.target.value;
+    renderIncomingOrders();
+  });
   $("incomingOrdersWrap").addEventListener("click", async event => {
-    const row = event.target.closest("tr[data-order-id]");
-    if (!row) return;
-    const orderId = row.dataset.orderId;
-    const receive = event.target.closest(".receive-incoming");
-    const remove = event.target.closest(".delete-incoming");
-    if (!receive && !remove) return;
-    const button = receive || remove;
+    const button = event.target.closest("button");
+    if (!button || button.disabled) return;
+    const rowId = button.closest("tr[data-order-id]")?.dataset.orderId || button.dataset.orderId;
+    const poId = button.dataset.poId;
+    const batchId = button.dataset.batchId;
     button.disabled = true;
     try {
-      if (receive) await receiveIncomingOrder(orderId);
-      else await deleteIncomingOrder(orderId);
+      if (button.classList.contains("receive-incoming")) await receiveIncomingOrder(rowId);
+      else if (button.classList.contains("delete-incoming")) await deleteIncomingOrder(rowId);
+      else if (button.classList.contains("receive-all-po")) await receiveAllPurchaseOrder(poId);
+      else if (button.classList.contains("close-po")) await closePurchaseOrder(poId);
+      else if (button.classList.contains("restore-po")) await restorePurchaseOrder(poId);
+      else if (button.classList.contains("undo-receipt-line")) await reverseReceipt(batchId, button.dataset.receiptLineId);
+      else if (button.classList.contains("undo-receipt-batch")) await reverseReceipt(batchId);
+      else if (button.classList.contains("undo-legacy-receipt")) await reverseLegacyReceipt(rowId);
     } catch (error) {
       console.error(error);
       alert(error.message);
       await syncFromCloud({ silent: true });
-    } finally {
-      button.disabled = false;
-    }
+    } finally { button.disabled = false; }
   });
 
   $("saveProjectEdit").addEventListener("click", saveProjectEdit);

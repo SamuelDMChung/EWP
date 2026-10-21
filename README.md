@@ -1,3 +1,14 @@
+## V1.13 WEB — Purchasing (October 21, 2026)
+
+**Current complete WEB baseline:** V1.13, built from V1.12. Next V1.14. Read **`PORTAL_HANDOFF.md`** first.
+
+- Forecast → Purchasing: grouped PO cards, Open/All/Received/Cancelled filters, Remove PO / Cancel Remaining / Restore PO, Receive All Remaining, individual receipt undo or whole-batch undo, and history for completed POs. Manual/Transfer stays separate.
+- Receipts and undo are atomic Postgres transactions updating both On Hand and incoming received LF. Legacy pre-V1.13 receipts have a guarded adjustment path. No changes to the EWP Connect iOS app or any Sales form/Edge Function.
+- **Required before GitHub Pages publication:** back up Supabase, then run the new **`v1_13_purchasing_receipts.sql`** in SQL Editor on top of your existing V1.12 database. This is not cumulative and does not reapply V1.10–V1.12 migrations. Verify tables and test with temporary POs.
+- Publish the entire ZIP as usual. No Edge Function changes. Read the detailed deployment/limitations in `PORTAL_HANDOFF.md`.
+
+---
+
 ## V1.12 WEB — EWP Order release (October 19, 2026)
 
 **Canonical complete WEB source:** V1.12 from uploaded V1.11. Next V1.13. Read `PORTAL_HANDOFF.md` first.

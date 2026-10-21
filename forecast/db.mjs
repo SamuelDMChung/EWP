@@ -43,7 +43,7 @@ async function request(table, { method = "GET", params = {}, body, prefer = "", 
 }
 
 export async function loadCloudRows() {
-  const [projects, levels, materials, deliveries, spruceOrders, spruceOrderItems, inventoryMaterials, purchaseOrders, incomingOrders, trackerSettings] = await Promise.all([
+  const [projects, levels, materials, deliveries, spruceOrders, spruceOrderItems, inventoryMaterials, purchaseOrders, incomingOrders, receiptBatches, receiptLines, trackerSettings] = await Promise.all([
     request("projects", { params: { select: "*", order: "created_at.asc" } }),
     request("levels", { params: { select: "*", order: "display_order.asc,created_at.asc" } }),
     request("materials", { params: { select: "*", order: "created_at.asc" } }),
@@ -53,6 +53,8 @@ export async function loadCloudRows() {
     request("inventory_materials", { params: { select: "*", order: "material_name.asc" } }),
     request("purchase_orders", { params: { select: "*", order: "created_at.desc" } }),
     request("incoming_orders", { params: { select: "*", order: "expected_date.asc,created_at.asc" } }),
+    request("purchase_receipt_batches", { params: { select: "*", order: "created_at.desc" } }),
+    request("purchase_receipt_lines", { params: { select: "*", order: "created_at.desc" } }),
     request("tracker_settings", { params: { select: "sales", id: "eq.global", limit: "1" } })
   ]);
   return {
@@ -65,6 +67,8 @@ export async function loadCloudRows() {
     inventoryMaterials: inventoryMaterials || [],
     purchaseOrders: purchaseOrders || [],
     incomingOrders: incomingOrders || [],
+    receiptBatches: receiptBatches || [],
+    receiptLines: receiptLines || [],
     trackerSettings: trackerSettings?.[0] || { sales: [] }
   };
 }

@@ -1,3 +1,14 @@
+## V1.14 WEB — Direct PO Re-import (October 21, 2026)
+
+**Canonical full source:** V1.14 based on V1.13. **Next version:** V1.15. Read `PORTAL_HANDOFF.md` first.
+
+- Reimport any existing PO (active, fully received, cancelled, or removed) with the same PO #, review the warning, and click **Update PO**. Previously removed/cancelled POs reactivate automatically in the same database transaction. No manual restore needed.
+- The new atomic `purchase_import_revision` RPC handles **both** new PO creation and existing PO revisions. It preserves received inventory and historical receipt links, prevents reducing an item below received LF, cancels open LF for superseded materials, and verifies optimistic version numbers.
+- **Mandatory deployment:** After V1.13 Purchasing SQL has been run, execute **`v1_14_purchase_order_reimport.sql`** in the existing Supabase SQL Editor **before** deploying V1.14 website files. No Edge Function or iOS changes.
+- Test a removed PO with a sample revision, a partially received PO, and stock/receiving history. SQL and production multi-user behavior require live verification. See handoff for details.
+
+---
+
 ## V1.13 WEB — Purchasing (October 21, 2026)
 
 **Current complete WEB baseline:** V1.13, built from V1.12. Next V1.14. Read **`PORTAL_HANDOFF.md`** first.

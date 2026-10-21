@@ -1,3 +1,11 @@
+# Current WEB SQL migration — V1.14
+
+First confirm `../v1_13_purchasing_receipts.sql` was already executed. Then run `../v1_14_purchase_order_reimport.sql` in your existing Supabase project **before** publishing the V1.14 frontend. It adds a single authenticated transactional PO import/revision RPC, without deleting existing records.
+
+Older migrations (including V1.13) remain in the package for history and upgrade sequencing only; do not rerun ones already deployed. See `../PORTAL_HANDOFF.md` for testing and the intended order.
+
+---
+
 # Current WEB SQL migration — V1.13
 
 Run **`../v1_13_purchasing_receipts.sql`** exactly on top of the existing V1.12 database *before* V1.13 GitHub Pages deployment. Back up first. It adds the atomic purchasing ledger and RPCs without deleting historical records.

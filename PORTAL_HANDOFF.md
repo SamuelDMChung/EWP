@@ -1,3 +1,32 @@
+# EWP Management Portal — V1.14 WEB Direct PO Re-import
+
+**Release:** `EWP_Management_Portal_V1_14_WEB_FULL.zip` (October 21, 2026). **Canonical input:** V1.13 WEB full ZIP. **Next WEB version:** V1.15. WEB only; EWP Connect iOS is independent.
+
+## Approved change implemented
+
+- Purchasing → import PO Excel → PO Details continues to show a warning when the PO number already exists. **Update PO** replaces the redundant V1.13 *Restore PO first* restriction. A formerly **removed** or **cancelled** PO is reactivated in the SAME update after confirmation. Existing active/received PO revisions remain supported. A new PO still uses **Add Purchase Order**.
+- The confirmation displays the existing PO status, new material count and LF, warns if it will reactivate the PO, and notes that receiving history and On Hand inventory are preserved. No duplicate PO header is created; existing ID and receipt batches/lines are retained.
+- `v1_14_purchase_order_reimport.sql` adds authenticated Postgres RPC `purchase_import_revision` for both new and existing imports. It creates/reconciles header and material rows in **one transaction** with header→line locks, PO/line optimistic-version checks, mandatory fields and duplicate-material validation. The function does **not** update inventory On Hand and never re-receives previously received materials.
+- Matching material lines retain received LF, with `cancelled_lf` reset to 0; the updated ordered LF cannot fall below existing received LF. A material omitted from a revision is **not hard-deleted**: its open LF is cancelled and its row retained for legacy and V1.13 receipt audit. Superseded lines continue appearing with their cancelled LF, so historical ordered totals may include superseded lines; Open LF excludes them. When receipt history exists for a line, its original stock-material name remains unchanged to protect receipt reversal.
+- After update, previously removed/cancelled POs have status `active` with closure fields cleared, and can be received normally if updated outstanding LF remains. The original manual Restore PO action stays in Purchasing for users who want to restore a closed PO *without* importing new Excel.
+- Entry History records an import/update and notes automatic reactivation and superseded line counts. All Tracking, Forecast material/delivery calculations, inventory/receipt RPCs, Sales workflows, email functions, Supabase login, Settings, light/dark themes, and Portal routes remain unchanged except version/cache references.
+
+## Required deployment order
+
+1. Back up current database and GitHub Pages files. **V1.13 schema and `v1_13_purchasing_receipts.sql` must already be deployed** before installing V1.14. If not, deploy the V1.13 migration first; do not rerun previous cumulative/archived scripts.
+2. Run **`v1_14_purchase_order_reimport.sql`** in the SAME Supabase project's SQL Editor. It only creates/replaces one new RPC (no drop/rewrite of existing PO/receipt data). Verify with `select to_regprocedure('public.purchase_import_revision(text,date,date,text,text,jsonb,uuid,integer)');` — it should return a function signature. New website code calls this RPC, so SQL **must** be deployed first.
+3. Publish complete V1.14 WEB files to the existing GitHub Pages root. Hard-refresh all browser tabs. No Edge Function redeployment or iOS rebuild is required.
+4. In **test data**, import a PO → Remove PO → import same PO # again → observe prior-PO warning and **Update PO** → confirm automatic reactivation, same PO ID, restored/reconciled Open LF, and no On Hand change. Reimport a partial/fully received PO with unchanged or larger quantities; verify old receipts, batches, and On Hand are unchanged. Try reducing ordered LF below already-received LF and verify rejection and no changes. Omit a previously included material and verify it has 0 Open LF (cancelled) with its history intact. Confirm concurrent stale revisions fail rather than partially applying.
+5. Regression: Receive All, Undo Receipt, Undo Legacy, Cancel Remaining, manual Restore PO, Manual/Transfer Incoming, Stock Position, Forecast PDF/material/delivery workflows, Tracker, New EWP Requests, EWP Order, sign-in, and light/dark theme.
+
+## Testing and limitations
+
+- Static checks: JavaScript syntax, V1.13 file-preservation comparisons and ZIP validation. Browser-isolated mocked tests: `removed`, `cancelled`, `active`, `new` import paths and guard for reduction below received LF. **Actual V1.14 SQL has not been executed against your Supabase production database; live Postgres/RLS/concurrency behavior is pending deployment testing.**
+- Pre-existing direct authenticated inventory/PO table updates remain possible in the legacy application; the new RPC provides atomic imports when this WEB UI is used, not a universal block against external direct table edits.
+- Material matching remains governed by existing Forecast normalization. A valid legacy receipt line's stock-material identity is not silently renamed. No automatic Spruce, Forecast project, or EWP Order linking was added.
+
+---
+
 # EWP Management Portal — V1.13 WEB Purchasing Upgrade
 
 **Release:** `EWP_Management_Portal_V1_13_WEB_FULL.zip` (October 21, 2026).  

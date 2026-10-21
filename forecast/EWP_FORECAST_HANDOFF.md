@@ -1,3 +1,9 @@
+## Portal V1.14 WEB (Oct 21, 2026) — Direct PO Re-import
+
+Importing a previously removed/cancelled PO no longer requires manual Restore: after warning and confirmation, **Update PO** performs automatic reactivation and material reconciliation atomically. Requires `../v1_14_purchase_order_reimport.sql` **after** V1.13 SQL and **before** WEB deployment. Receiving history/On Hand unchanged. Full migration and test plan: `../PORTAL_HANDOFF.md`.
+
+---
+
 ## Portal V1.13 WEB (Oct 21, 2026) — Purchasing only
 
 - Imported purchase orders now have grouped expandable cards, Receive All, reversible receipt batches, Remove PO / Cancel Remaining / Restore PO, and Completed/Cancelled filters.

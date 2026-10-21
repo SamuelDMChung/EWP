@@ -1,7 +1,7 @@
 import { extractPdfLines, parseMaterialReportLines, normalizeSpaces } from "./parser.mjs";
 import { parsePurchaseWorkbook, normalizePoMaterialDescription } from "./purchase_parser.mjs";
 import { parseDeliveryMaterialReportLines } from "./delivery_parser.mjs";
-import { loadCloudRows, loadActivityRows, findSharedProjectByNumber, insertRows, updateRows, deleteRows, logActivity, rpc } from "./db.mjs?v=1.13";
+import { loadCloudRows, loadActivityRows, findSharedProjectByNumber, insertRows, updateRows, deleteRows, logActivity, rpc } from "./db.mjs?v=1.14";
 import { restoreSession, signInWithPassword, signOut, getCurrentUser, getLastEmail } from "./auth.mjs?v=1.0-p3";
 import { startRealtime, stopRealtime, refreshRealtimeAuth } from "./realtime.mjs?v=1.0-p3";
 
@@ -2778,8 +2778,10 @@ function updatePurchaseDuplicateNotice() {
   const poNumber = normalizeSpaces($("purchasePoNumber")?.value || purchaseDraft?.poNumber || "").toUpperCase();
   const existing = purchaseOrderForNumber(poNumber);
   notice.classList.toggle("hidden", !existing);
-  notice.textContent = existing ? (existing.status !== "active" ? `PO ${existing.poNumber} is ${existing.status}. Restore it from the Purchasing list before updating the imported materials.` : `PO ${existing.poNumber} already exists. Confirming this import will reconcile the existing PO instead of adding the footage twice.`) : "";
-  if (saveButton) saveButton.textContent = existing ? "Update Existing PO" : "Add Purchase Order";
+  notice.textContent = existing ? (existing.status !== "active"
+    ? `PO ${existing.poNumber} was previously ${existing.status}. Update PO to reactivate it automatically and replace its outstanding materials. Existing receipts and inventory are preserved.`
+    : `PO ${existing.poNumber} was imported before. Update PO to reconcile its materials without duplicating inventory or receipts.`) : "";
+  if (saveButton) saveButton.textContent = existing ? "Update PO" : "Add Purchase Order";
 }
 
 function clearPurchaseValidation() {
@@ -2919,131 +2921,67 @@ async function persistPurchaseOrderDraft() {
   const items = validPurchaseDraftItems();
   if (!items.length) return showPurchaseValidation("Keep at least one material with incoming footage greater than 0 LF.");
   if (items.length !== purchaseDraft.items.length) return showPurchaseValidation("Every material row needs a material name and incoming footage greater than 0 LF, or remove the row.");
-  const materialKeys = items.map(item => normalizeMaterialKey(canonicalPurchaseMaterialName(item.material)));
+  const canonicalItems = items.map(item => ({
+    ...item,
+    materialName: canonicalPurchaseMaterialName(item.material)
+  }));
+  const materialKeys = canonicalItems.map(item => normalizeMaterialKey(item.materialName));
   if (new Set(materialKeys).size !== materialKeys.length) return showPurchaseValidation("The same material appears more than once. Combine its footage into one row before confirming.");
 
   await syncFromCloud({ silent: true });
   const existing = purchaseOrderForNumber(purchaseDraft.poNumber);
+  const existingItems = existing ? (state.incomingOrders || []).filter(order => order.purchaseOrderId === existing.id) : [];
   const totalLf = items.reduce((sum, item) => sum + Number(item.quantityLf || 0), 0);
-  const now = new Date().toISOString();
-
-  if (existing) {
-    if (existing.status !== "active") return showPurchaseValidation(`PO ${existing.poNumber} is ${existing.status}. Restore the PO in Purchasing before updating it.`);
-    const existingItems = (state.incomingOrders || []).filter(order => order.purchaseOrderId === existing.id);
-    const message = `PO ${existing.poNumber} already exists.\n\nUpdate it to the reviewed ${items.length} material${items.length === 1 ? "" : "s"} / ${formatNumber(totalLf)} LF? Existing received quantities will be preserved.`;
-    if (!confirm(message)) return;
-
-    const usedIds = new Set();
-    let added = 0;
-    let updated = 0;
-    let closed = 0;
-    for (const item of items) {
-      const materialName = canonicalPurchaseMaterialName(item.material);
-      const match = existingItems.find(order => !usedIds.has(order.id) && normalizeMaterialKey(order.material) === normalizeMaterialKey(materialName));
-      if (match) {
-        usedIds.add(match.id);
-        if (Number(item.quantityLf) + EPSILON < Number(match.receivedLf || 0)) {
-          throw new Error(`${materialName} has already received ${formatNumber(match.receivedLf)} LF, so the PO cannot be revised down to ${formatNumber(item.quantityLf)} LF.`);
-        }
-        const changed = await updateRows("incoming_orders", { id: `eq.${match.id}`, version: `eq.${match.version}` }, {
-          material_name: materialName,
-          quantity_lf: Number(item.quantityLf),
-          expected_date: purchaseDraft.expectedDate,
-          reference: purchaseDraft.poNumber,
-          note: purchaseDraft.note || null,
-          length_breakdown: item.breakdown || [],
-          updated_at: now,
-          version: match.version + 1
-        });
-        if (!changed?.length) throw new Error(`${materialName} changed while the PO revision was being saved. Refresh and try again.`);
-        updated += 1;
-      } else {
-        await insertRows("incoming_orders", {
-          id: uid(),
-          purchase_order_id: existing.id,
-          material_name: materialName,
-          quantity_lf: Number(item.quantityLf),
-          received_lf: 0,
-          expected_date: purchaseDraft.expectedDate,
-          reference: purchaseDraft.poNumber,
-          note: purchaseDraft.note || null,
-          length_breakdown: item.breakdown || [],
-          version: 1
-        });
-        added += 1;
+  const usedIds = new Set();
+  const payloadItems = canonicalItems.map(item => {
+    const key = normalizeMaterialKey(item.materialName);
+    const match = existingItems.find(order => !usedIds.has(order.id) && normalizeMaterialKey(order.material) === key);
+    if (match) {
+      usedIds.add(match.id);
+      if (Number(item.quantityLf) + EPSILON < Number(match.receivedLf || 0)) {
+        throw new Error(`${item.materialName} has already received ${formatNumber(match.receivedLf)} LF. Its updated PO quantity cannot be ${formatNumber(item.quantityLf)} LF.`);
       }
     }
-
-    for (const oldItem of existingItems) {
-      if (usedIds.has(oldItem.id)) continue;
-      if (Number(oldItem.receivedLf || 0) > EPSILON) {
-        const changed = await updateRows("incoming_orders", { id: `eq.${oldItem.id}`, version: `eq.${oldItem.version}` }, {
-          quantity_lf: Number(oldItem.receivedLf || 0),
-          expected_date: purchaseDraft.expectedDate,
-          note: [oldItem.note, "Removed from revised PO after receipt"].filter(Boolean).join(" · "),
-          updated_at: now,
-          version: oldItem.version + 1
-        });
-        if (!changed?.length) throw new Error(`${oldItem.material} changed while the PO revision was being saved.`);
-      } else {
-        const deleted = await deleteRows("incoming_orders", { id: `eq.${oldItem.id}`, version: `eq.${oldItem.version}` });
-        if (!deleted?.length) throw new Error(`${oldItem.material} changed while the PO revision was being saved.`);
-      }
-      closed += 1;
-    }
-
-    const header = await updateRows("purchase_orders", { id: `eq.${existing.id}`, version: `eq.${existing.version}` }, {
-      po_number: purchaseDraft.poNumber,
-      order_date: purchaseDraft.orderDate || null,
-      expected_date: purchaseDraft.expectedDate,
-      source_file_name: purchaseDraft.sourceFileName || null,
-      note: purchaseDraft.note || null,
-      updated_at: now,
-      version: existing.version + 1
-    });
-    if (!header?.length) throw new Error("This PO was changed by another user while the revision was being saved.");
-    await recordActivity("purchase_order", existing.id, "update_purchase_order", {
-      po_number: purchaseDraft.poNumber,
-      total_lf: totalLf,
-      expected_date: purchaseDraft.expectedDate,
-      source_file_name: purchaseDraft.sourceFileName,
-      items_added: added,
-      items_updated: updated,
-      items_removed_or_closed: closed
-    });
-  } else {
-    if (!confirm(`Add PO ${purchaseDraft.poNumber} with ${items.length} material${items.length === 1 ? "" : "s"} / ${formatNumber(totalLf)} LF incoming?`)) return;
-    const purchaseOrderId = uid();
-    await insertRows("purchase_orders", {
-      id: purchaseOrderId,
-      po_number: purchaseDraft.poNumber,
-      order_date: purchaseDraft.orderDate || null,
-      expected_date: purchaseDraft.expectedDate,
-      source_file_name: purchaseDraft.sourceFileName || null,
-      note: purchaseDraft.note || null,
-      version: 1
-    });
-    await insertRows("incoming_orders", items.map(item => ({
-      id: uid(),
-      purchase_order_id: purchaseOrderId,
-      material_name: canonicalPurchaseMaterialName(item.material),
+    return {
+      material_name: item.materialName,
+      material_key: key,
       quantity_lf: Number(item.quantityLf),
-      received_lf: 0,
-      expected_date: purchaseDraft.expectedDate,
-      reference: purchaseDraft.poNumber,
-      note: purchaseDraft.note || null,
-      length_breakdown: item.breakdown || [],
-      version: 1
-    })));
-    await recordActivity("purchase_order", purchaseOrderId, "import_purchase_order", {
-      po_number: purchaseDraft.poNumber,
-      material_count: items.length,
-      total_lf: totalLf,
-      expected_date: purchaseDraft.expectedDate,
-      source_file_name: purchaseDraft.sourceFileName
-    });
-  }
+      length_breakdown: Array.isArray(item.breakdown) ? item.breakdown : [],
+      incoming_order_id: match?.id || null,
+      expected_line_version: match?.version ?? null
+    };
+  });
+  const previousStatus = existing?.status || "new";
+  const actionNote = !existing
+    ? `Add PO ${purchaseDraft.poNumber} with ${items.length} material${items.length === 1 ? "" : "s"} / ${formatNumber(totalLf)} LF incoming?`
+    : `PO ${existing.poNumber} already exists${previousStatus !== "active" ? ` and was ${previousStatus}` : ""}.\n\nUpdate it with ${items.length} material${items.length === 1 ? "" : "s"} / ${formatNumber(totalLf)} LF?${previousStatus !== "active" ? "\n\nThis update will automatically reactivate the PO." : ""}\n\nExisting receipts and inventory will be preserved. Materials absent from this revision will have their remaining incoming LF cancelled; no material will be received again.`;
+  if (!confirm(actionNote)) return;
 
+  // One server transaction creates or revises the PO; a previously removed/cancelled PO
+  // is reactivated in that SAME transaction. Concurrent receipts / PO updates use
+  // row locks and version checks rather than partial client-side REST writes.
+  const result = await rpc("purchase_import_revision", {
+    p_po_number: purchaseDraft.poNumber,
+    p_order_date: purchaseDraft.orderDate || null,
+    p_expected_date: purchaseDraft.expectedDate,
+    p_source_file_name: purchaseDraft.sourceFileName || null,
+    p_note: purchaseDraft.note || null,
+    p_items: payloadItems,
+    p_existing_po_id: existing?.id || null,
+    p_expected_po_version: existing?.version ?? null
+  });
+  await recordActivity("purchase_order", result.po_id, result.action === "updated" ? "update_purchase_order" : "import_purchase_order", {
+    po_number: purchaseDraft.poNumber,
+    material_count: result.material_count,
+    total_lf: result.total_lf,
+    expected_date: purchaseDraft.expectedDate,
+    source_file_name: purchaseDraft.sourceFileName,
+    previous_status: result.previous_status,
+    automatically_reactivated: result.action === "updated" && result.previous_status !== "active",
+    items_added: result.items_added,
+    items_updated: result.items_updated,
+    items_removed_or_closed: result.items_superseded
+  });
   resetPurchaseDraft();
   await syncFromCloud({ silent: true });
   setTab("purchasing");
@@ -3166,7 +3104,9 @@ function activityDetailText(row) {
     d.total_lf !== undefined ? `${formatNumber(d.total_lf)} LF` : "",
     d.expected_date ? `Expected ${formatDate(d.expected_date)}` : "",
     d.items_added ? `${d.items_added} added` : "",
-    d.items_updated ? `${d.items_updated} updated` : ""
+    d.items_updated ? `${d.items_updated} updated` : "",
+    d.items_removed_or_closed ? `${d.items_removed_or_closed} superseded` : "",
+    d.automatically_reactivated ? `Automatically reactivated from ${d.previous_status}` : ""
   ].filter(Boolean).join(" · ");
   if (row.action === "add_incoming") return [d.material_name, `${formatNumber(d.quantity_lf)} LF`, d.expected_date ? `Expected ${formatDate(d.expected_date)}` : "", d.reference ? `Ref: ${d.reference}` : ""].filter(Boolean).join(" · ");
   if (row.action === "receive_incoming") return [d.material_name, `${formatNumber(d.received_lf)} LF received`, d.reference ? `Ref: ${d.reference}` : ""].filter(Boolean).join(" · ");

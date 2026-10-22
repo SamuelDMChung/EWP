@@ -1,6 +1,6 @@
 import { restoreSession, signInWithPassword, signOut, getCurrentSession, EWP_AUTH_STORAGE_KEY } from '../forecast/auth.mjs?v=1.0-p3';
 import { startTrackerRealtime, stopTrackerRealtime } from './realtime.mjs?v=1.0-p3';
-import { loadTrackerCloud, saveTrackerProject, setTrackerProjectStatus, moveTrackerWorkItem, deleteTrackerProject, getNextTrackerNumber, saveTrackerSettings, addTrackerFilter, removeTrackerFilter } from './cloud.mjs?v=1.10';
+import { loadTrackerCloud, saveTrackerProject, setTrackerProjectStatus, moveTrackerWorkItem, deleteTrackerProject, getNextTrackerNumber, saveTrackerSettings, addTrackerFilter, removeTrackerFilter } from './cloud.mjs?v=1.16';
 
 (() => {
   const PROJECTS_KEY = 'tc_project_tracker_v01_projects'; // legacy browser data; never used as authoritative data
@@ -19,6 +19,31 @@ import { loadTrackerCloud, saveTrackerProject, setTrackerProjectStatus, moveTrac
   }
   const defaultSettings = { sales: [], assignees: [], tasks: [] };
   let projects = [];
+  // The sequence is deliberately varied in hue. #11-20 are reserves.
+  // Supabase stores the 1-20 slot, not a CSS hex value, so the palette can evolve.
+  const LINKED_TASK_COLORS = [
+    '#2563EB', //  1 Royal blue
+    '#EA580C', //  2 Orange
+    '#15803D', //  3 Forest green
+    '#A21CAF', //  4 Magenta
+    '#DC2626', //  5 Red
+    '#0891B2', //  6 Cyan
+    '#B8860B', //  7 Golden yellow
+    '#7C3AED', //  8 Violet
+    '#92400E', //  9 Brown
+    '#65A30D', // 10 Lime
+    '#DB2777', // 11 Pink
+    '#0F766E', // 12 Deep teal
+    '#C2410C', // 13 Terracotta
+    '#4338CA', // 14 Indigo
+    '#9F1239', // 15 Burgundy
+    '#4D7C0F', // 16 Olive
+    '#0284C7', // 17 Sky blue
+    '#7E22CE', // 18 Orchid
+    '#A16207', // 19 Ochre
+    '#475569'  // 20 Slate
+  ];
+  let linkedColorByProject = new Map();
   let settings = { ...defaultSettings };
   let issuedCounters = {};
   let savedFilters = [];
@@ -135,6 +160,10 @@ import { loadTrackerCloud, saveTrackerProject, setTrackerProjectStatus, moveTrac
     try {
       const data=await loadTrackerCloud();
       projects=(data.projects||[]).map(item=>fromRow(item,data.workItems||[]));
+      linkedColorByProject = new Map((data.colorAssignments || [])
+        .filter(row => row?.project_id && Number.isInteger(Number(row.color_index)) &&
+          Number(row.color_index) >= 1 && Number(row.color_index) <= LINKED_TASK_COLORS.length)
+        .map(row => [row.project_id, Number(row.color_index)]));
       settings={sales:data.settings.sales||[],assignees:data.settings.assignees||[],tasks:data.settings.tasks||[],phases:data.settings.phases||['Awarded','Bidding']};
       savedFilters=(data.filters||[]).map(row=>({id:row.id,name:row.name,search:row.search||'',filters:row.filters||{},createdAt:row.created_at||''}));
       issuedCounters={};
@@ -680,6 +709,21 @@ import { loadTrackerCloud, saveTrackerProject, setTrackerProjectStatus, moveTrac
     card.classList.toggle('task-completed-card', done);
     card.classList.toggle('task-in-coordination', done);
     card.classList.toggle('task-split-card', !aggregate);
+    const colorSlot = total > 1 && !aggregate ? linkedColorByProject.get(project.id) : null;
+    const linkedColor = colorSlot ? LINKED_TASK_COLORS[colorSlot - 1] : null;
+    if (linkedColor) {
+      card.classList.add('linked-color-card');
+      card.style.setProperty('--linked-ticket-color', linkedColor);
+      card.title = `Linked project ${project.projectNumber} · Color #${colorSlot} · Drag or click to edit`;
+    }
+    // Top-right task count replaces repeated "Task 1/X" in the task description.
+    for (const badge of card.querySelectorAll('.task-count-badge')) {
+      if (total > 1 && !aggregate) {
+        badge.textContent = `Task ${taskIndex+1}/${total}`;
+        badge.classList.remove('hidden');
+        badge.title = `${project.projectNumber} · linked task ${taskIndex+1} of ${total}`;
+      }
+    }
     card.querySelector('.project-number').textContent = project.projectNumber || '—';
     const forecastLink = card.querySelector('.forecast-project-link');
     forecastLink.href = `../forecast/?project=${encodeURIComponent(project.projectNumber || '')}`;
@@ -715,7 +759,7 @@ import { loadTrackerCloud, saveTrackerProject, setTrackerProjectStatus, moveTrac
     const arrived = (project.workItems || []).filter(item => item.status === 'done').length;
     compactLinkage.textContent = aggregate
       ? (total ? `${total} linked tasks combined` : 'Forecast project · no layout tasks')
-      : `↳ ${taskLabel}${total>1 ? ` · Task ${taskIndex+1}/${total}` : ''}`;
+      : `↳ ${taskLabel}`;
     const arrival = card.querySelector('.compact-task-arrival');
     arrival.classList.toggle('hidden', !done || total <= 1);
     if (done && total > 1) arrival.textContent = `${arrived} of ${total} linked tasks in Coordination`;
@@ -770,7 +814,7 @@ import { loadTrackerCloud, saveTrackerProject, setTrackerProjectStatus, moveTrac
     card.addEventListener('dragend', () => {
       draggedWorkItem = null;
       card.classList.remove('dragging');
-      document.querySelectorAll('.dropzone').forEach(zone=>zone.classList.remove('drag-over'));
+      document.querySelectorAll('.board .column.drag-over').forEach(zone=>zone.classList.remove('drag-over'));
       setTimeout(()=>{dragOccurred=false;},0);
     });
     card.addEventListener('click', () => { if (!dragOccurred) openEditProject(project.id,aggregate?null:workItem.id); });
@@ -910,10 +954,8 @@ import { loadTrackerCloud, saveTrackerProject, setTrackerProjectStatus, moveTrac
     const selectedProjects = followUpVisibleProjects().filter(project => followUpSelectedIds.has(project.id));
     if (!sales || !selectedProjects.length) return '';
     const types = new Set(selectedProjects.map(project => project.projectType));
-    const queue = types.size === 1 && types.has('SFD') ? 'SFD'
-      : types.size === 1 && types.has('Multi') ? 'multiplex'
-      : [...types].some(type => type === 'Others' || type === 'Other') ? 'EWP'
-      : 'SFD/multiplex';
+    const queue = types.size === 1 ? ({SFD:'SFD', Multi:'multi-family', Duplex:'duplex', Multiplex:'multiplex', Townhome:'townhome', Others:'EWP'})[[...types][0]] || 'EWP'
+      : 'EWP';
     const projectLines = selectedProjects.map(project =>
       `${project.projectNumber || '—'} | ${project.customer || '—'} | ${project.address || '—'}`
     ).join('\n');
@@ -1740,7 +1782,9 @@ import { loadTrackerCloud, saveTrackerProject, setTrackerProjectStatus, moveTrac
     });
   });
 
-  Object.values(lists).forEach(zone => {
+  // V1.15: the ENTIRE visible column is the drop surface, not just its card
+  // list (which historically shrank as soon as In Progress held a ticket).
+  document.querySelectorAll('#board .column[data-status]').forEach(zone => {
     zone.addEventListener('dragover', event => {
       event.preventDefault();
       event.dataTransfer.dropEffect = 'move';

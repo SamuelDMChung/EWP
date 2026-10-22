@@ -1,3 +1,11 @@
+# Project Tracking — V1.15 linked-ticket border and full-panel drop areas
+
+- Board Queue/In Progress/Coordination/Completed panels are drop targets all the way from header to bottom, including blank space. The move/merge restriction rules are unchanged.
+- 2+ unfinished-task projects share a 2px colored card outline and a matching top-right `Task 1/X` badge; single-task projects and merged Coordination projects use neutral borders. The 20-color pool is saved in Supabase (not localStorage) and recycled after the project's final task reaches Coordination.
+- Requires **`../v1_15_tracker_linked_colors.sql`** installed before this frontend; the RPC assigns/reconciles slots for every Tracker refresh. Read `../PORTAL_HANDOFF.md` for migration and live tests. No other WEB workspace or iOS code changes.
+
+---
+
 **V1.10:** Adds Sales Requests as a separate portal tool. Phase choices in Tracking are now loaded from shared Settings (new `tracker_settings.phases`, initialized Awarded/Bidding). See root `PORTAL_HANDOFF.md` and `SALES_EMAIL_SETUP.md`. Existing Tracker task workflow unchanged.
 
 > **Portal V1.9 WEB (Oct 14, 2026):** Forecast matrix Edit buttons are replaced with clickable estimated delivery dates for undelivered levels, using either a project-wide outstanding-level dialog or single-level dialog. Fixed-height matrix vertical scrolling is removed; Tracker Follow-up project list now scrolls with page. No SQL changes, underlying database/calculations preserved. Root `PORTAL_HANDOFF.md` is authoritative.

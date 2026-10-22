@@ -1,0 +1,2744 @@
+{
+  "eligible": [
+    {
+      "number": "TC26001",
+      "sales_initials": "TO",
+      "sales": "Tyson Orlandi",
+      "customer": "Kerrisdale",
+      "source_project_type": "Garage",
+      "type": "Others",
+      "address": "3941 W 23rd Ave",
+      "included": true
+    },
+    {
+      "number": "TC26002",
+      "sales_initials": "JH",
+      "sales": "James Harper",
+      "customer": "Mierau",
+      "source_project_type": "Town Homes Multi",
+      "type": "Townhome",
+      "address": "Schkam 2 Chawathil BC",
+      "included": true
+    },
+    {
+      "number": "TC26003",
+      "sales_initials": "TO",
+      "sales": "Tyson Orlandi",
+      "customer": "Kerrisdale",
+      "source_project_type": "Duplex",
+      "type": "Duplex",
+      "address": "8107 Osler",
+      "included": true
+    },
+    {
+      "number": "TC26004",
+      "sales_initials": "CG",
+      "sales": "Chad Guidi",
+      "customer": "Giglio Construction",
+      "source_project_type": "Multi",
+      "type": "Multi",
+      "address": "1610 Riverside Rd. Abbotsford",
+      "included": true
+    },
+    {
+      "number": "TC26005",
+      "sales_initials": "CG",
+      "sales": "Chad Guidi",
+      "customer": "Giglio Construction",
+      "source_project_type": "Multi",
+      "type": "Multi",
+      "address": "22538 Royal Cresent Maple Ridge",
+      "included": true
+    },
+    {
+      "number": "TC26006",
+      "sales_initials": "TAO",
+      "sales": "Travis Orlandi",
+      "customer": "Vanmar",
+      "source_project_type": "Multi",
+      "type": "Multi",
+      "address": "6374 Byrnepark Dr Burnaby BC",
+      "included": true
+    },
+    {
+      "number": "TC26007",
+      "sales_initials": "TAO",
+      "sales": "Travis Orlandi",
+      "customer": "Andrew Blaauw",
+      "source_project_type": "Shop",
+      "type": "Others",
+      "address": "2611 Strathcona Ave Tulameen BC",
+      "included": true
+    },
+    {
+      "number": "TC26009",
+      "sales_initials": "CW",
+      "sales": "Clark White",
+      "customer": "Creative Ridge",
+      "source_project_type": "Trailer Hording",
+      "type": "Others",
+      "address": "1026 W 41st St Van BC",
+      "included": true
+    },
+    {
+      "number": "TC26010",
+      "sales_initials": "CG",
+      "sales": "Chad Guidi",
+      "customer": "Rev Construction",
+      "source_project_type": "Multi",
+      "type": "Multi",
+      "address": "140 W 19th St N Van BC",
+      "included": true
+    },
+    {
+      "number": "TC26011",
+      "sales_initials": "TAO",
+      "sales": "Travis Orlandi",
+      "customer": "Vanmar",
+      "source_project_type": "Multi",
+      "type": "Multi",
+      "address": "290 Laval Square Coquitlam BC",
+      "included": true
+    },
+    {
+      "number": "TC26012",
+      "sales_initials": "TAO",
+      "sales": "Travis Orlandi",
+      "customer": "Vanmar",
+      "source_project_type": "Multi",
+      "type": "Multi",
+      "address": "443 Clayton St. Coquitlam BC",
+      "included": true
+    },
+    {
+      "number": "TC26013",
+      "sales_initials": "TO",
+      "sales": "Tyson Orlandi",
+      "customer": "Kerrisdale",
+      "source_project_type": "Multiplex",
+      "type": "Multiplex",
+      "address": "7774 Mary Ave Burnaby",
+      "included": true
+    },
+    {
+      "number": "TC26014",
+      "sales_initials": "TAO",
+      "sales": "Travis Orlandi",
+      "customer": "Shaun Martin",
+      "source_project_type": "SFD",
+      "type": "SFD",
+      "address": "279 Jason Rd. Bowen Island BC",
+      "included": true
+    },
+    {
+      "number": "TC26015",
+      "sales_initials": "TAO",
+      "sales": "Travis Orlandi",
+      "customer": "MJR Holdings",
+      "source_project_type": "SFD",
+      "type": "SFD",
+      "address": "1021 Valewood Trail Victoria BC",
+      "included": true
+    },
+    {
+      "number": "TC26016",
+      "sales_initials": "TO",
+      "sales": "Tyson Orlandi",
+      "customer": "Linwood",
+      "source_project_type": "SFD",
+      "type": "SFD",
+      "address": "103-1948 Marcotte",
+      "included": true
+    },
+    {
+      "number": "TC26017",
+      "sales_initials": "CG",
+      "sales": "Chad Guidi",
+      "customer": "Alabaster Construction",
+      "source_project_type": "Multi",
+      "type": "Multi",
+      "address": "590 W29th Ave Van BC",
+      "included": true
+    },
+    {
+      "number": "TC26018",
+      "sales_initials": "TAO",
+      "sales": "Travis Orlandi",
+      "customer": "Yellowridge",
+      "source_project_type": "Commercial",
+      "type": "Others",
+      "address": "380 Main St. Lytton BC",
+      "included": true
+    },
+    {
+      "number": "TC26019",
+      "sales_initials": "CG",
+      "sales": "Chad Guidi",
+      "customer": "Minghang",
+      "source_project_type": "SFD",
+      "type": "SFD",
+      "address": "74 Desswood Pl W Van",
+      "included": true
+    },
+    {
+      "number": "TC26020",
+      "sales_initials": "TO",
+      "sales": "Tyson Orlandi",
+      "customer": "Kerrisdale",
+      "source_project_type": "SFD",
+      "type": "SFD",
+      "address": "2039 Creelman Ave Van",
+      "included": true
+    },
+    {
+      "number": "TC26021",
+      "sales_initials": "TO",
+      "sales": "Tyson Orlandi",
+      "customer": "Kerrisdale",
+      "source_project_type": "Multi",
+      "type": "Multi",
+      "address": "1033 Miller Rd Bowen Island",
+      "included": true
+    },
+    {
+      "number": "TC26022",
+      "sales_initials": "TO",
+      "sales": "Tyson Orlandi",
+      "customer": "Kerrisdale",
+      "source_project_type": "Multi",
+      "type": "Multi",
+      "address": "2553 Highbury Ave Van",
+      "included": true
+    },
+    {
+      "number": "TC26023",
+      "sales_initials": "CG",
+      "sales": "Chad Guidi",
+      "customer": "Wildstone Const.",
+      "source_project_type": "Commercial",
+      "type": "Others",
+      "address": "Haines Rd. Atlin BC",
+      "included": true
+    },
+    {
+      "number": "TC26024",
+      "sales_initials": "TO",
+      "sales": "Tyson Orlandi",
+      "customer": "Linwood",
+      "source_project_type": "SFD",
+      "type": "SFD",
+      "address": "Moravec Rice",
+      "included": true
+    },
+    {
+      "number": "TC26025",
+      "sales_initials": "TO",
+      "sales": "Tyson Orlandi",
+      "customer": "Kerrisdale",
+      "source_project_type": "Duplex",
+      "type": "Duplex",
+      "address": "1986 E 8th Ave Van",
+      "included": true
+    },
+    {
+      "number": "TC26026",
+      "sales_initials": "TAO",
+      "sales": "Travis Orlandi",
+      "customer": "Knappett",
+      "source_project_type": "School",
+      "type": "Others",
+      "address": "3121 Glenora Rd. Duncan BC",
+      "included": true
+    },
+    {
+      "number": "TC26027",
+      "sales_initials": "TO",
+      "sales": "Tyson Orlandi",
+      "customer": "Kerrisdale",
+      "source_project_type": "Duplex",
+      "type": "Duplex",
+      "address": "242 E 20th Ave Van",
+      "included": true
+    },
+    {
+      "number": "TC26028",
+      "sales_initials": "TO",
+      "sales": "Tyson Orlandi",
+      "customer": "Kerrisdale",
+      "source_project_type": "SFD",
+      "type": "SFD",
+      "address": "6655 Strathmore Ave Burnaby",
+      "included": true
+    },
+    {
+      "number": "TC26029",
+      "sales_initials": "TO",
+      "sales": "Tyson Orlandi",
+      "customer": "Kerrisdale",
+      "source_project_type": "SFD",
+      "type": "SFD",
+      "address": "4680 Gothard St Van",
+      "included": true
+    },
+    {
+      "number": "TC26030",
+      "sales_initials": "CG",
+      "sales": "Chad Guidi",
+      "customer": "Brown Bros",
+      "source_project_type": "Multi",
+      "type": "Multi",
+      "address": "6489 Paddle Rd. N Cowichan BC",
+      "included": true
+    },
+    {
+      "number": "TC26031",
+      "sales_initials": "TO",
+      "sales": "Tyson Orlandi",
+      "customer": "Kerrisdale",
+      "source_project_type": "Laneway",
+      "type": "Others",
+      "address": "3730 W 29 Van",
+      "included": true
+    },
+    {
+      "number": "TC26032",
+      "sales_initials": "JH",
+      "sales": "James Harper",
+      "customer": "CBN Enterprises",
+      "source_project_type": "SFD",
+      "type": "SFD",
+      "address": "4970 Horstman Whistler",
+      "included": true
+    },
+    {
+      "number": "TC26033",
+      "sales_initials": "JH",
+      "sales": "James Harper",
+      "customer": "Streetside Developments",
+      "source_project_type": "Townhomes",
+      "type": "Townhome",
+      "address": "1295 Rockiln St. Coquitlam",
+      "included": true
+    },
+    {
+      "number": "TC26034",
+      "sales_initials": "JH",
+      "sales": "James Harper",
+      "customer": "Sterling Pacific Developments",
+      "source_project_type": "Duplex",
+      "type": "Duplex",
+      "address": "5697 Aquila W Van",
+      "included": true
+    },
+    {
+      "number": "TC26035",
+      "sales_initials": "CW",
+      "sales": "Clark White",
+      "customer": "Skylands",
+      "source_project_type": "Laneway",
+      "type": "Others",
+      "address": "4589 Haggart St. Van",
+      "included": true
+    },
+    {
+      "number": "TC26036",
+      "sales_initials": "TAO",
+      "sales": "Travis Orlandi",
+      "customer": "Anthem",
+      "source_project_type": "Multi",
+      "type": "Multi",
+      "address": "6550-6576 Marlborough Ave Burnaby",
+      "included": true
+    },
+    {
+      "number": "TC26037",
+      "sales_initials": "TO",
+      "sales": "Tyson Orlandi",
+      "customer": "Kerrisdale",
+      "source_project_type": "Duplex",
+      "type": "Duplex",
+      "address": "2588 2598 Courtenay Van",
+      "included": true
+    },
+    {
+      "number": "TC26038",
+      "sales_initials": "TAO",
+      "sales": "Travis Orlandi",
+      "customer": "Trillium",
+      "source_project_type": "Duplex",
+      "type": "Duplex",
+      "address": "3566 W 11th Ave Van BC",
+      "included": true
+    },
+    {
+      "number": "TC26039",
+      "sales_initials": "TAO",
+      "sales": "Travis Orlandi",
+      "customer": "Urban One",
+      "source_project_type": "Multi",
+      "type": "Multi",
+      "address": "200 Tyee Rd. Victoria BC",
+      "included": true
+    },
+    {
+      "number": "TC26040",
+      "sales_initials": "TO",
+      "sales": "Tyson Orlandi",
+      "customer": "Linwood",
+      "source_project_type": "SFD",
+      "type": "SFD",
+      "address": "Riedel",
+      "included": true
+    },
+    {
+      "number": "TC26041",
+      "sales_initials": "TO",
+      "sales": "Tyson Orlandi",
+      "customer": "Kerrisdale",
+      "source_project_type": "Multiplex",
+      "type": "Multiplex",
+      "address": "4626 Selkirk Van",
+      "included": true
+    },
+    {
+      "number": "TC26042",
+      "sales_initials": "TO",
+      "sales": "Tyson Orlandi",
+      "customer": "Linwood",
+      "source_project_type": "SFD",
+      "type": "SFD",
+      "address": "Paterson",
+      "included": true
+    },
+    {
+      "number": "TC26043",
+      "sales_initials": "TO",
+      "sales": "Tyson Orlandi",
+      "customer": "Kerrisdale",
+      "source_project_type": "Multi",
+      "type": "Multi",
+      "address": "Marine Crescent Van",
+      "included": true
+    },
+    {
+      "number": "TC26044",
+      "sales_initials": "TO",
+      "sales": "Tyson Orlandi",
+      "customer": "Kerrisdale",
+      "source_project_type": "Duplex",
+      "type": "Duplex",
+      "address": "4386 W 2 Van",
+      "included": true
+    },
+    {
+      "number": "TC26045",
+      "sales_initials": "TAO",
+      "sales": "Travis Orlandi",
+      "customer": "Scansa Construction",
+      "source_project_type": "Multi",
+      "type": "Multi",
+      "address": "824 Alston St Langford BC",
+      "included": true
+    },
+    {
+      "number": "TC26046",
+      "sales_initials": "CG",
+      "sales": "Chad Guidi",
+      "customer": "Minghang",
+      "source_project_type": "SFD",
+      "type": "SFD",
+      "address": "5915 Angus Van",
+      "included": true
+    },
+    {
+      "number": "TC26047",
+      "sales_initials": "JH",
+      "sales": "James Harper",
+      "customer": "Sugar Custom",
+      "source_project_type": "SFD",
+      "type": "SFD",
+      "address": "1737 River Run Pl. Whistler BC",
+      "included": true
+    },
+    {
+      "number": "TC26048",
+      "sales_initials": "TO",
+      "sales": "Tyson Orlandi",
+      "customer": "Kerrisdale",
+      "source_project_type": "SFD",
+      "type": "SFD",
+      "address": "295 W 21 Van",
+      "included": true
+    },
+    {
+      "number": "TC26049",
+      "sales_initials": "MD",
+      "sales": "Matt Dean",
+      "customer": "Winton Homes",
+      "source_project_type": "Community Centre",
+      "type": "Others",
+      "address": "Tachie Road I.R. No.1 Fort St. James BC",
+      "included": true
+    },
+    {
+      "number": "TC26050",
+      "sales_initials": "TO",
+      "sales": "Tyson Orlandi",
+      "customer": "Femo Construction",
+      "source_project_type": "SFD w/Accessory",
+      "type": "SFD",
+      "address": "5240 234St Langley BC",
+      "included": true
+    },
+    {
+      "number": "TC26051",
+      "sales_initials": "TAO",
+      "sales": "Travis Orlandi",
+      "customer": "KCM Construction",
+      "source_project_type": "Multi",
+      "type": "Multi",
+      "address": "14460 105A Ave Surrey BC",
+      "included": true
+    },
+    {
+      "number": "TC26052",
+      "sales_initials": "TAO",
+      "sales": "Travis Orlandi",
+      "customer": "Nash Custom Homes",
+      "source_project_type": "Duplex",
+      "type": "Duplex",
+      "address": "3406 Ontario St Van",
+      "included": true
+    },
+    {
+      "number": "TC26053",
+      "sales_initials": "CG",
+      "sales": "Chad Guidi",
+      "customer": "Blueline Contracting",
+      "source_project_type": "SFD",
+      "type": "SFD",
+      "address": "1034 Goat Ridge Dr Britannia Beach",
+      "included": true
+    },
+    {
+      "number": "TC26054",
+      "sales_initials": "CC",
+      "sales": "Carl Canuel",
+      "customer": "Matacan",
+      "source_project_type": "Duplex",
+      "type": "Duplex",
+      "address": "3365 Victoria Dr Van",
+      "included": true
+    },
+    {
+      "number": "TC26055",
+      "sales_initials": "CC",
+      "sales": "Carl Canuel",
+      "customer": "Dulex",
+      "source_project_type": "Triplex x4",
+      "type": "Multiplex",
+      "address": "7362 Pemberton Farm Rd. Pemberton BC",
+      "included": true
+    },
+    {
+      "number": "TC26056",
+      "sales_initials": "TO",
+      "sales": "Tyson Orlandi",
+      "customer": "Kerrisdale",
+      "source_project_type": "Duplex",
+      "type": "Duplex",
+      "address": "3221 East 16 Van",
+      "included": true
+    },
+    {
+      "number": "TC26057",
+      "sales_initials": "TAO",
+      "sales": "Travis Orlandi",
+      "customer": "Nash Custom Homes",
+      "source_project_type": "SFD",
+      "type": "SFD",
+      "address": "6941 Barcelona Dr Kelowna",
+      "included": true
+    },
+    {
+      "number": "TC26058",
+      "sales_initials": "GB",
+      "sales": "George Bal",
+      "customer": "Tangerine",
+      "source_project_type": "Townhomes",
+      "type": "Townhome",
+      "address": "1292 Rosenburg Wy Coquitlam",
+      "included": true
+    },
+    {
+      "number": "TC26059",
+      "sales_initials": "TAO",
+      "sales": "Travis Orlandi",
+      "customer": "Jethro Projects",
+      "source_project_type": "Multi",
+      "type": "Multi",
+      "address": "5360 204 St Langley BC",
+      "included": true
+    },
+    {
+      "number": "TC26060",
+      "sales_initials": "TAO",
+      "sales": "Travis Orlandi",
+      "customer": "Trillium",
+      "source_project_type": "Multi",
+      "type": "Multi",
+      "address": "3839 Commercial Van (Hendry)",
+      "included": true
+    },
+    {
+      "number": "TC26061",
+      "sales_initials": "CG",
+      "sales": "Chad Guidi",
+      "customer": "Feature Projects",
+      "source_project_type": "SFD",
+      "type": "SFD",
+      "address": "1338 Matthews Van",
+      "included": true
+    },
+    {
+      "number": "TC26062",
+      "sales_initials": "TO",
+      "sales": "Tyson Orlandi",
+      "customer": "ITC",
+      "source_project_type": "Multi",
+      "type": "Multi",
+      "address": "2828 W 4th Ave Van BC",
+      "included": true
+    },
+    {
+      "number": "TC26063",
+      "sales_initials": "TO",
+      "sales": "Tyson Orlandi",
+      "customer": "ITC",
+      "source_project_type": "Multi",
+      "type": "Multi",
+      "address": "647 Cook Rd. Kelowna BC",
+      "included": true
+    },
+    {
+      "number": "TC26064",
+      "sales_initials": "JH",
+      "sales": "James Harper",
+      "customer": "Kindred",
+      "source_project_type": "Multi",
+      "type": "Multi",
+      "address": "2540 Grandview Hyw Van",
+      "included": true
+    },
+    {
+      "number": "TC26065",
+      "sales_initials": "TO",
+      "sales": "Tyson Orlandi",
+      "customer": "Linwood",
+      "source_project_type": "SFD",
+      "type": "SFD",
+      "address": "Reininger",
+      "included": true
+    },
+    {
+      "number": "TC26066",
+      "sales_initials": "TO",
+      "sales": "Tyson Orlandi",
+      "customer": "Kerrisdale",
+      "source_project_type": "Multi",
+      "type": "Multi",
+      "address": "1612 St Georges N Van",
+      "included": true
+    },
+    {
+      "number": "TC26067",
+      "sales_initials": "TO",
+      "sales": "Tyson Orlandi",
+      "customer": "Linwood",
+      "source_project_type": "SFD",
+      "type": "SFD",
+      "address": "Waetzig",
+      "included": true
+    },
+    {
+      "number": "TC26068",
+      "sales_initials": "TO",
+      "sales": "Tyson Orlandi",
+      "customer": "Linwood",
+      "source_project_type": "SFD",
+      "type": "SFD",
+      "address": "Schroeder",
+      "included": true
+    },
+    {
+      "number": "TC26069",
+      "sales_initials": "CG",
+      "sales": "Chad Guidi",
+      "customer": "Casa Framing",
+      "source_project_type": "SFD",
+      "type": "SFD",
+      "address": "699 Poplar St Coq",
+      "included": true
+    },
+    {
+      "number": "TC26070",
+      "sales_initials": "JH",
+      "sales": "James Harper",
+      "customer": "Kindred",
+      "source_project_type": "Multi x3 buildings",
+      "type": "Multi",
+      "address": "1000 Alpha Lake Road, Whistler, BC",
+      "included": true
+    },
+    {
+      "number": "TC26071",
+      "sales_initials": "CC",
+      "sales": "Carl Canuel",
+      "customer": "Pinnacle Homes",
+      "source_project_type": "Float Home",
+      "type": "Others",
+      "address": "127 Port Augusta St Comox",
+      "included": true
+    },
+    {
+      "number": "TC26072",
+      "sales_initials": "CW",
+      "sales": "Clark White",
+      "customer": "Onni",
+      "source_project_type": "Multi",
+      "type": "Multi",
+      "address": "7811 Alderbridge Richmond (Riva 5)",
+      "included": true
+    },
+    {
+      "number": "TC26073",
+      "sales_initials": "GB",
+      "sales": "George Bal",
+      "customer": "Tangerine",
+      "source_project_type": "Multi",
+      "type": "Multi",
+      "address": "14520 104A Ave Surrey (Fellow)",
+      "included": true
+    },
+    {
+      "number": "TC26074",
+      "sales_initials": "CC",
+      "sales": "Carl Canuel",
+      "customer": "Farkas",
+      "source_project_type": "SFD",
+      "type": "SFD",
+      "address": "4761 Wesley Dr Delta",
+      "included": true
+    },
+    {
+      "number": "TC26075",
+      "sales_initials": "GB",
+      "sales": "George Bal",
+      "customer": "Can West Developers",
+      "source_project_type": "Duplex",
+      "type": "Duplex",
+      "address": "8515 Royal Oak Ave Burnaby",
+      "included": true
+    },
+    {
+      "number": "TC26076",
+      "sales_initials": "TO",
+      "sales": "Tyson Orlandi",
+      "customer": "Kerrisdale",
+      "source_project_type": "Laneway",
+      "type": "Others",
+      "address": "2395 E 38 Van",
+      "included": true
+    },
+    {
+      "number": "TC26077",
+      "sales_initials": "GB",
+      "sales": "George Bal",
+      "customer": "Teragon",
+      "source_project_type": "SFD",
+      "type": "SFD",
+      "address": "3961 W 13 Van",
+      "included": true
+    },
+    {
+      "number": "TC26078",
+      "sales_initials": "GB",
+      "sales": "George Bal",
+      "customer": "Mirani Homes",
+      "source_project_type": "SFD",
+      "type": "SFD",
+      "address": "2177 E 11 Van",
+      "included": true
+    },
+    {
+      "number": "TC26079",
+      "sales_initials": "TO",
+      "sales": "Tyson Orlandi",
+      "customer": "Kerrisdale",
+      "source_project_type": "Multiplex",
+      "type": "Multiplex",
+      "address": "7760 Mary Ave Burnaby",
+      "included": true
+    },
+    {
+      "number": "TC26080",
+      "sales_initials": "TO",
+      "sales": "Tyson Orlandi",
+      "customer": "Kerrisdale",
+      "source_project_type": "SFD",
+      "type": "SFD",
+      "address": "2050 W 16 Van",
+      "included": true
+    },
+    {
+      "number": "TC26081",
+      "sales_initials": "CG",
+      "sales": "Chad Guidi",
+      "customer": "Abstract Developments",
+      "source_project_type": "Renovation",
+      "type": "Others",
+      "address": "1587 York Pl Victoria",
+      "included": true
+    },
+    {
+      "number": "TC26082",
+      "sales_initials": "TAO",
+      "sales": "Travis Orlandi",
+      "customer": "Beedie Living",
+      "source_project_type": "Multi",
+      "type": "Multi",
+      "address": "58 & 78 Kong Court Coquitlam",
+      "included": true
+    },
+    {
+      "number": "TC26083",
+      "sales_initials": "CC",
+      "sales": "Carl Canuel",
+      "customer": "Klaftar Management",
+      "source_project_type": "Temple",
+      "type": "Others",
+      "address": "2639 Campbell Rd. Golden BC",
+      "included": true
+    },
+    {
+      "number": "TC26084",
+      "sales_initials": "TO",
+      "sales": "Tyson Orlandi",
+      "customer": "Linwood",
+      "source_project_type": "SFD",
+      "type": "SFD",
+      "address": "Sorensen",
+      "included": true
+    },
+    {
+      "number": "TC26085",
+      "sales_initials": "TAO",
+      "sales": "Travis Orlandi",
+      "customer": "EDIFICE",
+      "source_project_type": "Service Building",
+      "type": "Others",
+      "address": "336 & 338 Quattishe Rd. Coal Habour BC",
+      "included": true
+    },
+    {
+      "number": "TC26086",
+      "sales_initials": "TO",
+      "sales": "Tyson Orlandi",
+      "customer": "Linwood",
+      "source_project_type": "SFD",
+      "type": "SFD",
+      "address": "Heinke",
+      "included": true
+    },
+    {
+      "number": "TC26087",
+      "sales_initials": "TO",
+      "sales": "Tyson Orlandi",
+      "customer": "Linwood",
+      "source_project_type": "SFD",
+      "type": "SFD",
+      "address": "Thavamany",
+      "included": true
+    },
+    {
+      "number": "TC26088",
+      "sales_initials": "TAO",
+      "sales": "Travis Orlandi",
+      "customer": "W&J Construction",
+      "source_project_type": "Multi",
+      "type": "Multi",
+      "address": "2114/2098 Beacon Ave & 2107 Jahn Pl Sidney BC",
+      "included": true
+    },
+    {
+      "number": "TC26089",
+      "sales_initials": "MD",
+      "sales": "Matt Dean",
+      "customer": "Winton Homes",
+      "source_project_type": "Multi",
+      "type": "Multi",
+      "address": "4500 Ospika Blvd South Prince George BC",
+      "included": true
+    },
+    {
+      "number": "TC26090",
+      "sales_initials": "TAO",
+      "sales": "Travis Orlandi",
+      "customer": "Axiom",
+      "source_project_type": "Multi x2 buildings",
+      "type": "Multi",
+      "address": "7880 Newcombe St. Burnaby BC",
+      "included": true
+    },
+    {
+      "number": "TC26091",
+      "sales_initials": "JH",
+      "sales": "James Harper",
+      "customer": "Sterling Pacific",
+      "source_project_type": "Duplex",
+      "type": "Duplex",
+      "address": "5706-5710 Aquila Ave W Van",
+      "included": true
+    },
+    {
+      "number": "TC26092",
+      "sales_initials": "GB",
+      "sales": "George Bal",
+      "customer": "Leone Homes",
+      "source_project_type": "Townhomes",
+      "type": "Townhome",
+      "address": "4558 208 St Langley",
+      "included": true
+    },
+    {
+      "number": "TC26094",
+      "sales_initials": "TO",
+      "sales": "Tyson Orlandi",
+      "customer": "Kerrisdale",
+      "source_project_type": "Duplex",
+      "type": "Duplex",
+      "address": "3771 Portland St Burnaby",
+      "included": true
+    },
+    {
+      "number": "TC26095",
+      "sales_initials": "TO",
+      "sales": "Tyson Orlandi",
+      "customer": "Kerrisdale",
+      "source_project_type": "SFD",
+      "type": "SFD",
+      "address": "5421 5B Ave Delta",
+      "included": true
+    },
+    {
+      "number": "TC26096",
+      "sales_initials": "CG",
+      "sales": "Chad Guidi",
+      "customer": "Fall Line Construction",
+      "source_project_type": "SFD",
+      "type": "SFD",
+      "address": "8603 Jon Montgomery Stroll Whistler BC",
+      "included": true
+    },
+    {
+      "number": "TC26097",
+      "sales_initials": "GB",
+      "sales": "George Bal",
+      "customer": "Haley McDougal",
+      "source_project_type": "SFD",
+      "type": "SFD",
+      "address": "2042 W 36th Ave Van",
+      "included": true
+    },
+    {
+      "number": "TC26098",
+      "sales_initials": "TO",
+      "sales": "Tyson Orlandi",
+      "customer": "Kerrisdale",
+      "source_project_type": "SFD",
+      "type": "SFD",
+      "address": "7531 Greenlees Rd Richmond",
+      "included": true
+    },
+    {
+      "number": "TC26099",
+      "sales_initials": "GB",
+      "sales": "George Bal",
+      "customer": "Postle Construction",
+      "source_project_type": "SFD",
+      "type": "SFD",
+      "address": "4408 Stone Crescent West Van BC",
+      "included": true
+    },
+    {
+      "number": "TC26100",
+      "sales_initials": "JH",
+      "sales": "James Harper",
+      "customer": "Nuframe",
+      "source_project_type": "Multi",
+      "type": "Multi",
+      "address": "19085 119B Ave Pitt Meadows BC",
+      "included": true
+    },
+    {
+      "number": "TC26101",
+      "sales_initials": "TO",
+      "sales": "Tyson Orlandi",
+      "customer": "Kerrisdale",
+      "source_project_type": "Duplex",
+      "type": "Duplex",
+      "address": "4386 W 2nd Ave Van",
+      "included": true
+    },
+    {
+      "number": "TC26102",
+      "sales_initials": "CG",
+      "sales": "Chad Guidi",
+      "customer": "Casman Projects",
+      "source_project_type": "Townhomes",
+      "type": "Townhome",
+      "address": "Seenupin Rd Lot 62 Capital Regional District",
+      "included": true
+    },
+    {
+      "number": "TC26103",
+      "sales_initials": "GB",
+      "sales": "George Bal",
+      "customer": "Mirani Homes",
+      "source_project_type": "Duplex",
+      "type": "Duplex",
+      "address": "539 E 7th Van BC",
+      "included": true
+    },
+    {
+      "number": "TC26104",
+      "sales_initials": "CG",
+      "sales": "Chad Guidi",
+      "customer": "Abstract Developments",
+      "source_project_type": "Townhomes",
+      "type": "Townhome",
+      "address": "4324 Majestic Dr. Victoria BC",
+      "included": true
+    },
+    {
+      "number": "TC26105",
+      "sales_initials": "TO",
+      "sales": "Tyson Orlandi",
+      "customer": "Kerrisdale",
+      "source_project_type": "Multiplex",
+      "type": "Multiplex",
+      "address": "4687 Angus Dr Van",
+      "included": true
+    },
+    {
+      "number": "TC26106",
+      "sales_initials": "TAO",
+      "sales": "Travis Orlandi",
+      "customer": "Beedie Living",
+      "source_project_type": "Multi & Townhomes x5 Bldg",
+      "type": "Townhome",
+      "address": "7118 & 7280 Macpherson Ave Burnaby BC",
+      "included": true
+    },
+    {
+      "number": "TC26107",
+      "sales_initials": "TO",
+      "sales": "Tyson Orlandi",
+      "customer": "Kerrisdale",
+      "source_project_type": "Duplex",
+      "type": "Duplex",
+      "address": "777 W 28th Ave Van",
+      "included": true
+    },
+    {
+      "number": "TC26108",
+      "sales_initials": "TO",
+      "sales": "Tyson Orlandi",
+      "customer": "Kerrisdale",
+      "source_project_type": "Renovation",
+      "type": "Others",
+      "address": "3-55 Electronic Ave Port Moody",
+      "included": true
+    },
+    {
+      "number": "TC26109",
+      "sales_initials": "TAO",
+      "sales": "Travis Orlandi",
+      "customer": "High Peak Timber Framing",
+      "source_project_type": "SFD",
+      "type": "SFD",
+      "address": "1041 Williams Gate Lane Revelstoke BC",
+      "included": true
+    },
+    {
+      "number": "TC26110",
+      "sales_initials": "GB",
+      "sales": "George Bal",
+      "customer": "Eyco",
+      "source_project_type": "SFD",
+      "type": "SFD",
+      "address": "920 Clipper Pl Bowen Island",
+      "included": true
+    },
+    {
+      "number": "TC26111",
+      "sales_initials": "TO",
+      "sales": "Tyson Orlandi",
+      "customer": "Linwood",
+      "source_project_type": "SFD",
+      "type": "SFD",
+      "address": "Kaiser",
+      "included": true
+    },
+    {
+      "number": "TC26112",
+      "sales_initials": "CG",
+      "sales": "Chad Guidi",
+      "customer": "Abstract Developments",
+      "source_project_type": "Tri-plex",
+      "type": "Multiplex",
+      "address": "397 Maria Rd. Victoria BC",
+      "included": true
+    },
+    {
+      "number": "TC26113",
+      "sales_initials": "GB",
+      "sales": "George Bal",
+      "customer": "1548990 BC LTD",
+      "source_project_type": "Duplex",
+      "type": "Duplex",
+      "address": "1610 East 10 Ave Van BC",
+      "included": true
+    },
+    {
+      "number": "TC26114",
+      "sales_initials": "TAO",
+      "sales": "Travis Orlandi",
+      "customer": "High Peak Timber Framing",
+      "source_project_type": "Duplex",
+      "type": "Duplex",
+      "address": "722 Patricia St Jasper AB",
+      "included": true
+    },
+    {
+      "number": "TC26115",
+      "sales_initials": "TO",
+      "sales": "Tyson Orlandi",
+      "customer": "Kerrisdale",
+      "source_project_type": "4-plex",
+      "type": "Multiplex",
+      "address": "3231 E 53rd Van",
+      "included": true
+    },
+    {
+      "number": "TC26116",
+      "sales_initials": "TO",
+      "sales": "Tyson Orlandi",
+      "customer": "Kerrisdale",
+      "source_project_type": "Laneway",
+      "type": "Others",
+      "address": "10931 Swinton Cres Richmond",
+      "included": true
+    },
+    {
+      "number": "TC26117",
+      "sales_initials": "TO",
+      "sales": "Tyson Orlandi",
+      "customer": "Kerrisdale",
+      "source_project_type": "SFD",
+      "type": "SFD",
+      "address": "4853 Cedar Cres Delta",
+      "included": true
+    },
+    {
+      "number": "TC26118",
+      "sales_initials": "TAO",
+      "sales": "Travis Orlandi",
+      "customer": "Estrada",
+      "source_project_type": "Multiplex 4 building",
+      "type": "Multiplex",
+      "address": "4334 Rumble St Burnaby BC",
+      "included": true
+    },
+    {
+      "number": "TC26119",
+      "sales_initials": "CG",
+      "sales": "Chad Guidi",
+      "customer": "Twin Lions Contracting",
+      "source_project_type": "SFD and Coach",
+      "type": "SFD",
+      "address": "4003 Delbrook Ave N Van BC",
+      "included": true
+    },
+    {
+      "number": "TC26120",
+      "sales_initials": "CG",
+      "sales": "Chad Guidi",
+      "customer": "Abstract Developments",
+      "source_project_type": "Tri-plex",
+      "type": "Multiplex",
+      "address": "2550 Arbutus Rd Victoria",
+      "included": true
+    },
+    {
+      "number": "TC26121",
+      "sales_initials": "TO",
+      "sales": "Tyson Orlandi",
+      "customer": "Linwood",
+      "source_project_type": "SFD",
+      "type": "SFD",
+      "address": "Korogonas",
+      "included": true
+    },
+    {
+      "number": "TC26122",
+      "sales_initials": "TO",
+      "sales": "Tyson Orlandi",
+      "customer": "Linwood",
+      "source_project_type": "SFD",
+      "type": "SFD",
+      "address": "Jasper Raft Tours",
+      "included": true
+    },
+    {
+      "number": "TC26123",
+      "sales_initials": "TO",
+      "sales": "Tyson Orlandi",
+      "customer": "Kerrisdale",
+      "source_project_type": "Multiplex",
+      "type": "Multiplex",
+      "address": "5680 Monarch St Burnaby",
+      "included": true
+    },
+    {
+      "number": "TC26124",
+      "sales_initials": "CG",
+      "sales": "Chad Guidi",
+      "customer": "Cash CW",
+      "source_project_type": "Workshop",
+      "type": "Others",
+      "address": "20228 98A Ave Langley BC",
+      "included": true
+    },
+    {
+      "number": "TC26126",
+      "sales_initials": "TO",
+      "sales": "Tyson Orlandi",
+      "customer": "ITC",
+      "source_project_type": "Multi",
+      "type": "Multi",
+      "address": "343 Anson Rd Esquimalt BC",
+      "included": true
+    },
+    {
+      "number": "TC26127",
+      "sales_initials": "TAO",
+      "sales": "Travis Orlandi",
+      "customer": "Ventana Construction",
+      "source_project_type": "Multi",
+      "type": "Multi",
+      "address": "07968 Seymour Creek No2 Orwell St N Van BC",
+      "included": true
+    },
+    {
+      "number": "TC26128",
+      "sales_initials": "GB",
+      "sales": "George Bal",
+      "customer": "Sac Moh Ventures",
+      "source_project_type": "Duplex",
+      "type": "Duplex",
+      "address": "3058 Charles St Van BC",
+      "included": true
+    },
+    {
+      "number": "TC26129",
+      "sales_initials": "TO",
+      "sales": "Tyson Orlandi",
+      "customer": "Kerrisdale",
+      "source_project_type": "SFD",
+      "type": "SFD",
+      "address": "Uplands Lot 14 Type 2",
+      "included": true
+    },
+    {
+      "number": "TC26130",
+      "sales_initials": "CW",
+      "sales": "Clark White",
+      "customer": "Madness Construction",
+      "source_project_type": "Deck",
+      "type": "Others",
+      "address": "Lilly's Place",
+      "included": true
+    },
+    {
+      "number": "TC26131",
+      "sales_initials": "GB",
+      "sales": "George Bal",
+      "customer": "Ruscitti Bros",
+      "source_project_type": "Multiplex",
+      "type": "Multiplex",
+      "address": "2998 Adanac St Van BC",
+      "included": true
+    },
+    {
+      "number": "TC26132",
+      "sales_initials": "SB",
+      "sales": "Shaan Bal",
+      "customer": "Uptown Solutions Group",
+      "source_project_type": "Duplex",
+      "type": "Duplex",
+      "address": "544 E 29th Ave Van BC",
+      "included": true
+    },
+    {
+      "number": "TC26133",
+      "sales_initials": "TO",
+      "sales": "Tyson Orlandi",
+      "customer": "Linwood",
+      "source_project_type": "SFD",
+      "type": "SFD",
+      "address": "Hart",
+      "included": true
+    },
+    {
+      "number": "TC26134",
+      "sales_initials": "TO",
+      "sales": "Tyson Orlandi",
+      "customer": "Kerrisdale",
+      "source_project_type": "Renovation",
+      "type": "Others",
+      "address": "3045 W 6th Van",
+      "included": true
+    },
+    {
+      "number": "TC26135",
+      "sales_initials": "TO",
+      "sales": "Tyson Orlandi",
+      "customer": "Linwood",
+      "source_project_type": "SFD",
+      "type": "SFD",
+      "address": "Edwardson",
+      "included": true
+    },
+    {
+      "number": "TC26136",
+      "sales_initials": "TO",
+      "sales": "Tyson Orlandi",
+      "customer": "Linwood",
+      "source_project_type": "SFD",
+      "type": "SFD",
+      "address": "Bristol Bay",
+      "included": true
+    },
+    {
+      "number": "TC26137",
+      "sales_initials": "TO",
+      "sales": "Tyson Orlandi",
+      "customer": "Kerrisdale",
+      "source_project_type": "SFD",
+      "type": "SFD",
+      "address": "2032 Nanton Ave Van",
+      "included": true
+    },
+    {
+      "number": "TC26138",
+      "sales_initials": "TAO",
+      "sales": "Travis Orlandi",
+      "customer": "Northstarfs",
+      "source_project_type": "Mezzanine",
+      "type": "Others",
+      "address": "108-9465 189 St Surrey",
+      "included": true
+    },
+    {
+      "number": "TC26141",
+      "sales_initials": "TO",
+      "sales": "Tyson Orlandi",
+      "customer": "Kerrisdale",
+      "source_project_type": "Laneway",
+      "type": "Others",
+      "address": "7286 Nanaimo St Van",
+      "included": true
+    },
+    {
+      "number": "TC26142",
+      "sales_initials": "TO",
+      "sales": "Tyson Orlandi",
+      "customer": "Kerrisdale",
+      "source_project_type": "SFD",
+      "type": "SFD",
+      "address": "3141 W 35th Ave Van",
+      "included": true
+    },
+    {
+      "number": "TC26143",
+      "sales_initials": "CW",
+      "sales": "Clark White",
+      "customer": "Paul",
+      "source_project_type": "Stairs Balconies",
+      "type": "Others",
+      "address": "14591 Gordon Ave, White Rock BC",
+      "included": true
+    },
+    {
+      "number": "TC26144",
+      "sales_initials": "CC",
+      "sales": "Carl Canuel",
+      "customer": "Vasto Builders",
+      "source_project_type": "Animal Shelter",
+      "type": "Others",
+      "address": "3202 Norland Ave Burnaby",
+      "included": true
+    },
+    {
+      "number": "TC26145",
+      "sales_initials": "CG",
+      "sales": "Chad Guidi",
+      "customer": "Giglio Construction",
+      "source_project_type": "Duplex",
+      "type": "Duplex",
+      "address": "528 Marine Dr Gibsons BC",
+      "included": true
+    },
+    {
+      "number": "TC26146",
+      "sales_initials": "GB",
+      "sales": "George Bal",
+      "customer": "Tangerine",
+      "source_project_type": "Multi",
+      "type": "Multi",
+      "address": "20282 Patterson Ave Maple Ridge",
+      "included": true
+    },
+    {
+      "number": "TC26147",
+      "sales_initials": "CG",
+      "sales": "Chad Guidi",
+      "customer": "Albion Construction",
+      "source_project_type": "Multi",
+      "type": "Multi",
+      "address": "20675 Eastleigh Cres Langley BC",
+      "included": true
+    },
+    {
+      "number": "TC26148",
+      "sales_initials": "CG",
+      "sales": "Chad Guidi",
+      "customer": "Brown Bros Framing",
+      "source_project_type": "Multi",
+      "type": "Multi",
+      "address": "2245 McAllister Ave Port Coquitlam BC",
+      "included": true
+    },
+    {
+      "number": "TC26149",
+      "sales_initials": "TO",
+      "sales": "Tyson Orlandi",
+      "customer": "Kerrisdale",
+      "source_project_type": "SFD",
+      "type": "SFD",
+      "address": "2942 Grant St Van",
+      "included": true
+    },
+    {
+      "number": "TC26150",
+      "sales_initials": "SB",
+      "sales": "Shaan Bal",
+      "customer": "Biring Bros",
+      "source_project_type": "Multiplex",
+      "type": "Multiplex",
+      "address": "6660 Aubrey St Burnaby BC",
+      "included": true
+    },
+    {
+      "number": "TC26151",
+      "sales_initials": "TO",
+      "sales": "Tyson Orlandi",
+      "customer": "Kerrisdale",
+      "source_project_type": "Multi",
+      "type": "Multi",
+      "address": "7028 River Pkwy Richmond (Riva 6)",
+      "included": true
+    },
+    {
+      "number": "TC26152",
+      "sales_initials": "CW",
+      "sales": "Clark White",
+      "customer": "Skylands",
+      "source_project_type": "Multiplex",
+      "type": "Multiplex",
+      "address": "6160 Red fern Cres Richmond BC",
+      "included": true
+    },
+    {
+      "number": "TC26153",
+      "sales_initials": "TAO",
+      "sales": "Travis Orlandi",
+      "customer": "Glenhaven",
+      "source_project_type": "SFD",
+      "type": "SFD",
+      "address": "5221 1 Ave Delta BC",
+      "included": true
+    },
+    {
+      "number": "TC26154",
+      "sales_initials": "GB",
+      "sales": "George Bal",
+      "customer": "Leone Homes",
+      "source_project_type": "Townhomes",
+      "type": "Townhome",
+      "address": "4519 200A St Langley BC",
+      "included": true
+    },
+    {
+      "number": "TC26155",
+      "sales_initials": "CG",
+      "sales": "Chad Guidi",
+      "customer": "Wester Construction",
+      "source_project_type": "Multi",
+      "type": "Multi",
+      "address": "7491 No. 1 Rd Richmond",
+      "included": true
+    },
+    {
+      "number": "TC26156",
+      "sales_initials": "CG",
+      "sales": "Chad Guidi",
+      "customer": "Giglio Construction",
+      "source_project_type": "Multi",
+      "type": "Multi",
+      "address": "5020 Earls St Van BC",
+      "included": true
+    },
+    {
+      "number": "TC26157",
+      "sales_initials": "TO",
+      "sales": "Tyson Orlandi",
+      "customer": "Kerrisdale",
+      "source_project_type": "Renovation",
+      "type": "Others",
+      "address": "1125 Mountain Ayre Ln Anmore",
+      "included": true
+    },
+    {
+      "number": "TC26158",
+      "sales_initials": "TAO",
+      "sales": "Travis Orlandi",
+      "customer": "Vanmar",
+      "source_project_type": "Multi",
+      "type": "Multi",
+      "address": "5937 Kincaid St Burnaby",
+      "included": true
+    },
+    {
+      "number": "TC26159",
+      "sales_initials": "GB",
+      "sales": "George Bal",
+      "customer": "Eyco",
+      "source_project_type": "SFD",
+      "type": "SFD",
+      "address": "3536 W 1st Ave Vancouver",
+      "included": true
+    },
+    {
+      "number": "TC26160",
+      "sales_initials": "CG",
+      "sales": "Chad Guidi",
+      "customer": "Axomm",
+      "source_project_type": "SFD",
+      "type": "SFD",
+      "address": "536 Tempe Cres N Van BC",
+      "included": true
+    },
+    {
+      "number": "TC26162",
+      "sales_initials": "TO",
+      "sales": "Tyson Orlandi",
+      "customer": "Linwood",
+      "source_project_type": "SFD",
+      "type": "SFD",
+      "address": "Sommerfeld",
+      "included": true
+    },
+    {
+      "number": "TC26163",
+      "sales_initials": "TAO",
+      "sales": "Travis Orlandi",
+      "customer": "High Peak Timber Framing",
+      "source_project_type": "Cabin",
+      "type": "Others",
+      "address": "Downie Loop Rd. Revelstoke BC",
+      "included": true
+    },
+    {
+      "number": "TC26164",
+      "sales_initials": "TAO",
+      "sales": "Travis Orlandi",
+      "customer": "Trillium Projects",
+      "source_project_type": "Multi",
+      "type": "Multi",
+      "address": "33503 Holland Ave Abbotsford BC",
+      "included": true
+    },
+    {
+      "number": "TC26165",
+      "sales_initials": "CC",
+      "sales": "Carl Canuel",
+      "customer": "TYRG",
+      "source_project_type": "SFD",
+      "type": "SFD",
+      "address": "1585 E 13th Ave Van",
+      "included": true
+    },
+    {
+      "number": "TC26166",
+      "sales_initials": "CC",
+      "sales": "Carl Canuel",
+      "customer": "Khizer Daya",
+      "source_project_type": "Duplex",
+      "type": "Duplex",
+      "address": "11453 142 St Surrey",
+      "included": true
+    },
+    {
+      "number": "TC26167",
+      "sales_initials": "GB",
+      "sales": "George Bal",
+      "customer": "Ranjit Dhothra",
+      "source_project_type": "SFD",
+      "type": "SFD",
+      "address": "11726 94A Ave Delta",
+      "included": true
+    },
+    {
+      "number": "TC26168",
+      "sales_initials": "GB",
+      "sales": "George Bal",
+      "customer": "Tangerine",
+      "source_project_type": "Multiplex",
+      "type": "Multiplex",
+      "address": "5621 Culloden St Vancouver",
+      "included": true
+    },
+    {
+      "number": "TC26169",
+      "sales_initials": "GB",
+      "sales": "George Bal",
+      "customer": "Vandwell",
+      "source_project_type": "Duplex",
+      "type": "Duplex",
+      "address": "408 E 20th Ave Vancouver",
+      "included": true
+    },
+    {
+      "number": "TC26170",
+      "sales_initials": "TO",
+      "sales": "Tyson Orlandi",
+      "customer": "Kerrisdale",
+      "source_project_type": "SFD",
+      "type": "SFD",
+      "address": "2156 E 45th Ave Vancouver",
+      "included": true
+    },
+    {
+      "number": "TC26171",
+      "sales_initials": "GB",
+      "sales": "George Bal",
+      "customer": "Keystone",
+      "source_project_type": "SFD",
+      "type": "SFD",
+      "address": "3019 Point Grey Rd. Vancouver",
+      "included": true
+    },
+    {
+      "number": "TC26172",
+      "sales_initials": "TO",
+      "sales": "Tyson Orlandi",
+      "customer": "Linwood",
+      "source_project_type": "SFD",
+      "type": "SFD",
+      "address": "Phillips",
+      "included": true
+    },
+    {
+      "number": "TC26173",
+      "sales_initials": "CG",
+      "sales": "Chad Guidi",
+      "customer": "Giglio Construction",
+      "source_project_type": "Multi",
+      "type": "Multi",
+      "address": "115 East Keith Rd N Van",
+      "included": true
+    },
+    {
+      "number": "TC26174",
+      "sales_initials": "TAO",
+      "sales": "Travis Orlandi",
+      "customer": "Kanin Construction",
+      "source_project_type": "Childcare Building",
+      "type": "Others",
+      "address": "14290-108 Ave Surrey BC",
+      "included": true
+    },
+    {
+      "number": "TC26176",
+      "sales_initials": "TO",
+      "sales": "Tyson Orlandi",
+      "customer": "ITC",
+      "source_project_type": "Multi",
+      "type": "Multi",
+      "address": "Garden Club Hayes 99",
+      "included": true
+    },
+    {
+      "number": "TC26177",
+      "sales_initials": "CT",
+      "sales": "Carter Turner",
+      "customer": "Masa Developments",
+      "source_project_type": "Duplex",
+      "type": "Duplex",
+      "address": "336 E 43rd Ave Van",
+      "included": true
+    },
+    {
+      "number": "TC26178",
+      "sales_initials": "CG",
+      "sales": "Chad Guidi",
+      "customer": "Gulzar Investments",
+      "source_project_type": "Multiplex",
+      "type": "Multiplex",
+      "address": "647 Ewen Ave New West",
+      "included": true
+    },
+    {
+      "number": "TC26179",
+      "sales_initials": "TO",
+      "sales": "Tyson Orlandi",
+      "customer": "Kerrisdale",
+      "source_project_type": "SFD w/Laneway",
+      "type": "SFD",
+      "address": "3589 W 20th Ave Vancouver BC",
+      "included": true
+    },
+    {
+      "number": "TC26180",
+      "sales_initials": "TO",
+      "sales": "Tyson Orlandi",
+      "customer": "Kerrisdale",
+      "source_project_type": "Townhomes",
+      "type": "Townhome",
+      "address": "4861 Mckee Place Burnaby BC",
+      "included": true
+    },
+    {
+      "number": "TC26181",
+      "sales_initials": "GB",
+      "sales": "George Bal",
+      "customer": "Leone Homes",
+      "source_project_type": "Townhomes",
+      "type": "Townhome",
+      "address": "6623-6633 Macdonald St. Vancouver BC",
+      "included": true
+    },
+    {
+      "number": "TC26182",
+      "sales_initials": "TAO",
+      "sales": "Travis Orlandi",
+      "customer": "Vanmar",
+      "source_project_type": "Multi",
+      "type": "Multi",
+      "address": "5625 Ladner Truck Rd. Delta BC",
+      "included": true
+    },
+    {
+      "number": "TC26183",
+      "sales_initials": "TAO",
+      "sales": "Travis Orlandi",
+      "customer": "Alpine Landscaping",
+      "source_project_type": "Duplex",
+      "type": "Duplex",
+      "address": "2073 E 7 Ave Vancouver BC",
+      "included": true
+    },
+    {
+      "number": "TC26184",
+      "sales_initials": "GB",
+      "sales": "George Bal",
+      "customer": "Motameni",
+      "source_project_type": "Duplex",
+      "type": "Duplex",
+      "address": "20575 Battle Ave Maple Ridge",
+      "included": true
+    },
+    {
+      "number": "TC26185",
+      "sales_initials": "TO",
+      "sales": "Tyson Orlandi",
+      "customer": "Kerrisdale",
+      "source_project_type": "Commercial",
+      "type": "Others",
+      "address": "1070 - 272 Street, Langley Township, BC",
+      "included": true
+    },
+    {
+      "number": "TC26186",
+      "sales_initials": "CG",
+      "sales": "Chad Guidi",
+      "customer": "Blackrete Builders",
+      "source_project_type": "Multi",
+      "type": "Multi",
+      "address": "2101 Sitka Court, Sooke, BC",
+      "included": true
+    },
+    {
+      "number": "TC26187",
+      "sales_initials": "CG",
+      "sales": "Chad Guidi",
+      "customer": "Blackrete Builders",
+      "source_project_type": "Multi",
+      "type": "Multi",
+      "address": "1056 Alston Street, Victoria, BC",
+      "included": true
+    },
+    {
+      "number": "TC26188",
+      "sales_initials": "TAO",
+      "sales": "Travis Orlandi",
+      "customer": "Total Reliance",
+      "source_project_type": "Multiplex",
+      "type": "Multiplex",
+      "address": "2218 E 39th Ave Vancouver, BC",
+      "included": true
+    },
+    {
+      "number": "TC26189",
+      "sales_initials": "TO",
+      "sales": "Tyson Orlandi",
+      "customer": "ITC",
+      "source_project_type": "Townhomes",
+      "type": "Townhome",
+      "address": "5310 & 5330 Crooked Branch Road, Van, BC",
+      "included": true
+    },
+    {
+      "number": "TC26190",
+      "sales_initials": "GB",
+      "sales": "George Bal",
+      "customer": "Westblu",
+      "source_project_type": "Laneway",
+      "type": "Others",
+      "address": "4027 West 31st Ave, Vancouver, BC",
+      "included": true
+    },
+    {
+      "number": "TC26191",
+      "sales_initials": "JH",
+      "sales": "James Harper",
+      "customer": "Nuframe",
+      "source_project_type": "Multi",
+      "type": "Multi",
+      "address": "325 Watfield Ave Nanaimo BC",
+      "included": true
+    },
+    {
+      "number": "TC26193",
+      "sales_initials": "TO",
+      "sales": "Tyson Orlandi",
+      "customer": "Kerrisdale",
+      "source_project_type": "Multiplex",
+      "type": "Multiplex",
+      "address": "5761 Sprott St. Burnaby",
+      "included": true
+    },
+    {
+      "number": "TC26194",
+      "sales_initials": "TO",
+      "sales": "Tyson Orlandi",
+      "customer": "Kerrisdale",
+      "source_project_type": "Multiplex",
+      "type": "Multiplex",
+      "address": "6465 Dawson St. Burnaby",
+      "included": true
+    },
+    {
+      "number": "TC26195",
+      "sales_initials": "TAO",
+      "sales": "Travis Orlandi",
+      "customer": "Ventana",
+      "source_project_type": "Multi",
+      "type": "Multi",
+      "address": "1415 Aspen Rd. Squamish BC",
+      "included": true
+    },
+    {
+      "number": "TC26196",
+      "sales_initials": "CG",
+      "sales": "Chad Guidi",
+      "customer": "Jim Construction 147BCL",
+      "source_project_type": "Duplex",
+      "type": "Duplex",
+      "address": "3242 Venables St Van",
+      "included": true
+    },
+    {
+      "number": "TC26197",
+      "sales_initials": "TO",
+      "sales": "Tyson Orlandi",
+      "customer": "Kerrisdale",
+      "source_project_type": "Multi",
+      "type": "Multi",
+      "address": "1184 Inlet St. Coquitlam BC",
+      "included": true
+    },
+    {
+      "number": "TC26198",
+      "sales_initials": "TO",
+      "sales": "Tyson Orlandi",
+      "customer": "Kerrisdale",
+      "source_project_type": "Accessory Reno",
+      "type": "Others",
+      "address": "4688 Eastridge Rd. N Van",
+      "included": true
+    },
+    {
+      "number": "TC26199",
+      "sales_initials": "JH",
+      "sales": "James Harper",
+      "customer": "Mierau Contracting",
+      "source_project_type": "Community Centre",
+      "type": "Others",
+      "address": "Chief Neskonlith Dr. Chase BC",
+      "included": true
+    },
+    {
+      "number": "TC26200",
+      "sales_initials": "TO",
+      "sales": "Tyson Orlandi",
+      "customer": "Linwood",
+      "source_project_type": "SFD w/Laneway",
+      "type": "SFD",
+      "address": "Malenchak",
+      "included": true
+    },
+    {
+      "number": "TC26201",
+      "sales_initials": "TO",
+      "sales": "Tyson Orlandi",
+      "customer": "Kerrisdale",
+      "source_project_type": "Multiplex",
+      "type": "Multiplex",
+      "address": "3170 Ash Street",
+      "included": true
+    },
+    {
+      "number": "TC26202",
+      "sales_initials": "TO",
+      "sales": "Tyson Orlandi",
+      "customer": "Kerrisdale",
+      "source_project_type": "Multiplex",
+      "type": "Multiplex",
+      "address": "4938 Fulwell St Burnaby",
+      "included": true
+    },
+    {
+      "number": "TC26203",
+      "sales_initials": "JH",
+      "sales": "James Harper",
+      "customer": "Nuframe",
+      "source_project_type": "Multi",
+      "type": "Multi",
+      "address": "33418 Marshall Rd Abbotsford (Aria Block B)",
+      "included": true
+    },
+    {
+      "number": "TC26204",
+      "sales_initials": "TO",
+      "sales": "Tyson Orlandi",
+      "customer": "Linwood",
+      "source_project_type": "SFD",
+      "type": "SFD",
+      "address": "Strom",
+      "included": true
+    },
+    {
+      "number": "TC26205",
+      "sales_initials": "JH",
+      "sales": "James Harper",
+      "customer": "Kindred Construction",
+      "source_project_type": "Multi",
+      "type": "Multi",
+      "address": "38028 Third Ave Squamish BC",
+      "included": true
+    },
+    {
+      "number": "TC26206",
+      "sales_initials": "TO",
+      "sales": "Tyson Orlandi",
+      "customer": "ITC",
+      "source_project_type": "Multi x3 Building",
+      "type": "Multi",
+      "address": "Modular Site Hayes 99",
+      "included": true
+    },
+    {
+      "number": "TC26207",
+      "sales_initials": "CC",
+      "sales": "Carl Canuel",
+      "customer": "Kinetic Construction",
+      "source_project_type": "Multi",
+      "type": "Multi",
+      "address": "B#368 19 Wing CFB Comox",
+      "included": true
+    },
+    {
+      "number": "TC26208",
+      "sales_initials": "CG",
+      "sales": "Chad Guidi",
+      "customer": "Darwin Construction",
+      "source_project_type": "Multi",
+      "type": "Multi",
+      "address": "1310 Monashee Dr. N Van BC",
+      "included": true
+    },
+    {
+      "number": "TC26209",
+      "sales_initials": "SB",
+      "sales": "Shaan Bal",
+      "customer": "Westmark Developments",
+      "source_project_type": "SFD",
+      "type": "SFD",
+      "address": "9431 Finn Rd Richmond",
+      "included": true
+    },
+    {
+      "number": "TC26210",
+      "sales_initials": "CC",
+      "sales": "Carl Canuel",
+      "customer": "Insignia Properties",
+      "source_project_type": "Multi",
+      "type": "Multi",
+      "address": "2731 Montrose Ave Abbotsford BC",
+      "included": true
+    },
+    {
+      "number": "TC26211",
+      "sales_initials": "TO",
+      "sales": "Tyson Orlandi",
+      "customer": "Kerrisdale",
+      "source_project_type": "Multi",
+      "type": "Multi",
+      "address": "5282 Granville St Van BC",
+      "included": true
+    },
+    {
+      "number": "TC26212",
+      "sales_initials": "TO",
+      "sales": "Tyson Orlandi",
+      "customer": "Kerrisdale",
+      "source_project_type": "Multiplex",
+      "type": "Multiplex",
+      "address": "176 West King Edward Van",
+      "included": true
+    },
+    {
+      "number": "TC26213",
+      "sales_initials": "TO",
+      "sales": "Tyson Orlandi",
+      "customer": "Kerrisdale",
+      "source_project_type": "Multiplex",
+      "type": "Multiplex",
+      "address": "158 West King Edward Van",
+      "included": true
+    },
+    {
+      "number": "TC26214",
+      "sales_initials": "CS",
+      "sales": "Clay Scott",
+      "customer": "Summit Brooke",
+      "source_project_type": "Multiplex",
+      "type": "Multiplex",
+      "address": "1640 Earle St Victoria BC",
+      "included": true
+    },
+    {
+      "number": "TC26215",
+      "sales_initials": "CS",
+      "sales": "Clay Scott",
+      "customer": "Summit Brooke",
+      "source_project_type": "Duplex x2",
+      "type": "Duplex",
+      "address": "5190 Del Monte Ave Sannich BC",
+      "included": true
+    },
+    {
+      "number": "TC26216",
+      "sales_initials": "TO",
+      "sales": "Tyson Orlandi",
+      "customer": "Kerrisdale",
+      "source_project_type": "SFD",
+      "type": "SFD",
+      "address": "6716 Osprey Pl Burnaby",
+      "included": true
+    },
+    {
+      "number": "TC26217",
+      "sales_initials": "TO",
+      "sales": "Tyson Orlandi",
+      "customer": "Kerrisdale",
+      "source_project_type": "SFD",
+      "type": "SFD",
+      "address": "6710 Osprey Pl Burnaby",
+      "included": true
+    },
+    {
+      "number": "TC26218",
+      "sales_initials": "TO",
+      "sales": "Tyson Orlandi",
+      "customer": "Linwood",
+      "source_project_type": "SFD",
+      "type": "SFD",
+      "address": "Chan",
+      "included": true
+    },
+    {
+      "number": "TC26219",
+      "sales_initials": "CG",
+      "sales": "Chad Guidi",
+      "customer": "Zoning",
+      "source_project_type": "Multi",
+      "type": "Multi",
+      "address": "2501 Blanshard St. Victoria BC",
+      "included": true
+    },
+    {
+      "number": "TC26220",
+      "sales_initials": "TO",
+      "sales": "Tyson Orlandi",
+      "customer": "Kerrisdale",
+      "source_project_type": "Multiplex",
+      "type": "Multiplex",
+      "address": "4044 Parker St Burnaby",
+      "included": true
+    },
+    {
+      "number": "TC26221",
+      "sales_initials": "CW",
+      "sales": "Clark White",
+      "customer": "Creative Ridge Contracting",
+      "source_project_type": "Shop",
+      "type": "Others",
+      "address": "12 Helmcken Rd. North Okanagan BC",
+      "included": true
+    },
+    {
+      "number": "TC26222",
+      "sales_initials": "CC",
+      "sales": "Carl Canuel",
+      "customer": "SitkaWest",
+      "source_project_type": "Boat House",
+      "type": "Others",
+      "address": "27871 113 Ave, Maple Ridge BC",
+      "included": true
+    },
+    {
+      "number": "TC26223",
+      "sales_initials": "CW",
+      "sales": "Clark White",
+      "customer": "Norm",
+      "source_project_type": "SFD",
+      "type": "SFD",
+      "address": "100 Mile House",
+      "included": true
+    },
+    {
+      "number": "TC26224",
+      "sales_initials": "JH",
+      "sales": "James Harper",
+      "customer": "Nuframe",
+      "source_project_type": "Multi",
+      "type": "Multi",
+      "address": "46723 Yale Rd. Chilliwack BC",
+      "included": true
+    },
+    {
+      "number": "TC26225",
+      "sales_initials": "GB",
+      "sales": "George Bal",
+      "customer": "Glenn Warren",
+      "source_project_type": "Duplex",
+      "type": "Duplex",
+      "address": "5525 Portland St Burnaby",
+      "included": true
+    },
+    {
+      "number": "TC26226",
+      "sales_initials": "CG",
+      "sales": "Chad Guidi",
+      "customer": "Twin Lions Contractiing",
+      "source_project_type": "Daycare",
+      "type": "Others",
+      "address": "6319 Tyne Rd. Van BC",
+      "included": true
+    },
+    {
+      "number": "TC26227",
+      "sales_initials": "TO",
+      "sales": "Tyson Orlandi",
+      "customer": "Kerrisdale",
+      "source_project_type": "SFD",
+      "type": "SFD",
+      "address": "4861 McKee Pl",
+      "included": true
+    },
+    {
+      "number": "TC26228",
+      "sales_initials": "CW",
+      "sales": "Clark White",
+      "customer": "Donald",
+      "source_project_type": "Shop",
+      "type": "Others",
+      "address": "Hanger 210 & 220 Pitt Meadows BC",
+      "included": true
+    },
+    {
+      "number": "TC26229",
+      "sales_initials": "JH",
+      "sales": "James Harper",
+      "customer": "Kindred Construction",
+      "source_project_type": "Multi",
+      "type": "Multi",
+      "address": "Revelstoke BC",
+      "included": true
+    },
+    {
+      "number": "TC26230",
+      "sales_initials": "CG",
+      "sales": "Chad Guidi",
+      "customer": "Domus",
+      "source_project_type": "Townhomes",
+      "type": "Townhome",
+      "address": "388 Duncan St (Mercer Village Ph 3)",
+      "included": true
+    },
+    {
+      "number": "TC26231",
+      "sales_initials": "TAO",
+      "sales": "Travis Orlandi",
+      "customer": "Vanmar",
+      "source_project_type": "Multi Rebuild",
+      "type": "Multi",
+      "address": "1355 27th St N Van",
+      "included": true
+    },
+    {
+      "number": "TC26232",
+      "sales_initials": "TO",
+      "sales": "Tyson Orlandi",
+      "customer": "Kerrisdale",
+      "source_project_type": "Duplex",
+      "type": "Duplex",
+      "address": "285 E 48th Ave Van",
+      "included": true
+    },
+    {
+      "number": "TC26233",
+      "sales_initials": "GB",
+      "sales": "George Bal",
+      "customer": "Rostam",
+      "source_project_type": "Duplex",
+      "type": "Duplex",
+      "address": "3070 Lazy A St Coquitlam",
+      "included": true
+    },
+    {
+      "number": "TC26234",
+      "sales_initials": "CG",
+      "sales": "Chad Guidi",
+      "customer": "Blueline Contracting",
+      "source_project_type": "SFD",
+      "type": "SFD",
+      "address": "2279 Mossy Rock Pl Squamish",
+      "included": true
+    },
+    {
+      "number": "TC26235",
+      "sales_initials": "CG",
+      "sales": "Chad Guidi",
+      "customer": "Dava Developments",
+      "source_project_type": "Multi",
+      "type": "Multi",
+      "address": "2231-2247 E 41st Ave Van",
+      "included": true
+    },
+    {
+      "number": "TC26236",
+      "sales_initials": "GB",
+      "sales": "George Bal",
+      "customer": "Gurv Kahlon",
+      "source_project_type": "SFD",
+      "type": "SFD",
+      "address": "16275 28 Ave Surrey",
+      "included": true
+    },
+    {
+      "number": "TC26237",
+      "sales_initials": "CT",
+      "sales": "Carter Turner",
+      "customer": "Mike Jeske",
+      "source_project_type": "SFD w/ Workshop",
+      "type": "SFD",
+      "address": "25160 54th Ave Langley",
+      "included": true
+    },
+    {
+      "number": "TC26238",
+      "sales_initials": "TO",
+      "sales": "Tyson Orlandi",
+      "customer": "Linwood",
+      "source_project_type": "SFD",
+      "type": "SFD",
+      "address": "Gillette",
+      "included": true
+    },
+    {
+      "number": "TC26239",
+      "sales_initials": "TO",
+      "sales": "Tyson Orlandi",
+      "customer": "Kerrisdale",
+      "source_project_type": "Multi",
+      "type": "Multi",
+      "address": "1081-1131 W 16th Ave Van (Marlowe)",
+      "included": true
+    },
+    {
+      "number": "TC26240",
+      "sales_initials": "TO",
+      "sales": "Tyson Orlandi",
+      "customer": "Kerrisdale",
+      "source_project_type": "Multi",
+      "type": "Multi",
+      "address": "180 E 35th Ave Van",
+      "included": true
+    },
+    {
+      "number": "TC26241",
+      "sales_initials": "CS",
+      "sales": "Clay Scott",
+      "customer": "Dustin H",
+      "source_project_type": "SFD",
+      "type": "SFD",
+      "address": "7672 Cerulean Dr Pemberton",
+      "included": true
+    },
+    {
+      "number": "TC26242",
+      "sales_initials": "CT",
+      "sales": "Carter Turner",
+      "customer": "Ladner Homes",
+      "source_project_type": "Duplex",
+      "type": "Duplex",
+      "address": "4893 44B Ave Delta",
+      "included": true
+    },
+    {
+      "number": "TC26243",
+      "sales_initials": "TAO",
+      "sales": "Travis Orlandi",
+      "customer": "Onni",
+      "source_project_type": "Tenant Improvement",
+      "type": "Others",
+      "address": "1050 United Blvd Coquitlam",
+      "included": true
+    },
+    {
+      "number": "TC26244",
+      "sales_initials": "TO",
+      "sales": "Tyson Orlandi",
+      "customer": "Kerrisdale",
+      "source_project_type": "Duplex",
+      "type": "Duplex",
+      "address": "2040 Stirling Ave Richmond",
+      "included": true
+    },
+    {
+      "number": "TC26245",
+      "sales_initials": "SB",
+      "sales": "Shaan Bal",
+      "customer": "Planet Construction",
+      "source_project_type": "Duplex",
+      "type": "Duplex",
+      "address": "12540 Centre Dr Surrey",
+      "included": true
+    },
+    {
+      "number": "TC26246",
+      "sales_initials": "CT",
+      "sales": "Carter Turner",
+      "customer": "Stix Construction",
+      "source_project_type": "SFD",
+      "type": "SFD",
+      "address": "5451 Stonebridge PL Whistler BC",
+      "included": true
+    },
+    {
+      "number": "TC26247",
+      "sales_initials": "TO",
+      "sales": "Tyson Orlandi",
+      "customer": "Linwood",
+      "source_project_type": "SFD",
+      "type": "SFD",
+      "address": "Grumetza Fujczak",
+      "included": true
+    },
+    {
+      "number": "TC26248",
+      "sales_initials": "CS",
+      "sales": "Clay Scott",
+      "customer": "Metrocan Construction",
+      "source_project_type": "Multi",
+      "type": "Multi",
+      "address": "12925 95A Ave Surrey BC",
+      "included": true
+    },
+    {
+      "number": "TC26249",
+      "sales_initials": "TO",
+      "sales": "Tyson Orlandi",
+      "customer": "Kerrisdale",
+      "source_project_type": "Multi",
+      "type": "Multi",
+      "address": "4437-4449 Hastings St Burnaby BC",
+      "included": true
+    },
+    {
+      "number": "TC26250",
+      "sales_initials": "CG",
+      "sales": "Chad Guidi",
+      "customer": "Meypro Construction",
+      "source_project_type": "Tri-plex",
+      "type": "Multiplex",
+      "address": "3514 W 14th Ave Van BC",
+      "included": true
+    },
+    {
+      "number": "TC26251",
+      "sales_initials": "CG",
+      "sales": "Chad Guidi",
+      "customer": "Zako Developments",
+      "source_project_type": "SFD w/Accessory",
+      "type": "SFD",
+      "address": "3180 Delbrook Ave N Van BC",
+      "included": true
+    },
+    {
+      "number": "TC26252",
+      "sales_initials": "TO",
+      "sales": "Tyson Orlandi",
+      "customer": "Kerrisdale",
+      "source_project_type": "SFD",
+      "type": "SFD",
+      "address": "1063 Marigold Pl N Van",
+      "included": true
+    },
+    {
+      "number": "TC26253",
+      "sales_initials": "GB",
+      "sales": "George Bal",
+      "customer": "Medallion",
+      "source_project_type": "Detached Garage",
+      "type": "Others",
+      "address": "3732 Avondale St Burnaby BC",
+      "included": true
+    },
+    {
+      "number": "TC26254",
+      "sales_initials": "CC",
+      "sales": "Carl Canuel",
+      "customer": "TRG holdings",
+      "source_project_type": "Duplex",
+      "type": "Duplex",
+      "address": "1385 E 13th Ave Van",
+      "included": true
+    },
+    {
+      "number": "TC26255",
+      "sales_initials": "GB",
+      "sales": "George Bal",
+      "customer": "Eyco",
+      "source_project_type": "SFD / Renovation",
+      "type": "SFD",
+      "address": "1712 Woods Rd. Bowen Island BC",
+      "included": true
+    },
+    {
+      "number": "TC26256",
+      "sales_initials": "TAO",
+      "sales": "Travis Orlandi",
+      "customer": "Vanmar",
+      "source_project_type": "Multi",
+      "type": "Multi",
+      "address": "4949 200 St Langley BC",
+      "included": true
+    },
+    {
+      "number": "TC26257",
+      "sales_initials": "CG",
+      "sales": "Chad Guidi",
+      "customer": "New Edge Group",
+      "source_project_type": "Multi",
+      "type": "Multi",
+      "address": "2585 W 10th Ave Van BC",
+      "included": true
+    },
+    {
+      "number": "TC26258",
+      "sales_initials": "CG",
+      "sales": "Chad Guidi",
+      "customer": "Urbo West Construction",
+      "source_project_type": "SFD",
+      "type": "SFD",
+      "address": "474 Montroyal Blvd N Van",
+      "included": true
+    },
+    {
+      "number": "TC26259",
+      "sales_initials": "TO",
+      "sales": "Tyson Orlandi",
+      "customer": "Kerrisdale",
+      "source_project_type": "SFD",
+      "type": "SFD",
+      "address": "4570 198B St Langley",
+      "included": true
+    },
+    {
+      "number": "TC26260",
+      "sales_initials": "CW",
+      "sales": "Clark White",
+      "customer": "Costar Construction Inc",
+      "source_project_type": "SFD/ Lanway",
+      "type": "SFD",
+      "address": "3050 E 26th Ave",
+      "included": true
+    },
+    {
+      "number": "TC26261",
+      "sales_initials": "CT",
+      "sales": "Carter Turner",
+      "customer": "Bold Properties",
+      "source_project_type": "Multiplex",
+      "type": "Multiplex",
+      "address": "3247 W 30th Ave Van BC",
+      "included": true
+    },
+    {
+      "number": "TC26262",
+      "sales_initials": "TAO",
+      "sales": "Travis Orlandi",
+      "customer": "Pyria Homes",
+      "source_project_type": "SFD",
+      "type": "SFD",
+      "address": "226 Hampton St New West",
+      "included": true
+    },
+    {
+      "number": "TC26263",
+      "sales_initials": "CS",
+      "sales": "Clay Scott",
+      "customer": "Kane Piendl",
+      "source_project_type": "SFD",
+      "type": "SFD",
+      "address": "8175 Fenwick St Burnaby BC",
+      "included": true
+    },
+    {
+      "number": "TC26264",
+      "sales_initials": "GB",
+      "sales": "George Bal",
+      "customer": "David Barkwell",
+      "source_project_type": "SFD",
+      "type": "SFD",
+      "address": "3281 W 21 St Van",
+      "included": true
+    },
+    {
+      "number": "TC26265",
+      "sales_initials": "SB",
+      "sales": "Shaan Bal",
+      "customer": "Mountainview Enterprises",
+      "source_project_type": "Multiplex",
+      "type": "Multiplex",
+      "address": "5829 Mckinnon St Van BC",
+      "included": true
+    },
+    {
+      "number": "TC26266",
+      "sales_initials": "CC",
+      "sales": "Carl Canuel",
+      "customer": "Aragon",
+      "source_project_type": "Row Homes x5 plus Garage",
+      "type": "Townhome",
+      "address": "2182 Church Rd Sooke BC",
+      "included": true
+    },
+    {
+      "number": "TC26267",
+      "sales_initials": "GB",
+      "sales": "George Bal",
+      "customer": "Tatla Developments",
+      "source_project_type": "Multi",
+      "type": "Multi",
+      "address": "10611 & 10751 River Drive Richmond, B.C.",
+      "included": true
+    },
+    {
+      "number": "TC26268",
+      "sales_initials": "TO",
+      "sales": "Tyson Orlandi",
+      "customer": "Kerrisdale",
+      "source_project_type": "Townhomes",
+      "type": "Townhome",
+      "address": "7645 Berkley St, Burnaby (Curve Seven)",
+      "included": true
+    },
+    {
+      "number": "TC26269",
+      "sales_initials": "CG",
+      "sales": "Chad Guidi",
+      "customer": "Albion Construction",
+      "source_project_type": "Church",
+      "type": "Others",
+      "address": "13181 Old Yale Rd Surrey BC",
+      "included": true
+    },
+    {
+      "number": "TC26270",
+      "sales_initials": "CG",
+      "sales": "Chad Guidi",
+      "customer": "Hyve Construction",
+      "source_project_type": "Townhomes",
+      "type": "Townhome",
+      "address": "7645 Berkley St. Burnaby BC",
+      "included": true
+    },
+    {
+      "number": "TC26271",
+      "sales_initials": "TO",
+      "sales": "Tyson Orlandi",
+      "customer": "Kerrisdale",
+      "source_project_type": "Multiplex",
+      "type": "Multiplex",
+      "address": "5320 Spruce St Burnaby",
+      "included": true
+    },
+    {
+      "number": "TC26272",
+      "sales_initials": "CG",
+      "sales": "Chad Guidi",
+      "customer": "Giglio Construction",
+      "source_project_type": "Multi",
+      "type": "Multi",
+      "address": "672 North Rd. Gibsons BC",
+      "included": true
+    },
+    {
+      "number": "TC26273",
+      "sales_initials": "TAO",
+      "sales": "Travis Orlandi",
+      "customer": "Vanmar",
+      "source_project_type": "Multi",
+      "type": "Multi",
+      "address": "770 Old Lillooet Rd. N Van BC",
+      "included": true
+    }
+  ],
+  "skipped": [
+    {
+      "number": "TC26008",
+      "sales_initials": "CJ",
+      "sales": "",
+      "customer": "Sam Shoker",
+      "source_project_type": "SFD",
+      "type": "SFD",
+      "address": "12425 - 60 Ave Surrey BC",
+      "included": false
+    },
+    {
+      "number": "TC26093",
+      "sales_initials": "CJ",
+      "sales": "",
+      "customer": "Glenbrook",
+      "source_project_type": "Townhomes",
+      "type": "Townhome",
+      "address": "788 First St New Westminister BC",
+      "included": false
+    },
+    {
+      "number": "TC26125",
+      "sales_initials": "MID",
+      "sales": "",
+      "customer": "Rev'd Concrete",
+      "source_project_type": "SFD",
+      "type": "SFD",
+      "address": "4689 Hwy 6 Nakusp BC",
+      "included": false
+    },
+    {
+      "number": "TC26139",
+      "sales_initials": "CJ",
+      "sales": "",
+      "customer": "Versa Homes",
+      "source_project_type": "Shop",
+      "type": "Others",
+      "address": "6265 236 A Langley BC",
+      "included": false
+    },
+    {
+      "number": "TC26140",
+      "sales_initials": "CJ",
+      "sales": "",
+      "customer": "Holaco Construction",
+      "source_project_type": "Barn",
+      "type": "Others",
+      "address": "5104 Westwater Dr Richmond BC",
+      "included": false
+    },
+    {
+      "number": "TC26161",
+      "sales_initials": "MID",
+      "sales": "",
+      "customer": "Winton Homes",
+      "source_project_type": "Family Services Building",
+      "type": "Others",
+      "address": "Lot 194 & 195 Iskut IR 6 Iskut BC",
+      "included": false
+    },
+    {
+      "number": "TC26175",
+      "sales_initials": "CJ",
+      "sales": "",
+      "customer": "Pro Home",
+      "source_project_type": "Duplex",
+      "type": "Duplex",
+      "address": "10335 Mcleod Court Richmond BC",
+      "included": false
+    },
+    {
+      "number": "TC26192",
+      "sales_initials": "CJ",
+      "sales": "",
+      "customer": "Lion Home Contracting",
+      "source_project_type": "Multiplex",
+      "type": "Multiplex",
+      "address": "3069 11th Ave Port Alberni",
+      "included": false
+    }
+  ],
+  "counts": {
+    "Others": 37,
+    "Townhome": 15,
+    "Duplex": 35,
+    "Multi": 68,
+    "Multiplex": 28,
+    "SFD": 82
+  }
+}

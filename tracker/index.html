@@ -4,10 +4,10 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>EWP Project Tracker — Shared Cloud</title>
-  <link rel="stylesheet" href="styles.css?v=1.14" />
-  <link rel="stylesheet" href="../portal-nav.css?v=1.14" />
-  <link rel="stylesheet" href="../theme.css?v=1.14" />
-  <script src="../theme.js?v=1.14"></script>
+  <link rel="stylesheet" href="styles.css?v=1.16" />
+  <link rel="stylesheet" href="../portal-nav.css?v=1.16" />
+  <link rel="stylesheet" href="../theme.css?v=1.16" />
+  <script src="../theme.js?v=1.16"></script>
 </head>
 <body>
   <nav class="ewp-portal-nav" aria-label="EWP Management Portal navigation">
@@ -37,7 +37,7 @@
       <div class="tracker-header-title">
         <div class="brand-kicker">EWP PROJECT TRACKING</div>
         <h1>EWP Project Tracker</h1>
-        <div class="version-line">Version V1.14 · Developed by Samuel Chung</div>
+        <div class="version-line">Version V1.16 · Developed by Samuel Chung</div>
       </div>
       <div class="tracker-header-actions ewp-header-actions">
         <div class="user-chip tracker-user-chip ewp-account-chip" title="Signed-in Supabase account used for shared project data.">
@@ -229,7 +229,10 @@
             <select id="followUpType">
               <option value="">All types</option>
               <option value="SFD">SFD</option>
-              <option value="Multi">Multi / multiplex</option>
+              <option value="Multi">Multi</option>
+              <option value="Duplex">Duplex</option>
+              <option value="Multiplex">Multiplex</option>
+              <option value="Townhome">Townhome</option>
               <option value="Others">Others</option>
             </select>
           </label>
@@ -325,6 +328,9 @@
             <select id="projectType" name="projectType" required>
               <option value="SFD">SFD</option>
               <option value="Multi">Multi</option>
+              <option value="Duplex">Duplex</option>
+              <option value="Multiplex">Multiplex</option>
+              <option value="Townhome">Townhome</option>
               <option value="Others">Others</option>
             </select>
           </label>
@@ -491,7 +497,7 @@
 
         <label>
           <span>Project Type</span>
-          <select id="editProjectType" required><option value="SFD">SFD</option><option value="Multi">Multi</option><option value="Others">Others</option></select>
+          <select id="editProjectType" required><option value="SFD">SFD</option><option value="Multi">Multi</option><option value="Duplex">Duplex</option><option value="Multiplex">Multiplex</option><option value="Townhome">Townhome</option><option value="Others">Others</option></select>
         </label>
 
         <label id="editProjectTypeOtherWrap" class="full-field conditional-field hidden">
@@ -551,6 +557,7 @@
           <strong class="compact-project-number"></strong>
           <span class="compact-project-type"></span>
           <a class="compact-forecast-link" href="../forecast/" title="Open in EWP Forecast" aria-label="Open project in EWP Forecast" draggable="false">↗</a>
+          <span class="task-count-badge compact-task-count hidden"></span>
         </div>
         <div class="compact-project-address"></div>
         <div class="compact-project-parties"><span class="compact-customer"></span><span class="compact-parties-separator" aria-hidden="true">·</span><span class="compact-sales"></span></div>
@@ -567,6 +574,7 @@
         <div class="compact-workload"><span class="compact-assignee"></span><span class="compact-due"></span></div>
       </div>
       <div class="detailed-card">
+        <div class="detailed-task-count-row"><span class="task-count-badge detailed-task-count hidden"></span></div>
         <h4 class="card-heading">
           <span class="project-number"></span><span class="separator">|</span><span class="project-address"></span><span class="separator">|</span><span class="project-task"></span>
         </h4>
@@ -590,8 +598,8 @@
   </template>
 
   </div>
-  <script type="module" src="app.js?v=1.14"></script>
-  <script type="module" src="../workspace-auth.mjs?v=1.14"></script>
-  <script type="module" src="../shared-settings.mjs?v=1.14"></script>
+  <script type="module" src="app.js?v=1.16"></script>
+  <script type="module" src="../workspace-auth.mjs?v=1.16"></script>
+  <script type="module" src="../shared-settings.mjs?v=1.16"></script>
 </body>
 </html>

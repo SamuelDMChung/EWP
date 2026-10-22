@@ -1,3 +1,22 @@
+# EWP Management Portal V1.16 WEB
+
+Latest release: V1.16 WEB (Oct 22, 2026), built on V1.15 full baseline. Added Duplex, Multiplex, Townhome to Tracker and Forecast project-type dropdowns and separated Follow-up filters; provides 265-project stress-test classification and incremental import-audit SQL. `PORTAL_HANDOFF.md` is the authoritative detailed handoff.
+
+**Deployment prerequisite:** Apply V1.15 linked-color migration if absent, then V1.16 import-audit migration before any stress-test import. Never assume GitHub Pages or migrations already ran. This complete ZIP preserves all WEB workspaces, Supabase Auth, RLS, Edge Functions, Resend integration, settings and themes. EWP Connect iOS unchanged.
+
+---
+
+## V1.15 WEB — Linked Ticket Borders and Full-Column Dragging (October 21, 2026)
+
+**Canonical full source:** V1.15 based on V1.14. **Next version:** V1.16. Read `PORTAL_HANDOFF.md` first.
+
+- Entire Project Tracking columns now accept drops, including full empty column space.
+- Linked tickets get the same 2px solid color border on all sides, top-right matching `Task 1/X` badge, and stable shared assignments from Supabase. Single-task and fully merged Coordination project tickets use neutral borders.
+- New **mandatory incremental migration** `v1_15_tracker_linked_colors.sql` creates a restricted assignment table and an authenticated, concurrency-safe RPC. Twenty distinct colors are assigned to simultaneous active multi-task projects; a color returns to the pool after every task reaches Coordination and the project merges. A new project reuses the lowest available slot.
+- **Deployment:** Make sure earlier SQL prerequisites actually ran (particularly V1.13 then V1.14 if needed); run V1.15 SQL **before** updating GitHub Pages. No Edge Function or EWP Connect iOS rebuild needed. Production testing has not been performed.
+
+---
+
 ## V1.14 WEB — Direct PO Re-import (October 21, 2026)
 
 **Canonical full source:** V1.14 based on V1.13. **Next version:** V1.15. Read `PORTAL_HANDOFF.md` first.

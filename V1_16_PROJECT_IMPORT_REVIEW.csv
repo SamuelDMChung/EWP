@@ -1,0 +1,274 @@
+﻿number,sales_initials,sales,customer,source_project_type,type,address,included
+TC26001,TO,Tyson Orlandi,Kerrisdale,Garage,Others,3941 W 23rd Ave,True
+TC26002,JH,James Harper,Mierau,Town Homes Multi,Townhome,Schkam 2 Chawathil BC,True
+TC26003,TO,Tyson Orlandi,Kerrisdale,Duplex,Duplex,8107 Osler,True
+TC26004,CG,Chad Guidi,Giglio Construction,Multi,Multi,1610 Riverside Rd. Abbotsford,True
+TC26005,CG,Chad Guidi,Giglio Construction,Multi,Multi,22538 Royal Cresent Maple Ridge,True
+TC26006,TAO,Travis Orlandi,Vanmar,Multi,Multi,6374 Byrnepark Dr Burnaby BC,True
+TC26007,TAO,Travis Orlandi,Andrew Blaauw,Shop,Others,2611 Strathcona Ave Tulameen BC,True
+TC26008,CJ,,Sam Shoker,SFD,SFD,12425 - 60 Ave Surrey BC,False
+TC26009,CW,Clark White,Creative Ridge,Trailer Hording,Others,1026 W 41st St Van BC,True
+TC26010,CG,Chad Guidi,Rev Construction,Multi,Multi,140 W 19th St N Van BC,True
+TC26011,TAO,Travis Orlandi,Vanmar,Multi,Multi,290 Laval Square Coquitlam BC,True
+TC26012,TAO,Travis Orlandi,Vanmar,Multi,Multi,443 Clayton St. Coquitlam BC,True
+TC26013,TO,Tyson Orlandi,Kerrisdale,Multiplex,Multiplex,7774 Mary Ave Burnaby,True
+TC26014,TAO,Travis Orlandi,Shaun Martin,SFD,SFD,279 Jason Rd. Bowen Island BC,True
+TC26015,TAO,Travis Orlandi,MJR Holdings,SFD,SFD,1021 Valewood Trail Victoria BC,True
+TC26016,TO,Tyson Orlandi,Linwood,SFD,SFD,103-1948 Marcotte,True
+TC26017,CG,Chad Guidi,Alabaster Construction,Multi,Multi,590 W29th Ave Van BC,True
+TC26018,TAO,Travis Orlandi,Yellowridge,Commercial,Others,380 Main St. Lytton BC,True
+TC26019,CG,Chad Guidi,Minghang,SFD,SFD,74 Desswood Pl W Van,True
+TC26020,TO,Tyson Orlandi,Kerrisdale,SFD,SFD,2039 Creelman Ave Van,True
+TC26021,TO,Tyson Orlandi,Kerrisdale,Multi,Multi,1033 Miller Rd Bowen Island,True
+TC26022,TO,Tyson Orlandi,Kerrisdale,Multi,Multi,2553 Highbury Ave Van,True
+TC26023,CG,Chad Guidi,Wildstone Const.,Commercial,Others,Haines Rd. Atlin BC,True
+TC26024,TO,Tyson Orlandi,Linwood,SFD,SFD,Moravec Rice,True
+TC26025,TO,Tyson Orlandi,Kerrisdale,Duplex,Duplex,1986 E 8th Ave Van,True
+TC26026,TAO,Travis Orlandi,Knappett,School,Others,3121 Glenora Rd. Duncan BC,True
+TC26027,TO,Tyson Orlandi,Kerrisdale,Duplex,Duplex,242 E 20th Ave Van,True
+TC26028,TO,Tyson Orlandi,Kerrisdale,SFD,SFD,6655 Strathmore Ave Burnaby,True
+TC26029,TO,Tyson Orlandi,Kerrisdale,SFD,SFD,4680 Gothard St Van,True
+TC26030,CG,Chad Guidi,Brown Bros,Multi,Multi,6489 Paddle Rd. N Cowichan BC,True
+TC26031,TO,Tyson Orlandi,Kerrisdale,Laneway,Others,3730 W 29 Van,True
+TC26032,JH,James Harper,CBN Enterprises,SFD,SFD,4970 Horstman Whistler,True
+TC26033,JH,James Harper,Streetside Developments,Townhomes,Townhome,1295 Rockiln St. Coquitlam,True
+TC26034,JH,James Harper,Sterling Pacific Developments,Duplex,Duplex,5697 Aquila W Van,True
+TC26035,CW,Clark White,Skylands,Laneway,Others,4589 Haggart St. Van,True
+TC26036,TAO,Travis Orlandi,Anthem,Multi,Multi,6550-6576 Marlborough Ave Burnaby,True
+TC26037,TO,Tyson Orlandi,Kerrisdale,Duplex,Duplex,2588 2598 Courtenay Van,True
+TC26038,TAO,Travis Orlandi,Trillium,Duplex,Duplex,3566 W 11th Ave Van BC,True
+TC26039,TAO,Travis Orlandi,Urban One,Multi,Multi,200 Tyee Rd. Victoria BC,True
+TC26040,TO,Tyson Orlandi,Linwood,SFD,SFD,Riedel,True
+TC26041,TO,Tyson Orlandi,Kerrisdale,Multiplex,Multiplex,4626 Selkirk Van,True
+TC26042,TO,Tyson Orlandi,Linwood,SFD,SFD,Paterson,True
+TC26043,TO,Tyson Orlandi,Kerrisdale,Multi,Multi,Marine Crescent Van,True
+TC26044,TO,Tyson Orlandi,Kerrisdale,Duplex,Duplex,4386 W 2 Van,True
+TC26045,TAO,Travis Orlandi,Scansa Construction,Multi,Multi,824 Alston St Langford BC,True
+TC26046,CG,Chad Guidi,Minghang,SFD,SFD,5915 Angus Van,True
+TC26047,JH,James Harper,Sugar Custom,SFD,SFD,1737 River Run Pl. Whistler BC,True
+TC26048,TO,Tyson Orlandi,Kerrisdale,SFD,SFD,295 W 21 Van,True
+TC26049,MD,Matt Dean,Winton Homes,Community Centre,Others,Tachie Road I.R. No.1 Fort St. James BC,True
+TC26050,TO,Tyson Orlandi,Femo Construction,SFD w/Accessory,SFD,5240 234St Langley BC,True
+TC26051,TAO,Travis Orlandi,KCM Construction,Multi,Multi,14460 105A Ave Surrey BC,True
+TC26052,TAO,Travis Orlandi,Nash Custom Homes,Duplex,Duplex,3406 Ontario St Van,True
+TC26053,CG,Chad Guidi,Blueline Contracting,SFD,SFD,1034 Goat Ridge Dr Britannia Beach,True
+TC26054,CC,Carl Canuel,Matacan,Duplex,Duplex,3365 Victoria Dr Van,True
+TC26055,CC,Carl Canuel,Dulex,Triplex x4,Multiplex,7362 Pemberton Farm Rd. Pemberton BC,True
+TC26056,TO,Tyson Orlandi,Kerrisdale,Duplex,Duplex,3221 East 16 Van,True
+TC26057,TAO,Travis Orlandi,Nash Custom Homes,SFD,SFD,6941 Barcelona Dr Kelowna,True
+TC26058,GB,George Bal,Tangerine,Townhomes,Townhome,1292 Rosenburg Wy Coquitlam,True
+TC26059,TAO,Travis Orlandi,Jethro Projects,Multi,Multi,5360 204 St Langley BC,True
+TC26060,TAO,Travis Orlandi,Trillium,Multi,Multi,3839 Commercial Van (Hendry),True
+TC26061,CG,Chad Guidi,Feature Projects,SFD,SFD,1338 Matthews Van,True
+TC26062,TO,Tyson Orlandi,ITC,Multi,Multi,2828 W 4th Ave Van BC,True
+TC26063,TO,Tyson Orlandi,ITC,Multi,Multi,647 Cook Rd. Kelowna BC,True
+TC26064,JH,James Harper,Kindred,Multi,Multi,2540 Grandview Hyw Van,True
+TC26065,TO,Tyson Orlandi,Linwood,SFD,SFD,Reininger,True
+TC26066,TO,Tyson Orlandi,Kerrisdale,Multi,Multi,1612 St Georges N Van,True
+TC26067,TO,Tyson Orlandi,Linwood,SFD,SFD,Waetzig,True
+TC26068,TO,Tyson Orlandi,Linwood,SFD,SFD,Schroeder,True
+TC26069,CG,Chad Guidi,Casa Framing,SFD,SFD,699 Poplar St Coq,True
+TC26070,JH,James Harper,Kindred,Multi x3 buildings,Multi,"1000 Alpha Lake Road, Whistler, BC",True
+TC26071,CC,Carl Canuel,Pinnacle Homes,Float Home,Others,127 Port Augusta St Comox,True
+TC26072,CW,Clark White,Onni,Multi,Multi,7811 Alderbridge Richmond (Riva 5),True
+TC26073,GB,George Bal,Tangerine,Multi,Multi,14520 104A Ave Surrey (Fellow),True
+TC26074,CC,Carl Canuel,Farkas,SFD,SFD,4761 Wesley Dr Delta,True
+TC26075,GB,George Bal,Can West Developers,Duplex,Duplex,8515 Royal Oak Ave Burnaby,True
+TC26076,TO,Tyson Orlandi,Kerrisdale,Laneway,Others,2395 E 38 Van,True
+TC26077,GB,George Bal,Teragon,SFD,SFD,3961 W 13 Van,True
+TC26078,GB,George Bal,Mirani Homes,SFD,SFD,2177 E 11 Van,True
+TC26079,TO,Tyson Orlandi,Kerrisdale,Multiplex,Multiplex,7760 Mary Ave Burnaby,True
+TC26080,TO,Tyson Orlandi,Kerrisdale,SFD,SFD,2050 W 16 Van,True
+TC26081,CG,Chad Guidi,Abstract Developments,Renovation,Others,1587 York Pl Victoria,True
+TC26082,TAO,Travis Orlandi,Beedie Living,Multi,Multi,58 & 78 Kong Court Coquitlam,True
+TC26083,CC,Carl Canuel,Klaftar Management,Temple,Others,2639 Campbell Rd. Golden BC,True
+TC26084,TO,Tyson Orlandi,Linwood,SFD,SFD,Sorensen,True
+TC26085,TAO,Travis Orlandi,EDIFICE,Service Building,Others,336 & 338 Quattishe Rd. Coal Habour BC,True
+TC26086,TO,Tyson Orlandi,Linwood,SFD,SFD,Heinke,True
+TC26087,TO,Tyson Orlandi,Linwood,SFD,SFD,Thavamany,True
+TC26088,TAO,Travis Orlandi,W&J Construction,Multi,Multi,2114/2098 Beacon Ave & 2107 Jahn Pl Sidney BC,True
+TC26089,MD,Matt Dean,Winton Homes,Multi,Multi,4500 Ospika Blvd South Prince George BC,True
+TC26090,TAO,Travis Orlandi,Axiom,Multi x2 buildings,Multi,7880 Newcombe St. Burnaby BC,True
+TC26091,JH,James Harper,Sterling Pacific,Duplex,Duplex,5706-5710 Aquila Ave W Van,True
+TC26092,GB,George Bal,Leone Homes,Townhomes,Townhome,4558 208 St Langley,True
+TC26093,CJ,,Glenbrook,Townhomes,Townhome,788 First St New Westminister BC,False
+TC26094,TO,Tyson Orlandi,Kerrisdale,Duplex,Duplex,3771 Portland St Burnaby,True
+TC26095,TO,Tyson Orlandi,Kerrisdale,SFD,SFD,5421 5B Ave Delta,True
+TC26096,CG,Chad Guidi,Fall Line Construction,SFD,SFD,8603 Jon Montgomery Stroll Whistler BC,True
+TC26097,GB,George Bal,Haley McDougal,SFD,SFD,2042 W 36th Ave Van,True
+TC26098,TO,Tyson Orlandi,Kerrisdale,SFD,SFD,7531 Greenlees Rd Richmond,True
+TC26099,GB,George Bal,Postle Construction,SFD,SFD,4408 Stone Crescent West Van BC,True
+TC26100,JH,James Harper,Nuframe,Multi,Multi,19085 119B Ave Pitt Meadows BC,True
+TC26101,TO,Tyson Orlandi,Kerrisdale,Duplex,Duplex,4386 W 2nd Ave Van,True
+TC26102,CG,Chad Guidi,Casman Projects,Townhomes,Townhome,Seenupin Rd Lot 62 Capital Regional District,True
+TC26103,GB,George Bal,Mirani Homes,Duplex,Duplex,539 E 7th Van BC,True
+TC26104,CG,Chad Guidi,Abstract Developments,Townhomes,Townhome,4324 Majestic Dr. Victoria BC,True
+TC26105,TO,Tyson Orlandi,Kerrisdale,Multiplex,Multiplex,4687 Angus Dr Van,True
+TC26106,TAO,Travis Orlandi,Beedie Living,Multi & Townhomes x5 Bldg,Townhome,7118 & 7280 Macpherson Ave Burnaby BC,True
+TC26107,TO,Tyson Orlandi,Kerrisdale,Duplex,Duplex,777 W 28th Ave Van,True
+TC26108,TO,Tyson Orlandi,Kerrisdale,Renovation,Others,3-55 Electronic Ave Port Moody,True
+TC26109,TAO,Travis Orlandi,High Peak Timber Framing,SFD,SFD,1041 Williams Gate Lane Revelstoke BC,True
+TC26110,GB,George Bal,Eyco,SFD,SFD,920 Clipper Pl Bowen Island,True
+TC26111,TO,Tyson Orlandi,Linwood,SFD,SFD,Kaiser,True
+TC26112,CG,Chad Guidi,Abstract Developments,Tri-plex,Multiplex,397 Maria Rd. Victoria BC,True
+TC26113,GB,George Bal,1548990 BC LTD,Duplex,Duplex,1610 East 10 Ave Van BC,True
+TC26114,TAO,Travis Orlandi,High Peak Timber Framing,Duplex,Duplex,722 Patricia St Jasper AB,True
+TC26115,TO,Tyson Orlandi,Kerrisdale,4-plex,Multiplex,3231 E 53rd Van,True
+TC26116,TO,Tyson Orlandi,Kerrisdale,Laneway,Others,10931 Swinton Cres Richmond,True
+TC26117,TO,Tyson Orlandi,Kerrisdale,SFD,SFD,4853 Cedar Cres Delta,True
+TC26118,TAO,Travis Orlandi,Estrada,Multiplex 4 building,Multiplex,4334 Rumble St Burnaby BC,True
+TC26119,CG,Chad Guidi,Twin Lions Contracting,SFD and Coach,SFD,4003 Delbrook Ave N Van BC,True
+TC26120,CG,Chad Guidi,Abstract Developments,Tri-plex,Multiplex,2550 Arbutus Rd Victoria,True
+TC26121,TO,Tyson Orlandi,Linwood,SFD,SFD,Korogonas,True
+TC26122,TO,Tyson Orlandi,Linwood,SFD,SFD,Jasper Raft Tours,True
+TC26123,TO,Tyson Orlandi,Kerrisdale,Multiplex,Multiplex,5680 Monarch St Burnaby,True
+TC26124,CG,Chad Guidi,Cash CW,Workshop,Others,20228 98A Ave Langley BC,True
+TC26125,MID,,Rev'd Concrete,SFD,SFD,4689 Hwy 6 Nakusp BC,False
+TC26126,TO,Tyson Orlandi,ITC,Multi,Multi,343 Anson Rd Esquimalt BC,True
+TC26127,TAO,Travis Orlandi,Ventana Construction,Multi,Multi,07968 Seymour Creek No2 Orwell St N Van BC,True
+TC26128,GB,George Bal,Sac Moh Ventures,Duplex,Duplex,3058 Charles St Van BC,True
+TC26129,TO,Tyson Orlandi,Kerrisdale,SFD,SFD,Uplands Lot 14 Type 2,True
+TC26130,CW,Clark White,Madness Construction,Deck,Others,Lilly's Place,True
+TC26131,GB,George Bal,Ruscitti Bros,Multiplex,Multiplex,2998 Adanac St Van BC,True
+TC26132,SB,Shaan Bal,Uptown Solutions Group,Duplex,Duplex,544 E 29th Ave Van BC,True
+TC26133,TO,Tyson Orlandi,Linwood,SFD,SFD,Hart,True
+TC26134,TO,Tyson Orlandi,Kerrisdale,Renovation,Others,3045 W 6th Van,True
+TC26135,TO,Tyson Orlandi,Linwood,SFD,SFD,Edwardson,True
+TC26136,TO,Tyson Orlandi,Linwood,SFD,SFD,Bristol Bay,True
+TC26137,TO,Tyson Orlandi,Kerrisdale,SFD,SFD,2032 Nanton Ave Van,True
+TC26138,TAO,Travis Orlandi,Northstarfs,Mezzanine,Others,108-9465 189 St Surrey,True
+TC26139,CJ,,Versa Homes,Shop,Others,6265 236 A Langley BC,False
+TC26140,CJ,,Holaco Construction,Barn,Others,5104 Westwater Dr Richmond BC,False
+TC26141,TO,Tyson Orlandi,Kerrisdale,Laneway,Others,7286 Nanaimo St Van,True
+TC26142,TO,Tyson Orlandi,Kerrisdale,SFD,SFD,3141 W 35th Ave Van,True
+TC26143,CW,Clark White,Paul,Stairs Balconies,Others,"14591 Gordon Ave, White Rock BC",True
+TC26144,CC,Carl Canuel,Vasto Builders,Animal Shelter,Others,3202 Norland Ave Burnaby,True
+TC26145,CG,Chad Guidi,Giglio Construction,Duplex,Duplex,528 Marine Dr Gibsons BC,True
+TC26146,GB,George Bal,Tangerine,Multi,Multi,20282 Patterson Ave Maple Ridge,True
+TC26147,CG,Chad Guidi,Albion Construction,Multi,Multi,20675 Eastleigh Cres Langley BC,True
+TC26148,CG,Chad Guidi,Brown Bros Framing,Multi,Multi,2245 McAllister Ave Port Coquitlam BC,True
+TC26149,TO,Tyson Orlandi,Kerrisdale,SFD,SFD,2942 Grant St Van,True
+TC26150,SB,Shaan Bal,Biring Bros,Multiplex,Multiplex,6660 Aubrey St Burnaby BC,True
+TC26151,TO,Tyson Orlandi,Kerrisdale,Multi,Multi,7028 River Pkwy Richmond (Riva 6),True
+TC26152,CW,Clark White,Skylands,Multiplex,Multiplex,6160 Red fern Cres Richmond BC,True
+TC26153,TAO,Travis Orlandi,Glenhaven,SFD,SFD,5221 1 Ave Delta BC,True
+TC26154,GB,George Bal,Leone Homes,Townhomes,Townhome,4519 200A St Langley BC,True
+TC26155,CG,Chad Guidi,Wester Construction,Multi,Multi,7491 No. 1 Rd Richmond,True
+TC26156,CG,Chad Guidi,Giglio Construction,Multi,Multi,5020 Earls St Van BC,True
+TC26157,TO,Tyson Orlandi,Kerrisdale,Renovation,Others,1125 Mountain Ayre Ln Anmore,True
+TC26158,TAO,Travis Orlandi,Vanmar,Multi,Multi,5937 Kincaid St Burnaby,True
+TC26159,GB,George Bal,Eyco,SFD,SFD,3536 W 1st Ave Vancouver,True
+TC26160,CG,Chad Guidi,Axomm,SFD,SFD,536 Tempe Cres N Van BC,True
+TC26161,MID,,Winton Homes,Family Services Building,Others,Lot 194 & 195 Iskut IR 6 Iskut BC,False
+TC26162,TO,Tyson Orlandi,Linwood,SFD,SFD,Sommerfeld,True
+TC26163,TAO,Travis Orlandi,High Peak Timber Framing,Cabin,Others,Downie Loop Rd. Revelstoke BC,True
+TC26164,TAO,Travis Orlandi,Trillium Projects,Multi,Multi,33503 Holland Ave Abbotsford BC,True
+TC26165,CC,Carl Canuel,TYRG,SFD,SFD,1585 E 13th Ave Van,True
+TC26166,CC,Carl Canuel,Khizer Daya,Duplex,Duplex,11453 142 St Surrey,True
+TC26167,GB,George Bal,Ranjit Dhothra,SFD,SFD,11726 94A Ave Delta,True
+TC26168,GB,George Bal,Tangerine,Multiplex,Multiplex,5621 Culloden St Vancouver,True
+TC26169,GB,George Bal,Vandwell,Duplex,Duplex,408 E 20th Ave Vancouver,True
+TC26170,TO,Tyson Orlandi,Kerrisdale,SFD,SFD,2156 E 45th Ave Vancouver,True
+TC26171,GB,George Bal,Keystone,SFD,SFD,3019 Point Grey Rd. Vancouver,True
+TC26172,TO,Tyson Orlandi,Linwood,SFD,SFD,Phillips,True
+TC26173,CG,Chad Guidi,Giglio Construction,Multi,Multi,115 East Keith Rd N Van,True
+TC26174,TAO,Travis Orlandi,Kanin Construction,Childcare Building,Others,14290-108 Ave Surrey BC,True
+TC26175,CJ,,Pro Home,Duplex,Duplex,10335 Mcleod Court Richmond BC,False
+TC26176,TO,Tyson Orlandi,ITC,Multi,Multi,Garden Club Hayes 99,True
+TC26177,CT,Carter Turner,Masa Developments,Duplex,Duplex,336 E 43rd Ave Van,True
+TC26178,CG,Chad Guidi,Gulzar Investments,Multiplex,Multiplex,647 Ewen Ave New West,True
+TC26179,TO,Tyson Orlandi,Kerrisdale,SFD w/Laneway,SFD,3589 W 20th Ave Vancouver BC,True
+TC26180,TO,Tyson Orlandi,Kerrisdale,Townhomes,Townhome,4861 Mckee Place Burnaby BC,True
+TC26181,GB,George Bal,Leone Homes,Townhomes,Townhome,6623-6633 Macdonald St. Vancouver BC,True
+TC26182,TAO,Travis Orlandi,Vanmar,Multi,Multi,5625 Ladner Truck Rd. Delta BC,True
+TC26183,TAO,Travis Orlandi,Alpine Landscaping,Duplex,Duplex,2073 E 7 Ave Vancouver BC,True
+TC26184,GB,George Bal,Motameni,Duplex,Duplex,20575 Battle Ave Maple Ridge,True
+TC26185,TO,Tyson Orlandi,Kerrisdale,Commercial,Others,"1070 - 272 Street, Langley Township, BC",True
+TC26186,CG,Chad Guidi,Blackrete Builders,Multi,Multi,"2101 Sitka Court, Sooke, BC",True
+TC26187,CG,Chad Guidi,Blackrete Builders,Multi,Multi,"1056 Alston Street, Victoria, BC",True
+TC26188,TAO,Travis Orlandi,Total Reliance,Multiplex,Multiplex,"2218 E 39th Ave Vancouver, BC",True
+TC26189,TO,Tyson Orlandi,ITC,Townhomes,Townhome,"5310 & 5330 Crooked Branch Road, Van, BC",True
+TC26190,GB,George Bal,Westblu,Laneway,Others,"4027 West 31st Ave, Vancouver, BC",True
+TC26191,JH,James Harper,Nuframe,Multi,Multi,325 Watfield Ave Nanaimo BC,True
+TC26192,CJ,,Lion Home Contracting,Multiplex,Multiplex,3069 11th Ave Port Alberni,False
+TC26193,TO,Tyson Orlandi,Kerrisdale,Multiplex,Multiplex,5761 Sprott St. Burnaby,True
+TC26194,TO,Tyson Orlandi,Kerrisdale,Multiplex,Multiplex,6465 Dawson St. Burnaby,True
+TC26195,TAO,Travis Orlandi,Ventana,Multi,Multi,1415 Aspen Rd. Squamish BC,True
+TC26196,CG,Chad Guidi,Jim Construction 147BCL,Duplex,Duplex,3242 Venables St Van,True
+TC26197,TO,Tyson Orlandi,Kerrisdale,Multi,Multi,1184 Inlet St. Coquitlam BC,True
+TC26198,TO,Tyson Orlandi,Kerrisdale,Accessory Reno,Others,4688 Eastridge Rd. N Van,True
+TC26199,JH,James Harper,Mierau Contracting,Community Centre,Others,Chief Neskonlith Dr. Chase BC,True
+TC26200,TO,Tyson Orlandi,Linwood,SFD w/Laneway,SFD,Malenchak,True
+TC26201,TO,Tyson Orlandi,Kerrisdale,Multiplex,Multiplex,3170 Ash Street,True
+TC26202,TO,Tyson Orlandi,Kerrisdale,Multiplex,Multiplex,4938 Fulwell St Burnaby,True
+TC26203,JH,James Harper,Nuframe,Multi,Multi,33418 Marshall Rd Abbotsford (Aria Block B),True
+TC26204,TO,Tyson Orlandi,Linwood,SFD,SFD,Strom,True
+TC26205,JH,James Harper,Kindred Construction,Multi,Multi,38028 Third Ave Squamish BC,True
+TC26206,TO,Tyson Orlandi,ITC,Multi x3 Building,Multi,Modular Site Hayes 99,True
+TC26207,CC,Carl Canuel,Kinetic Construction,Multi,Multi,B#368 19 Wing CFB Comox,True
+TC26208,CG,Chad Guidi,Darwin Construction,Multi,Multi,1310 Monashee Dr. N Van BC,True
+TC26209,SB,Shaan Bal,Westmark Developments,SFD,SFD,9431 Finn Rd Richmond,True
+TC26210,CC,Carl Canuel,Insignia Properties,Multi,Multi,2731 Montrose Ave Abbotsford BC,True
+TC26211,TO,Tyson Orlandi,Kerrisdale,Multi,Multi,5282 Granville St Van BC,True
+TC26212,TO,Tyson Orlandi,Kerrisdale,Multiplex,Multiplex,176 West King Edward Van,True
+TC26213,TO,Tyson Orlandi,Kerrisdale,Multiplex,Multiplex,158 West King Edward Van,True
+TC26214,CS,Clay Scott,Summit Brooke,Multiplex,Multiplex,1640 Earle St Victoria BC,True
+TC26215,CS,Clay Scott,Summit Brooke,Duplex x2,Duplex,5190 Del Monte Ave Sannich BC,True
+TC26216,TO,Tyson Orlandi,Kerrisdale,SFD,SFD,6716 Osprey Pl Burnaby,True
+TC26217,TO,Tyson Orlandi,Kerrisdale,SFD,SFD,6710 Osprey Pl Burnaby,True
+TC26218,TO,Tyson Orlandi,Linwood,SFD,SFD,Chan,True
+TC26219,CG,Chad Guidi,Zoning,Multi,Multi,2501 Blanshard St. Victoria BC,True
+TC26220,TO,Tyson Orlandi,Kerrisdale,Multiplex,Multiplex,4044 Parker St Burnaby,True
+TC26221,CW,Clark White,Creative Ridge Contracting,Shop,Others,12 Helmcken Rd. North Okanagan BC,True
+TC26222,CC,Carl Canuel,SitkaWest,Boat House,Others,"27871 113 Ave, Maple Ridge BC",True
+TC26223,CW,Clark White,Norm,SFD,SFD,100 Mile House,True
+TC26224,JH,James Harper,Nuframe,Multi,Multi,46723 Yale Rd. Chilliwack BC,True
+TC26225,GB,George Bal,Glenn Warren,Duplex,Duplex,5525 Portland St Burnaby,True
+TC26226,CG,Chad Guidi,Twin Lions Contractiing,Daycare,Others,6319 Tyne Rd. Van BC,True
+TC26227,TO,Tyson Orlandi,Kerrisdale,SFD,SFD,4861 McKee Pl,True
+TC26228,CW,Clark White,Donald,Shop,Others,Hanger 210 & 220 Pitt Meadows BC,True
+TC26229,JH,James Harper,Kindred Construction,Multi,Multi,Revelstoke BC,True
+TC26230,CG,Chad Guidi,Domus,Townhomes,Townhome,388 Duncan St (Mercer Village Ph 3),True
+TC26231,TAO,Travis Orlandi,Vanmar,Multi Rebuild,Multi,1355 27th St N Van,True
+TC26232,TO,Tyson Orlandi,Kerrisdale,Duplex,Duplex,285 E 48th Ave Van,True
+TC26233,GB,George Bal,Rostam,Duplex,Duplex,3070 Lazy A St Coquitlam,True
+TC26234,CG,Chad Guidi,Blueline Contracting,SFD,SFD,2279 Mossy Rock Pl Squamish,True
+TC26235,CG,Chad Guidi,Dava Developments,Multi,Multi,2231-2247 E 41st Ave Van,True
+TC26236,GB,George Bal,Gurv Kahlon,SFD,SFD,16275 28 Ave Surrey,True
+TC26237,CT,Carter Turner,Mike Jeske,SFD w/ Workshop,SFD,25160 54th Ave Langley,True
+TC26238,TO,Tyson Orlandi,Linwood,SFD,SFD,Gillette,True
+TC26239,TO,Tyson Orlandi,Kerrisdale,Multi,Multi,1081-1131 W 16th Ave Van (Marlowe),True
+TC26240,TO,Tyson Orlandi,Kerrisdale,Multi,Multi,180 E 35th Ave Van,True
+TC26241,CS,Clay Scott,Dustin H,SFD,SFD,7672 Cerulean Dr Pemberton,True
+TC26242,CT,Carter Turner,Ladner Homes,Duplex,Duplex,4893 44B Ave Delta,True
+TC26243,TAO,Travis Orlandi,Onni,Tenant Improvement,Others,1050 United Blvd Coquitlam,True
+TC26244,TO,Tyson Orlandi,Kerrisdale,Duplex,Duplex,2040 Stirling Ave Richmond,True
+TC26245,SB,Shaan Bal,Planet Construction,Duplex,Duplex,12540 Centre Dr Surrey,True
+TC26246,CT,Carter Turner,Stix Construction,SFD,SFD,5451 Stonebridge PL Whistler BC,True
+TC26247,TO,Tyson Orlandi,Linwood,SFD,SFD,Grumetza Fujczak,True
+TC26248,CS,Clay Scott,Metrocan Construction,Multi,Multi,12925 95A Ave Surrey BC,True
+TC26249,TO,Tyson Orlandi,Kerrisdale,Multi,Multi,4437-4449 Hastings St Burnaby BC,True
+TC26250,CG,Chad Guidi,Meypro Construction,Tri-plex,Multiplex,3514 W 14th Ave Van BC,True
+TC26251,CG,Chad Guidi,Zako Developments,SFD w/Accessory,SFD,3180 Delbrook Ave N Van BC,True
+TC26252,TO,Tyson Orlandi,Kerrisdale,SFD,SFD,1063 Marigold Pl N Van,True
+TC26253,GB,George Bal,Medallion,Detached Garage,Others,3732 Avondale St Burnaby BC,True
+TC26254,CC,Carl Canuel,TRG holdings,Duplex,Duplex,1385 E 13th Ave Van,True
+TC26255,GB,George Bal,Eyco,SFD / Renovation,SFD,1712 Woods Rd. Bowen Island BC,True
+TC26256,TAO,Travis Orlandi,Vanmar,Multi,Multi,4949 200 St Langley BC,True
+TC26257,CG,Chad Guidi,New Edge Group,Multi,Multi,2585 W 10th Ave Van BC,True
+TC26258,CG,Chad Guidi,Urbo West Construction,SFD,SFD,474 Montroyal Blvd N Van,True
+TC26259,TO,Tyson Orlandi,Kerrisdale,SFD,SFD,4570 198B St Langley,True
+TC26260,CW,Clark White,Costar Construction Inc,SFD/ Lanway,SFD,3050 E 26th Ave,True
+TC26261,CT,Carter Turner,Bold Properties,Multiplex,Multiplex,3247 W 30th Ave Van BC,True
+TC26262,TAO,Travis Orlandi,Pyria Homes,SFD,SFD,226 Hampton St New West,True
+TC26263,CS,Clay Scott,Kane Piendl,SFD,SFD,8175 Fenwick St Burnaby BC,True
+TC26264,GB,George Bal,David Barkwell,SFD,SFD,3281 W 21 St Van,True
+TC26265,SB,Shaan Bal,Mountainview Enterprises,Multiplex,Multiplex,5829 Mckinnon St Van BC,True
+TC26266,CC,Carl Canuel,Aragon,Row Homes x5 plus Garage,Townhome,2182 Church Rd Sooke BC,True
+TC26267,GB,George Bal,Tatla Developments,Multi,Multi,"10611 & 10751 River Drive Richmond, B.C.",True
+TC26268,TO,Tyson Orlandi,Kerrisdale,Townhomes,Townhome,"7645 Berkley St, Burnaby (Curve Seven)",True
+TC26269,CG,Chad Guidi,Albion Construction,Church,Others,13181 Old Yale Rd Surrey BC,True
+TC26270,CG,Chad Guidi,Hyve Construction,Townhomes,Townhome,7645 Berkley St. Burnaby BC,True
+TC26271,TO,Tyson Orlandi,Kerrisdale,Multiplex,Multiplex,5320 Spruce St Burnaby,True
+TC26272,CG,Chad Guidi,Giglio Construction,Multi,Multi,672 North Rd. Gibsons BC,True
+TC26273,TAO,Travis Orlandi,Vanmar,Multi,Multi,770 Old Lillooet Rd. N Van BC,True

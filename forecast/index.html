@@ -5,10 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="color-scheme" content="light" />
   <title>EWP Material Forecast</title>
-  <link rel="stylesheet" href="styles.css?v=1.14" />
-  <link rel="stylesheet" href="../portal-nav.css?v=1.14" />
-  <link rel="stylesheet" href="../theme.css?v=1.14" />
-  <script src="../theme.js?v=1.14"></script>
+  <link rel="stylesheet" href="styles.css?v=1.16" />
+  <link rel="stylesheet" href="../portal-nav.css?v=1.16" />
+  <link rel="stylesheet" href="../theme.css?v=1.16" />
+  <script src="../theme.js?v=1.16"></script>
 </head>
 <body>
   <nav class="ewp-portal-nav" aria-label="EWP Management Portal navigation">
@@ -26,7 +26,7 @@
     <div>
       <p class="eyebrow">EWP PURCHASING</p>
       <h1>EWP Material Forecast</h1>
-      <p class="subtitle">Version V1.14 · Developed by Samuel Chung</p>
+      <p class="subtitle">Version V1.16 · Developed by Samuel Chung</p>
     </div>
     <div class="header-actions ewp-header-actions">
       <div class="user-chip ewp-account-chip" title="Signed-in Supabase account used for database access and edit history.">
@@ -85,6 +85,9 @@
               <select id="projectType">
                 <option value="sfd">SFD</option>
                 <option value="multi" selected>Multi</option>
+                <option value="duplex">Duplex</option>
+                <option value="multiplex">Multiplex</option>
+                <option value="townhome">Townhome</option>
                 <option value="others">Others</option>
               </select>
             </label>
@@ -160,7 +163,7 @@
       <div class="toolbar">
         <div>
           <h2>Delivery Forecast</h2>
-          <p>All SFD, Multi and Others packages are shown in the next six weeks by estimated delivery date. The monthly table remains available for the longer-term material outlook.</p>
+          <p>All project types are shown in the next six weeks by estimated delivery date. The monthly table remains available for the longer-term material outlook.</p>
         </div>
         <div class="toolbar-actions">
           <button id="refreshCloudForecast" class="button secondary">Refresh</button>
@@ -553,6 +556,9 @@
           <select id="editProjectType">
             <option value="sfd">SFD</option>
             <option value="multi">Multi</option>
+            <option value="duplex">Duplex</option>
+            <option value="multiplex">Multiplex</option>
+            <option value="townhome">Townhome</option>
             <option value="others">Others</option>
           </select>
         </label>
@@ -632,8 +638,8 @@
     </div>
   </div>
 
-  <script type="module" src="app.mjs?v=1.14"></script>
-  <script type="module" src="../workspace-auth.mjs?v=1.14"></script>
-  <script type="module" src="../shared-settings.mjs?v=1.14"></script>
+  <script type="module" src="app.mjs?v=1.16"></script>
+  <script type="module" src="../workspace-auth.mjs?v=1.16"></script>
+  <script type="module" src="../shared-settings.mjs?v=1.16"></script>
 </body>
 </html>

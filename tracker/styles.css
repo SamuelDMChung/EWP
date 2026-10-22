@@ -1129,18 +1129,15 @@ input:focus,select:focus,textarea:focus{border-color:#747300;box-shadow:0 0 0 3p
 .compact-parties-separator { flex: 0 0 auto; display: inline-block; padding: 0 7px; color: #777166; }
 .compact-task-linkage { margin-top: 5px; font-size: 11px; font-weight: 800; color: #4f4b3b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .compact-task-linkage.hidden { display: none; }
-.task-split-card { border-left: 3px solid #747300; }
-.task-completed-card { border-left-color: #208052; background: #fbfdfb; }
+.task-completed-card { background: #fbfdfb; }
 .work-item-grid { grid-template-columns: minmax(155px,1fr) minmax(155px,1fr) minmax(150px,1fr) minmax(135px,0.85fr); }
 @media (max-width:900px) { .work-item-grid { grid-template-columns: repeat(2,minmax(0,1fr)); } }
 @media (max-width:560px) { .work-item-grid { grid-template-columns: minmax(0,1fr); } }
-/* Keep active task cards in a compact drop target. */
-#progressList.dropzone { min-height: 110px; }
-#progressList.dropzone:has(.project-card) { min-height: 10px; }
+/* All columns keep full-height drop targets, regardless of card count. */
 
 /* V1.5: task drag into Coordination is completion; merge on final arrival. */
 .new-work-item-grid { grid-template-columns: minmax(155px,1fr) minmax(155px,1fr) minmax(170px,1fr); }
-.task-in-coordination { border-left-color: #208052; background: #fbfdfb; }
+.task-in-coordination { background: #fbfdfb; }
 .board .project-card.task-in-coordination .compact-workload,
 .board .project-card.task-in-coordination .card-detail-due,
 .board .project-card.task-in-coordination .card-detail-assignee { display:none; }
@@ -1153,3 +1150,61 @@ input:focus,select:focus,textarea:focus{border-color:#747300;box-shadow:0 0 0 3p
 /* V1.9: Follow-up records scroll with the page; dropdowns and modal dialogs
    still scroll internally when required to fit the screen. */
 .followup-project-list {max-height:none;overflow:visible;}
+
+/* V1.15 — full-column drag target and shared linked-project border palette. */
+.board { align-items: stretch; }
+.board .column {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.board .column .dropzone {
+  flex: 1 1 auto;
+  min-height: 140px;
+}
+/* The WHOLE column is active, including its header, legend, and empty space. */
+.board .column.drag-over {
+  background: #f2f1d9;
+  outline: 2px dashed #949300;
+  outline-offset: -4px;
+}
+.board .column.drag-over .dropzone { background: transparent; outline: 0; }
+/* Default tickets have the same neutral border on every side. */
+.board .project-card.task-split-card { border: 1px solid #dbe2ea; }
+.board .project-card.linked-color-card {
+  border: 2px solid var(--linked-ticket-color);
+}
+.task-count-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  white-space: nowrap;
+  font-size: 10px;
+  font-weight: 900;
+  line-height: 1.35;
+  border-radius: 5px;
+  padding: 3px 5px;
+  border: 1px solid #a8a29e;
+  color: #655f57;
+  background: transparent;
+}
+.linked-color-card .task-count-badge {
+  color: var(--linked-ticket-color);
+  border-color: var(--linked-ticket-color);
+}
+.task-count-badge.hidden { display: none; }
+.detailed-task-count-row { display: flex; justify-content: flex-end; }
+.detailed-task-count-row:has(.hidden) { display: none; }
+/* Complement existing shared dark theme without overriding per-project colors. */
+html[data-ewp-theme="dark"] .board .column.drag-over {
+  background: #3b4026;
+  outline-color: #bdc15d;
+}
+html[data-ewp-theme="dark"] .board .project-card.task-split-card:not(.linked-color-card) {
+  border-color: #515b4b;
+}
+html[data-ewp-theme="dark"] .linked-color-card .task-count-badge {
+  background: #242822;
+  filter: brightness(1.16);
+}

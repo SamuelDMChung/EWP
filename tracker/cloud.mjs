@@ -34,11 +34,14 @@ export async function loadTrackerSettings() {
 }
 
 export async function loadTrackerCloud() {
+  // V1.15: reconcile the shared, recycled 20-color pool atomically in Supabase.
+  // Do this before reading project/task rows so all clients use the same IDs.
+  const colorAssignments = await request('rpc/tracker_sync_active_colors', {method:'POST',body:{}});
   const [projects,workItems,settings,filters]=await Promise.all([
     allRows('projects'),allRows('tracker_work_items'),
     request('tracker_settings?select=*&id=eq.global'),allRows('tracker_saved_filters')
   ]);
-  return { projects, workItems, settings:settings?.[0] || {sales:[],assignees:[],tasks:[],phases:['Awarded','Bidding']}, filters };
+  return { projects, workItems, settings:settings?.[0] || {sales:[],assignees:[],tasks:[],phases:['Awarded','Bidding']}, filters, colorAssignments:colorAssignments||[] };
 }
 export function saveTrackerProject(project, workItems, expectedVersion=null) {
   return request('rpc/tracker_save_project',{method:'POST',body:{p_project:project,p_work_items:workItems,p_expected_version:expectedVersion}});

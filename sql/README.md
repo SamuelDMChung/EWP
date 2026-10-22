@@ -1,3 +1,9 @@
+# Current WEB SQL migration — V1.15
+
+Run **`../v1_15_tracker_linked_colors.sql`** in the SAME Supabase project SQL Editor **before** publishing the V1.15 website. It requires working Tracker task/Coordination schema and does not replace or re-run older migrations. It adds `tracker_active_colors` (authenticated read-only) and atomic `tracker_sync_active_colors()` (authenticated RPC), with no changes to PO, inventory, Forecast or Sales data. Check actual installation of V1.13 and V1.14 separately before deploying; read root `../PORTAL_HANDOFF.md` for required order and tests.
+
+---
+
 # Current WEB SQL migration — V1.14
 
 First confirm `../v1_13_purchasing_receipts.sql` was already executed. Then run `../v1_14_purchase_order_reimport.sql` in your existing Supabase project **before** publishing the V1.14 frontend. It adds a single authenticated transactional PO import/revision RPC, without deleting existing records.

@@ -1,3 +1,9 @@
+## Portal V1.15 WEB (Oct 21, 2026) — Tracker-only UI + color allocation
+
+The new V1.15 WEB baseline changes only Tracker board drag targets/linked ticket borders plus a separate Tracker Supabase color-assignment table/RPC. **Forecast calculations, PDF imports, purchasing, inventory, deliveries, and PO history remain unchanged.** The incremental SQL is `../v1_15_tracker_linked_colors.sql`; deploy before the full WEB V1.15 site. Read `../PORTAL_HANDOFF.md`.
+
+---
+
 ## Portal V1.14 WEB (Oct 21, 2026) — Direct PO Re-import
 
 Importing a previously removed/cancelled PO no longer requires manual Restore: after warning and confirmation, **Update PO** performs automatic reactivation and material reconciliation atomically. Requires `../v1_14_purchase_order_reimport.sql` **after** V1.13 SQL and **before** WEB deployment. Receiving history/On Hand unchanged. Full migration and test plan: `../PORTAL_HANDOFF.md`.

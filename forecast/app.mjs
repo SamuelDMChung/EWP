@@ -44,15 +44,21 @@ let trackerSalesOptions = [];
 // The database's legacy project_type column allows only multi/sfd. "Others" is
 // stored as multi for compatibility, with the precise user selection saved in
 // tracker_project_type (the authoritative shared classification).
+const PROJECT_TYPES = ["sfd", "multi", "duplex", "multiplex", "townhome", "others"];
+const TRACKER_PROJECT_TYPES = {sfd:"SFD",multi:"Multi",duplex:"Duplex",multiplex:"Multiplex",townhome:"Townhome",others:"Others"};
+const PROJECT_TYPE_LABELS = {sfd:"SFD",multi:"Multi",duplex:"Duplex",multiplex:"Multiplex",townhome:"Townhome",others:"Others"};
 function projectTypeFromRow(row) {
-  if (row?.tracker_project_type === "Others" || row?.projectType === "others") return "others";
-  if (row?.tracker_project_type === "SFD") return "sfd";
-  if (row?.tracker_project_type === "Multi") return "multi";
-  return row?.project_type === "sfd" || row?.projectType === "sfd" ? "sfd" : "multi";
+  const trackerType = String(row?.tracker_project_type || "").trim();
+  const matched = PROJECT_TYPES.find(type => TRACKER_PROJECT_TYPES[type] === trackerType);
+  if (matched) return matched;
+  if (PROJECT_TYPES.includes(row?.projectType)) return row.projectType;
+  return row?.project_type === "sfd" ? "sfd" : "multi";
 }
+// Preserve old DB constraint: public.projects.project_type supports only sfd/multi.
+// Accurate categories are stored in tracker_project_type, shared with Tracking.
 function databaseProjectType(type) { return type === "sfd" ? "sfd" : "multi"; }
-function trackerProjectType(type) { return type === "others" ? "Others" : type === "sfd" ? "SFD" : "Multi"; }
-function projectTypeLabel(type) { return type === "others" ? "Others" : type === "sfd" ? "SFD" : "Multi"; }
+function trackerProjectType(type) { return TRACKER_PROJECT_TYPES[type] || "Multi"; }
+function projectTypeLabel(type) { return PROJECT_TYPE_LABELS[type] || "Multi"; }
 
 function populateSalesChoices(rows) {
   const configured = Array.isArray(rows?.trackerSettings?.sales) ? rows.trackerSettings.sales : [];
@@ -216,7 +222,7 @@ function migrateLegacyState(parsed) {
       customer: project.customer || "",
       sales: project.sales || "",
       address: project.address || "",
-      projectType: ["sfd", "multi", "others"].includes(project.projectType) ? project.projectType : "multi",
+      projectType: PROJECT_TYPES.includes(project.projectType) ? project.projectType : "multi",
       defaultEstimatedDeliveryDate: project.defaultEstimatedDeliveryDate || "",
       sourceFileName: project.sourceFileName || "",
       createdAt: project.createdAt || new Date().toISOString(),
@@ -957,7 +963,7 @@ function applyMatchedProjectToIntake(project, { trackerOnly = false } = {}) {
     }
   }
   const mappedType = projectTypeFromRow(project);
-  if (["sfd", "multi", "others"].includes(mappedType)) {
+  if (PROJECT_TYPES.includes(mappedType)) {
     if (managed || !$("projectType").value) {
       if ($("projectType").value !== mappedType) changed = true;
       $("projectType").value = mappedType;
@@ -1196,7 +1202,7 @@ function renderDeliveryPreview() {
 
 function updateProjectTypeUi() {
   const hint = $("projectTypeHint");
-  if (hint) hint.textContent = "SFD, Multi and Others have identical forecasting and purchasing behavior. New levels require an estimated delivery date.";
+  if (hint) hint.textContent = "All project types have identical forecasting and purchasing behavior. New levels require an estimated delivery date.";
   syncOtherTypeField();
   if (draft) { draft.projectType = $("projectType")?.value || "multi"; draft.projectTypeOther = normalizeSpaces($("projectTypeOther").value); }
 }
@@ -4347,7 +4353,7 @@ function cleanBackupState() {
       customer: project.customer,
       sales: project.sales,
       address: project.address,
-      projectType: ["sfd", "multi", "others"].includes(project.projectType) ? project.projectType : "multi",
+      projectType: PROJECT_TYPES.includes(project.projectType) ? project.projectType : "multi",
       defaultEstimatedDeliveryDate: project.defaultEstimatedDeliveryDate,
       levels: (project.levels || []).map(level => ({
         name: level.name,
@@ -4407,7 +4413,7 @@ function normalizeBackup(parsed) {
       customer: normalizeSpaces(project.customer || ""),
       sales: normalizeSpaces(project.sales || ""),
       address: normalizeSpaces(project.address || ""),
-      projectType: ["sfd", "multi", "others"].includes(project.projectType) ? project.projectType : "multi",
+      projectType: PROJECT_TYPES.includes(project.projectType) ? project.projectType : "multi",
       defaultEstimatedDeliveryDate: project.defaultEstimatedDeliveryDate || "",
       levels: (project.levels || []).map((level, index) => ({
         id: uid(),

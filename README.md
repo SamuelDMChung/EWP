@@ -1,3 +1,13 @@
+# EWP Management Portal V1.20 WEB — Full Source
+
+**Latest WEB version:** V1.20 (October 23, 2026), based on complete V1.19 source. **Next:** V1.21. **iOS EWP Connect:** unchanged.
+
+**V1.20:** Consolidate Material List now merges regular and `INVERTED` variants of the same hanger model; `HGUS410` is **71 pcs** across the sample levels (40 + 31). Removed the Manufacturer column; connector table shows Product / Total plus optional per-level amounts. Connector, lengths and both-sections results have separate **Copy for Email** (compact bordered HTML, with clipboard fallback) and **Copy for Excel** (TSV) controls. Copy for Email pastes into an Outlook message as a rich table when the browser/Outlook support HTML clipboard content. Current sample PDF totals and cross-page reading remain correct. Small on-screen table spacing improvements; all page credit lines updated to `V1.20 WEB · Developed by Samuel Chung`.
+
+**Deploy:** Replace entire GitHub Pages repository root contents with this ZIP; hard-refresh all pages. **No SQL migration, Supabase updates, or Edge Function changes.** PDF processing stays entirely in the browser. Verify Copy for Email by pasting into your actual Outlook client; browser/mock tests alone cannot guarantee Outlook formatting. `PORTAL_HANDOFF.md` contains full details and regression checklist.
+
+---
+
 # EWP Management Portal — V1.19 WEB (Latest)
 
 The **canonical source release** is **V1.19 WEB**, built from the full V1.18 package. This version fixes Material List PDF.js cleanup (`getDocument` loading task), adds local PDF drag-and-drop plus Browse, and standardizes `V1.19 WEB · Developed by Samuel Chung` across every workspace header. **No SQL migration, Supabase writes, Edge Function redeployment, or iOS changes** are required. Follow `PORTAL_HANDOFF.md` for deployment and sample-PDF verification. All earlier functionality is retained.

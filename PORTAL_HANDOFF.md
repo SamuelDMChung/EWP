@@ -1,3 +1,36 @@
+# EWP Management Portal — V1.20 WEB: Hanger Normalization and Email-Ready Copy
+
+**Canonical input:** Complete V1.19 WEB source ZIP. **Release:** `EWP_Management_Portal_V1_20_WEB_FULL.zip` (October 23, 2026). **Next:** V1.21 WEB. **Scope:** WEB only; EWP Connect iOS unchanged.
+
+## Changes in V1.20
+
+1. **All hanger models — ignore INVERTED mounting orientation:** `ewp-tools/consolidate-material-list/parser.mjs` normalizes the standalone word `INVERTED` (case insensitive, including parentheses/brackets) before grouping connectors. It removes the report's trailing `Not Required`, `No Not Required`, and `No No/Yes` filler when not part of the actual model. It deliberately retains meaningful model letters, numbers, sizes and other modifiers. Example: source HGUS410 69 pcs and HGUS410 INVERTED 2 pcs become one **HGUS410 71 pcs** entry. This generic rule applies across hanger models; the per-level quantities remain correct. Different models are never collapsed merely for sharing a prefix.
+2. **Remove Manufacturer from displayed/copy output:** The Framing Connector Summary table now has only **Product / Total** (plus optional per-level columns). Manufacturer is still read to identify a well-formed source connector row, but is not retained as a summary dimension or shown in clipboard output. Total Lengths remains **Product / Total** with optional per-level columns.
+3. **Email-ready copy:** Connector, Total Lengths and Both Tables each have **Copy for Email** and **Copy for Excel** buttons. Email copies HTML tables with compact padding, a narrow ~480px default width, light header shading, subtle cell borders and right-aligned numeric totals. The clipboard publishes `text/html` together with a `text/plain` fallback using `ClipboardItem`; older browsers attempt a selected rich HTML fragment via `execCommand`. If only plain-text copying is possible, the UI explicitly warns that the formatting was not preserved. The source PDF remains browser-local.
+4. **Excel-ready copy:** Preserves TSV (tab-separated values) including the same normalized products and optional level breakdown, without Manufacturer. Both-tables mode separates the connector and length sections. Values are HTML-escaped when building the email table, so PDF product labels cannot inject HTML into pasted content.
+5. **Compact on-screen results:** Reduced table padding and text size, preserved responsive horizontal scrolling when breakdown columns are shown, and kept drag/drop, Browse PDF, Clear, 200 MB cap, PDF.js guarded cleanup and section continuity across PDF page breaks.
+6. **Version consistency:** All eight HTML page headers/footers now display `V1.20 WEB · Developed by Samuel Chung`. Script/style URLs updated with `?v=1.20` for cache-busting. No other web workspace behavior was intentionally changed.
+
+## Sample PDF verification — TC26268, 7645 Berkley St
+
+- L2 Framing, L3 Framing across **five** PDF pages; no lost rows at page breaks.
+- HGUS410: **71 pcs** (L2 **40**, L3 **31**) instead of two separate HGUS410 vs HGUS410 INVERTED rows; distinct connector products decrease **9 → 8**.
+- HUS1.81/10: **24 pcs** (7 + 17); IUS2.37/11.88: **424 pcs** (331 + 93).
+- 11 7/8" TJI 230 joist: **4,385 LF** (2,297 + 2,088); Total Lengths untouched.
+- Added simulated cross-page test with HUC410 and HUC410 INVERTED, HTML escaping, level breakdown and HTML/plain clipboard tests. Static syntax on all JS modules, all HTML navigation/asset paths, ZIP integrity checked.
+
+## Deployment and live QA
+
+1. Extract **all** files from V1.20 full ZIP to your GitHub Pages repository root (preserve hidden `.nojekyll`). Do not deploy just the changed tool files.
+2. **No Supabase SQL migration, RLS, storage or Edge Function redeploy is needed**. Do not modify shared database or EWP Connect iOS. User must publish GitHub Pages to activate the changes; this ZIP alone does not update production.
+3. After publishing, hard-refresh, sign in and navigate Portal → **All** → EWP Tools → Consolidate Material List. Upload `TC26268 - 7645 Berkley St - Material List for Quote.pdf` using drag/drop or Browse PDF. Verify HGUS410 **71** and the 40/31 level breakdown. Confirm all other totals.
+4. Click **Copy for Email** on each section, paste into a real Outlook compose message and check thin borders, small rows, no Manufacturer, bold/right-aligned totals, and optional breakdown. Click **Copy for Excel**, paste into Excel, verify split columns and figures. Check **Copy both tables** for both formats. Note: Outlook and browser clipboard capabilities differ; isolated tests do **not** prove native Outlook rendering.
+5. Regression check All/Sales Portal routing, New EWP Requests/EWP Order, Sales Project Tracking read-only list, Forecast/Purchasing inventory and PO transactions, Tracker shared statuses/colors, theme and auth navigation. No database writes were made by this tool.
+
+**Verification boundary:** Real GitHub Pages auth/navigation, PDF.js CDN loading, browser clipboard permissions and paste into Outlook have NOT been verified in production. Static unit and DOM-mock clipboard tests passed locally; see release test notes. Source ZIP is a release candidate until deployed and checked by the user.
+
+---
+
 # EWP Management Portal — V1.19 WEB: Material PDF Cleanup Fix, Drag-and-Drop, Shared Credits
 
 **Canonical source:** V1.18 WEB full ZIP (all previous features retained). **Release:** `EWP_Management_Portal_V1_19_WEB_FULL.zip` (October 23, 2026). **Next:** V1.20 WEB. **Scope:** WEB only; EWP Connect iOS unchanged.

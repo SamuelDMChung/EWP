@@ -4,8 +4,8 @@
  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light">
  <meta name="description" content="Consolidate EWP Framing Connector Summary and Total Lengths from multi-level PDF reports.">
  <title>Consolidate Material List — EWP Tools</title>
- <link rel="stylesheet" href="../../portal-nav.css?v=1.19"><link rel="stylesheet" href="../../theme.css?v=1.19"><link rel="stylesheet" href="../tools.css?v=1.19">
- <script src="../../theme.js?v=1.19"></script>
+ <link rel="stylesheet" href="../../portal-nav.css?v=1.20"><link rel="stylesheet" href="../../theme.css?v=1.20"><link rel="stylesheet" href="../tools.css?v=1.20">
+ <script src="../../theme.js?v=1.20"></script>
 </head>
 <body>
  <nav class="ewp-portal-nav" aria-label="EWP Management navigation">
@@ -13,7 +13,7 @@
   <div class="ewp-portal-nav__links"><a class="ewp-portal-nav__link" href="../../">Portal</a><a class="ewp-portal-nav__link" href="../../tracker/">Project Tracking</a><a class="ewp-portal-nav__link" href="../../forecast/">EWP Forecast</a><a class="ewp-portal-nav__link" href="../" aria-current="page">EWP Tools</a></div>
   <span id="ewpNavAccount" class="ewp-portal-nav__account" aria-live="polite"></span>
  </nav>
- <header class="tools-header"><div><span class="eyebrow">EWP TOOLS</span><h1>Consolidate Material List</h1><p>V1.19 WEB · Developed by Samuel Chung</p></div><button id="ewpToolsSettings" type="button" class="tool-button ewp-settings-trigger">⚙ Settings</button></header>
+ <header class="tools-header"><div><span class="eyebrow">EWP TOOLS</span><h1>Consolidate Material List</h1><p>V1.20 WEB · Developed by Samuel Chung</p></div><button id="ewpToolsSettings" type="button" class="tool-button ewp-settings-trigger">⚙ Settings</button></header>
  <main class="tools-main">
   <div class="tools-breadcrumb"><a href="../">← All EWP Tools</a></div>
   <section class="tools-panel tool-input-panel" aria-labelledby="materialImportTitle">
@@ -34,15 +34,15 @@
   <section id="materialOutput" class="tools-panel" hidden aria-labelledby="materialResultsHeading">
    <div class="material-results-head"><div><h2 id="materialResultsHeading">2. Consolidated summary</h2><p id="materialStats" class="small-hint"></p></div><label class="breakdown-toggle"><input id="showMaterialBreakdown" type="checkbox"> Show quantity / length by level</label></div>
    <div id="materialWarnings" class="material-warnings" role="alert" hidden></div>
-   <div class="material-table-head"><h3>Framing Connector Summary <small>Pieces</small></h3><button id="copyMaterialConnectors" class="tool-button" type="button">Copy connectors</button></div>
+   <div class="material-table-head"><h3>Framing Connector Summary <small>Pieces</small></h3><div class="material-copy-actions"><button id="copyMaterialConnectorsEmail" class="tool-primary" type="button">Copy for Email</button><button id="copyMaterialConnectorsExcel" class="tool-button" type="button">Copy for Excel</button></div></div>
    <div class="material-scroll"><table class="material-table" id="materialConnectorsTable"><thead id="materialConnectorsHead"></thead><tbody id="materialConnectorsBody"></tbody></table></div>
-   <div class="material-table-head"><h3>Total Lengths <small>Linear feet</small></h3><button id="copyMaterialLengths" class="tool-button" type="button">Copy total lengths</button></div>
+   <div class="material-table-head"><h3>Total Lengths <small>Linear feet</small></h3><div class="material-copy-actions"><button id="copyMaterialLengthsEmail" class="tool-primary" type="button">Copy for Email</button><button id="copyMaterialLengthsExcel" class="tool-button" type="button">Copy for Excel</button></div></div>
    <div class="material-scroll"><table class="material-table" id="materialLengthsTable"><thead id="materialLengthsHead"></thead><tbody id="materialLengthsBody"></tbody></table></div>
-   <div class="tool-actions result-actions"><button id="copyMaterialAll" class="tool-primary" type="button">Copy both tables</button><span class="small-hint">Tab-separated values are ready to paste into Excel.</span></div>
+   <div class="tool-actions result-actions"><strong>Both tables:</strong><button id="copyMaterialAllEmail" class="tool-primary" type="button">Copy for Email</button><button id="copyMaterialAllExcel" class="tool-button" type="button">Copy for Excel</button><span class="small-hint">Email copies bordered HTML tables; Excel copies tab-separated columns. Includes visible per-level breakdown when selected.</span></div>
   </section>
  </main>
- <footer class="tools-footer"><span>EWP Management Portal</span><span>V1.19 WEB · Developed by Samuel Chung</span></footer>
- <script type="module" src="../../workspace-auth.mjs?v=1.19"></script>
- <script type="module" src="./app.mjs?v=1.19"></script>
- <script type="module" src="../../shared-settings.mjs?v=1.19"></script>
+ <footer class="tools-footer"><span>EWP Management Portal</span><span>V1.20 WEB · Developed by Samuel Chung</span></footer>
+ <script type="module" src="../../workspace-auth.mjs?v=1.20"></script>
+ <script type="module" src="./app.mjs?v=1.20"></script>
+ <script type="module" src="../../shared-settings.mjs?v=1.20"></script>
 </body></html>

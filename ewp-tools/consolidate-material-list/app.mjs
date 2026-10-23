@@ -1,4 +1,4 @@
-import {consolidatePages,extractPdfPages,toTsv,combinedTsv,formatFeet} from './parser.mjs?v=1.19';
+import {consolidatePages,extractPdfPages,toTsv,combinedTsv,toEmailHtml,combinedEmailHtml,formatFeet} from './parser.mjs?v=1.20';
 const $=id=>document.getElementById(id);
 const current={result:null,pdf:null,library:null,busy:false};
 
@@ -21,7 +21,8 @@ function renderTable(kind){
  const isConnector=kind==='connectors';
  const show=$('showMaterialBreakdown').checked,head=$(isConnector?'materialConnectorsHead':'materialLengthsHead'),body=$(isConnector?'materialConnectorsBody':'materialLengthsBody');
  clearChildren(head);clearChildren(body);
- const headers=['Product',...(isConnector?['Manufacturer']:[]),'Total',...(show?result.levels:[])];
+ const headers=['Product','Total',...(show?result.levels:[])];
+ head.closest('table')?.classList.toggle('has-breakdown',show);
  const tr=document.createElement('tr');
  for(const text of headers){const th=cell('th',text);th.scope='col';tr.append(th);}
  head.append(tr);
@@ -30,7 +31,6 @@ function renderTable(kind){
  for(const item of items){
   const tr=document.createElement('tr');
   tr.append(cell('td',item.product));
-  if(isConnector)tr.append(cell('td',item.manufacturers.join(' / ')));
   const total=cell('td',isConnector?item.quantity:formatFeet(item.inches));total.className='material-num material-total';tr.append(total);
   if(show)for(const level of result.levels){const td=cell('td',isConnector?(item.byLevel[level]||0):formatFeet(item.byLevel[level]||0));td.className='material-num';tr.append(td);}
   body.append(tr);
@@ -48,8 +48,53 @@ async function copyText(value,label){
  try{
   if(navigator.clipboard?.writeText)await navigator.clipboard.writeText(value);
   else {const textarea=document.createElement('textarea');textarea.value=value;textarea.style.cssText='position:fixed;left:-9999px;top:0';document.body.append(textarea);textarea.select();const copied=document.execCommand('copy');textarea.remove();if(!copied)throw new Error('Copy command was not supported.');}
-  status(`${label} copied. Paste directly into Excel or a spreadsheet.`);
+  status(`${label} copied for Excel. Paste into a spreadsheet.`);
  }catch(e){status(`Could not copy automatically: ${e.message}. Try another browser.`,true);}
+}
+// ClipboardItem writes both rich HTML (for Outlook/webmail) and a plain-text
+// representation (for applications that prefer it). For older browsers use a
+// selected HTML fragment with execCommand, then fall back to plain text with
+// a truthful notice if rich formatting is not supported.
+async function copyForEmail(html,plain,label){
+  if(!current.result)return;
+  let richCopied=false;
+  let lastError;
+  if(navigator.clipboard?.write && typeof ClipboardItem!=='undefined'){
+    try{
+      const richItem=new ClipboardItem({
+        'text/html':new Blob([html],{type:'text/html'}),
+        'text/plain':new Blob([plain],{type:'text/plain'})
+      });
+      await navigator.clipboard.write([richItem]);
+      richCopied=true;
+    }catch(error){lastError=error;}
+  }
+  if(!richCopied && typeof document.execCommand==='function' && typeof window.getSelection==='function'){
+    const holder=document.createElement('div');
+    holder.innerHTML=html;
+    holder.style.cssText='position:fixed;left:-10000px;top:0;pointer-events:none;';
+    document.body.append(holder);
+    const selection=window.getSelection(),range=document.createRange();
+    const previous=[];
+    if(selection)for(let i=0;i<selection.rangeCount;i++)previous.push(selection.getRangeAt(i));
+    try{
+      range.selectNodeContents(holder);
+      selection.removeAllRanges();selection.addRange(range);
+      richCopied=!!document.execCommand('copy');
+    }catch(error){lastError=error;}
+    finally{
+      selection?.removeAllRanges();
+      for(const prior of previous)selection?.addRange(prior);
+      holder.remove();
+    }
+  }
+  if(richCopied){status(`${label} copied as a formatted table. Paste into your email body.`);return;}
+  // A fallback still lets the user copy quantities without claiming borders.
+  try{
+    if(navigator.clipboard?.writeText){await navigator.clipboard.writeText(plain);}
+    else throw (lastError || new Error('Rich-text clipboard is unavailable.'));
+    status(`${label} copied as plain text only. Your browser did not allow a formatted email table.`,true);
+  }catch(error){status(`Could not copy ${label.toLowerCase()}: ${error?.message || 'Clipboard access denied'}.`,true);}
 }
 const zone=$('materialDropZone');
 const fileInput=$('materialPdfFile');
@@ -135,11 +180,15 @@ $('materialParse').addEventListener('click',async()=>{
   const pages=await extractPdfPages(file,lib,(i,n)=>status(`Reading page ${i} of ${n}…`));
   const result=consolidatePages(pages);
   if(!result.connectors.length&&!result.lengths.length)throw new Error('No readable Framing Connector Summary or Total Lengths rows were found. This tool requires a selectable-text material report (scanned PDFs are not supported).');
-  current.result=result;renderResult();status(`Finished processing ${result.stats.pages} pages. Review the tables and use Copy to paste them into Excel.`);
+  current.result=result;renderResult();status(`Finished processing ${result.stats.pages} pages. Use Copy for Email for a bordered table or Copy for Excel for tab-separated columns.`);
  }catch(e){status(`Could not consolidate PDF: ${e?.message||'Unknown error'}`,true);}
  finally{setBusy(false);}
 });
 $('showMaterialBreakdown').addEventListener('change',()=>{renderTable('connectors');renderTable('lengths');});
-$('copyMaterialConnectors').addEventListener('click',()=>current.result&&copyText(toTsv(current.result.connectors,current.result.levels,'connectors',$('showMaterialBreakdown').checked),'Connector summary'));
-$('copyMaterialLengths').addEventListener('click',()=>current.result&&copyText(toTsv(current.result.lengths,current.result.levels,'lengths',$('showMaterialBreakdown').checked),'Total lengths'));
-$('copyMaterialAll').addEventListener('click',()=>current.result&&copyText(combinedTsv(current.result,$('showMaterialBreakdown').checked),'Both tables'));
+function selectedBreakdown(){return $('showMaterialBreakdown').checked;}
+$('copyMaterialConnectorsEmail').addEventListener('click',()=>current.result&&copyForEmail(toEmailHtml(current.result.connectors,current.result.levels,'connectors',selectedBreakdown()),toTsv(current.result.connectors,current.result.levels,'connectors',selectedBreakdown()),'Connector summary'));
+$('copyMaterialConnectorsExcel').addEventListener('click',()=>current.result&&copyText(toTsv(current.result.connectors,current.result.levels,'connectors',selectedBreakdown()),'Connector summary'));
+$('copyMaterialLengthsEmail').addEventListener('click',()=>current.result&&copyForEmail(toEmailHtml(current.result.lengths,current.result.levels,'lengths',selectedBreakdown()),toTsv(current.result.lengths,current.result.levels,'lengths',selectedBreakdown()),'Total lengths'));
+$('copyMaterialLengthsExcel').addEventListener('click',()=>current.result&&copyText(toTsv(current.result.lengths,current.result.levels,'lengths',selectedBreakdown()),'Total lengths'));
+$('copyMaterialAllEmail').addEventListener('click',()=>current.result&&copyForEmail(combinedEmailHtml(current.result,selectedBreakdown()),combinedTsv(current.result,selectedBreakdown()),'Both tables'));
+$('copyMaterialAllExcel').addEventListener('click',()=>current.result&&copyText(combinedTsv(current.result,selectedBreakdown()),'Both tables'));

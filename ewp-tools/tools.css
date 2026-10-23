@@ -26,3 +26,14 @@ html[data-ewp-theme=dark]{--tools-bg:#161815;--tools-paper:#242822;--tools-ink:#
 .file-selection{display:flex;align-items:center;gap:9px;overflow-wrap:anywhere;color:var(--tools-accent);font-weight:800;margin:7px 0}
 .file-selection .file-name{color:var(--tools-ink);font-weight:600}
 @media(max-width:740px){.file-dropzone{min-height:200px;padding:23px 12px}.dropzone-title{font-size:16px}}
+
+/* V1.20: compact consolidation table and side-by-side rich/plain clipboard actions. */
+.material-copy-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.material-copy-actions .tool-button,.material-copy-actions .tool-primary{padding:8px 12px;font-size:12px}
+.material-scroll{max-width:920px}
+.material-table{min-width:420px;font-size:12.5px}
+.material-table.has-breakdown{min-width:690px}
+.material-table th,.material-table td{padding:7px 10px}
+.material-table th+th,.material-table td+td{border-left:1px solid var(--tools-line)}
+.result-actions strong{font-size:13px}
+@media(max-width:740px){.material-copy-actions{width:100%}.material-copy-actions button{flex:1}.material-scroll{max-width:100%}}

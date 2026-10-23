@@ -1,4 +1,4 @@
-/* EWP Management V1.19 — client-side Weyerhaeuser material report consolidation.
+/* EWP Management V1.20 — client-side Weyerhaeuser material report consolidation.
  * The active level and section deliberately survive PDF page breaks.
  * Only Framing Connector Summary and Total Lengths are read.
  */
@@ -32,6 +32,19 @@ function furniture(line){
     || /^\d{1,2}\/\d{1,2}\/\d{4}\s/.test(s)
     || /^(?:Not Required|No No|No Yes)$/i.test(s);
 }
+// INVERTED is a mounting orientation, not a different hanger SKU.
+// Remove it as a standalone modifier for ANY connector model, leaving
+// dimensions and meaningful model suffixes untouched.
+export function normalizeConnectorProduct(value){
+  return clean(value)
+    .replace(/\s+(?:No\s+)?Not\s+Required\s*$/i, '')
+    .replace(/\s+No\s+(?:No|Yes)\s*$/i, '')
+    .replace(/(?:\(\s*INVERTED\s*\)|\[\s*INVERTED\s*\]|\bINVERTED\b)/gi, ' ')
+    .replace(/\(\s*\)|\[\s*\]/g, '')
+    .replace(/\s*[-–—]\s*$/g, '')
+    .replace(/\s{2,}/g, ' ')
+    .trim();
+}
 function parseConnector(line){
   // Column-leading PlotID, Qty, Manuf, Product, then optional nailing schedule.
   const m=clean(line).match(/^([A-Za-z]{1,4}\d+[\w.'/-]*)\s+(\d+)\s+([A-Za-z][\w&.-]*)\s+(.+)$/);
@@ -41,9 +54,8 @@ function parseConnector(line){
   const qty=Number(qtyText);
   if(!Number.isSafeInteger(qty)||qty<0||qty>1000000)return null;
   // Nailing counts are outside the requested connector material name.
-  const material=clean(tail
-    .split(/\s+(?=\d+\s*-\s*(?:10d|SDS|Strong-Grip|16d|8d|Nail|Screw))/i)[0]
-    .replace(/\s+(?:(?:No\s+)?Not\s+Required|No\s+(?:No|Yes))\s*$/i,''));
+  const material=normalizeConnectorProduct(tail
+    .split(/\s+(?=\d+\s*-\s*(?:10d|SDS|Strong-Grip|16d|8d|Nail|Screw))/i)[0]);
   if(!material||!/\w/.test(material))return null;
   return { product:material, manufacturer, quantity:qty, plot };
 }
@@ -83,8 +95,8 @@ export function consolidatePages(pages){
         if(!c){skipped++;continue;}
         const key=c.product.toLowerCase();
         const old=level.connectors.get(key);
-        if(old){old.quantity+=c.quantity;old.manufacturers.add(c.manufacturer);}
-        else level.connectors.set(key,{product:c.product,quantity:c.quantity,manufacturers:new Set([c.manufacturer])});
+        if(old)old.quantity+=c.quantity;
+        else level.connectors.set(key,{product:c.product,quantity:c.quantity});
         recognizedConnectors++;level.pageNumbers.add(pageIndex+1);
       } else {
         const l=parseLength(line);
@@ -101,9 +113,8 @@ export function consolidatePages(pages){
   const connectors=new Map(),lengths=new Map();
   for(const level of levels.values()){
     for(const [key,c] of level.connectors){
-      const val=connectors.get(key)||{product:c.product,quantity:0,byLevel:{},manufacturers:new Set()};
+      const val=connectors.get(key)||{product:c.product,quantity:0,byLevel:{}};
       val.quantity+=c.quantity;val.byLevel[level.name]=(val.byLevel[level.name]||0)+c.quantity;
-      for(const manufacturer of c.manufacturers)val.manufacturers.add(manufacturer);
       connectors.set(key,val);
     }
     for(const [key,l] of level.lengths){
@@ -113,7 +124,7 @@ export function consolidatePages(pages){
     }
   }
   const sorting=(a,b)=>a.product.localeCompare(b.product,undefined,{numeric:true,sensitivity:'base'});
-  const connectorList=[...connectors.values()].sort(sorting).map(c=>({...c,manufacturers:[...c.manufacturers].sort()}));
+  const connectorList=[...connectors.values()].sort(sorting);
   const lengthList=[...lengths.values()].sort(sorting);
   if(!recognizedConnectors)warnings.push('No Framing Connector Summary rows were found.');
   if(!recognizedLengths)warnings.push('No Total Lengths rows were found.');
@@ -121,20 +132,52 @@ export function consolidatePages(pages){
   return {levels:names,connectors:connectorList,lengths:lengthList,warnings,stats:{pages:pages.length,levelCount:names.length,connectorRows:recognizedConnectors,lengthRows:recognizedLengths,unmatchedLines:skipped}};
 }
 
-export function toTsv(items,levels,kind,showLevels=false){
-  const connector=kind==='connectors';
-  const title=connector?'FRAMING CONNECTOR SUMMARY — QUANTITY (PCS)':'TOTAL LENGTHS — LINEAR FEET (LF)';
-  const header=['Product',...(connector?['Manufacturer']:[]),'Total',...(showLevels?levels:[])];
+// Keep email and Excel columns derived from the same data so copying never
+// changes product grouping or per-level quantities.
+function tableData(items,levels,kind,showLevels=false){
+  const isConnector=kind==='connectors';
+  const title=isConnector?'FRAMING CONNECTOR SUMMARY — QUANTITY (PCS)':'TOTAL LENGTHS — LINEAR FEET (LF)';
+  const headers=['Product','Total',...(showLevels?levels:[])];
   const rows=items.map(item=>[
     item.product,
-    ...(connector?[item.manufacturers.join(' / ')]:[]),
-    connector?String(item.quantity):formatFeet(item.inches),
-    ...(showLevels?levels.map(level=>connector?String(item.byLevel[level]||0):formatFeet(item.byLevel[level]||0)):[])
+    isConnector?String(item.quantity):formatFeet(item.inches),
+    ...(showLevels?levels.map(level=>isConnector?String(item.byLevel[level]||0):formatFeet(item.byLevel[level]||0)):[])
   ]);
-  return [title,header.join('\t'),...rows.map(cols=>cols.map(col=>String(col).replace(/[\t\r\n]+/g,' ')).join('\t'))].join('\n');
+  return {title,headers,rows};
+}
+export function toTsv(items,levels,kind,showLevels=false){
+  const {title,headers,rows}=tableData(items,levels,kind,showLevels);
+  const plain=value=>String(value).replace(/[\t\r\n]+/g,' ');
+  return [title,headers.join('\t'),...rows.map(cols=>cols.map(plain).join('\t'))].join('\n');
 }
 export function combinedTsv(result,showLevels=false){
   return [toTsv(result.connectors,result.levels,'connectors',showLevels),toTsv(result.lengths,result.levels,'lengths',showLevels)].join('\n\n');
+}
+const escapeHtml=value=>String(value).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+
+// Outlook and webmail support pasted HTML tables most reliably with styles
+// inlined on each cell (rather than a CSS class or external stylesheet).
+export function toEmailHtml(items,levels,kind,showLevels=false){
+  const {title,headers,rows}=tableData(items,levels,kind,showLevels);
+  const tableWidth=showLevels?Math.min(920,Math.max(560,340+levels.length*105)):480;
+  const tableStyle=`border-collapse:collapse;border-spacing:0;width:${tableWidth}px;max-width:100%;border:1px solid #cdd2d1;font-family:Arial,Calibri,sans-serif;font-size:12px;line-height:1.25;color:#29313b;`;
+  const common='border:1px solid #d9dedb;padding:5px 9px;vertical-align:middle;';
+  const headStyle=common+'background-color:#f2f3ed;font-weight:700;text-align:left;';
+  const headNumStyle=headStyle+'text-align:right;';
+  const titleHtml=`<p style="margin:0 0 6px 0;font-family:Arial,Calibri,sans-serif;font-size:13px;line-height:1.3;font-weight:700;color:#29313b;">${escapeHtml(title)}</p>`;
+  const headHtml='<tr>'+headers.map((heading,i)=>`<th scope="col" style="${i?' '+headNumStyle:headStyle}">${escapeHtml(heading)}</th>`).join('')+'</tr>';
+  const rowsHtml=rows.length ? rows.map((cols,index)=>'<tr>'+cols.map((value,i)=>{
+    const shade=index%2===1?'background-color:#fafaf8;':'';
+    const align=i?'text-align:right;white-space:nowrap;':'text-align:left;';
+    const weight=i===1?'font-weight:700;':'';
+    return `<td style="${common}${shade}${align}${weight}">${escapeHtml(value)}</td>`;
+  }).join('')+'</tr>').join('')
+   : `<tr><td colspan="${headers.length}" style="${common}">No matching rows found</td></tr>`;
+  return titleHtml+`<table role="table" width="${tableWidth}" cellspacing="0" cellpadding="0" border="1" style="${tableStyle}"><thead>${headHtml}</thead><tbody>${rowsHtml}</tbody></table>`;
+}
+export function combinedEmailHtml(result,showLevels=false){
+  const separator='<div style="height:14px;line-height:14px;font-size:1px;">&nbsp;</div>';
+  return '<div>'+toEmailHtml(result.connectors,result.levels,'connectors',showLevels)+separator+toEmailHtml(result.lengths,result.levels,'lengths',showLevels)+'</div>';
 }
 
 export async function extractPdfPages(file,pdfjsLib,onPage=()=>{}){

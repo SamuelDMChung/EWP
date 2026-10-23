@@ -1,3 +1,11 @@
+# EWP Tools — V1.20 WEB
+
+**New in V1.20:** Connector models with standalone `INVERTED` mounting orientation are consolidated with the unmodified model. Source HGUS410 69 + HGUS410 INVERTED 2 = **71 pcs**. The 5-page sample includes L2=40, L3=31. Manufacturer no longer appears in summary or copied data. Each section and the combined output provide **Copy for Email** (compact, light-bordered HTML table via ClipboardItem, with accurate plain-text fallback notice) and **Copy for Excel** (TSV). Per-level checkbox affects both screen and clipboard tables. No changes to PDF page-break continuity, local processing, authentication or other workspaces. No SQL migration required.
+
+**Live QA required:** Paste into Outlook desktop/web compose and visually confirm cell borders, column widths, heading shading and totals; test Excel paste and level breakdown. Browser clipboard permissions/support differ across clients. See root `PORTAL_HANDOFF.md`.
+
+---
+
 # EWP Tools — V1.19 WEB
 
 Internal hub at `ewp-tools/` linked from the Portal's **All** view (staff-labelled tile); hidden from the Portal **Sales** toggle. The visibility filter is not an authorization boundary. The current Supabase sign-in/session guard applies, but staff-only access must be implemented with roles/RLS separately if required.

@@ -1,6 +1,12 @@
-# EWP Tools — V1.18 WEB
+# EWP Tools — V1.19 WEB
 
 Internal hub at `ewp-tools/` linked from the Portal's **All** view (staff-labelled tile); hidden from the Portal **Sales** toggle. The visibility filter is not an authorization boundary. The current Supabase sign-in/session guard applies, but staff-only access must be implemented with roles/RLS separately if required.
+
+## V1.19 bug fix and drop zone
+
+- The document's `doc.destroy()` is no longer called. The supported `getDocument()` loading task (`task.destroy()`) is cleaned up in a guarded `finally` block; cleanup failures cannot erase the parsed result. The main document read is inside the `try`, so failed loads are also cleaned up.
+- One-PDF drag-and-drop area highlights when a file is dragged over; Browse PDF remains available, including keyboard activation. The existing 200 MB limit, selectable-text requirement, and explicit Consolidate/Clear buttons remain. Selected files are kept entirely in browser memory.
+- All page headers use the uniform `V1.19 WEB · Developed by Samuel Chung` credit.
 
 ## Consolidate Material List
 
@@ -20,4 +26,4 @@ Errors and warnings are displayed for unsupported/non-readable PDFs and text row
 4. Test PDF lacking target sections, scanned PDF, malformed/non-PDF selection and a different-size PDF. Verify explicit user-facing warnings.
 5. Test both themes, mobile width, refresh, sign-out/auth redirect from the nested tool route, settings and navigation.
 
-No V1.18 SQL migration required. EWP Connect iOS is unchanged.
+No V1.19 SQL migration required. Existing browser-only PDF workflow is unchanged apart from upload UI and cleanup reliability. EWP Connect iOS is unchanged.

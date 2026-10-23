@@ -1,3 +1,30 @@
+# EWP Management Portal — V1.19 WEB: Material PDF Cleanup Fix, Drag-and-Drop, Shared Credits
+
+**Canonical source:** V1.18 WEB full ZIP (all previous features retained). **Release:** `EWP_Management_Portal_V1_19_WEB_FULL.zip` (October 23, 2026). **Next:** V1.20 WEB. **Scope:** WEB only; EWP Connect iOS unchanged.
+
+## Changes made in V1.19
+
+1. **Consolidate Material List PDF.js cleanup:** Replaced the failure-prone `doc.destroy()` call in `ewp-tools/consolidate-material-list/parser.mjs` with `task.destroy()` on the PDF.js document **loading task** returned by `getDocument`. The outer `try/finally` now covers document load failures too. Page cache cleanup and loading-task destruction are guarded so failures do not discard successfully extracted framing connector and total length results. PDF parser calculations, page-break continuation logic, level breakdown, and Excel clipboard output are unchanged.
+2. **PDF drag-and-drop:** Replaced the compact Choose PDF row with a large dashed **drop zone**. Users can drag and drop **one PDF** onto the zone; drag-over highlights it; users can also use **Browse PDF** (keyboard Enter/Space supported on the zone). Selected filename displays below. Retained explicit **Consolidate** and **Clear** controls, PDF-only checks, and the existing 200 MB limit. Dropping outside the target is prevented from navigating away from the page. A new file replaces the previous selection and clears its previous result. All PDF processing remains browser-local (no Supabase upload).
+3. **Page credits standardized:** The eight HTML pages (Portal, Tracker, Forecast/Purchasing, New EWP Requests, EWP Order, Sales Project Tracking, EWP Tools hub, and Consolidate Material List) now show the exact header line **`V1.19 WEB · Developed by Samuel Chung`**. Removed the descriptive subtitles in the three newer pages that lacked the version line. Existing footer credits were aligned. Updated HTML resource query parameters to `?v=1.19` to reduce cache staleness after deployment.
+4. **Preserved:** Supabase Auth and RLS, Forecast/Purchasing transactions and inventory, linked-task statuses/colors and Coordination, both Sales forms and email Edge Functions, read-only Sales Project Tracking, Portal `?view=sales`, light/dark themes, PDF page-break safety, and all existing module paths/navigation.
+
+## Deployment (WEB)
+
+1. Extract the **entire** V1.19 full source ZIP into the existing GitHub Pages site root. Retain hidden `.nojekyll` and existing asset paths. Do not deploy as a nested folder.
+2. **No SQL migration or Supabase changes**, no Edge Function redeploys, and no EWP Connect iOS rebuild are needed.
+3. Hard-refresh the Portal after GitHub Pages publishes. Confirm the header `V1.19 WEB · Developed by Samuel Chung` on all eight pages.
+4. Open Portal (All) → EWP Tools → Consolidate Material List. Use sample **TC26268 - 7645 Berkley St - Material List for Quote.pdf** either via Browse PDF or drag/drop. Click **Consolidate**. Expected **HGUS410 = 69 pcs**, **IUS2.37/11.88 = 424 pcs**, **11 7/8" TJI 230 joist = 4385 LF**, two levels **L2 Framing** and **L3 Framing**, and the correct breakdown totals. Repeat with one file dropped and verify Clear/reselect. Test Copy/paste to Excel. Verify bad/non-PDF rejection and mobile theme/layout.
+5. Regression: Existing All/Sales Portal toggle with `?view=sales`, each shared workspace, Supabase login redirects, EWP Order/New EWP Requests, Purchasing receiving/PO history, Forecast, Tracker drag/drop and linked colors, shared Settings and light/dark theme.
+
+## Verification limits
+
+- Static/Node tests verify that the original missing `doc.destroy` no longer aborts results, and that task destruction happens on both successful parse and document-load failure. Forced page/task cleanup errors are safely ignored after logging. The original five-page sample was rechecked against extracted text, with correct sums and page-break state retention.
+- All 20 JavaScript modules passed `node --check`; HTML references and ZIP integrity are checked before delivery.
+- Chromium navigation in this sandbox was blocked by administrator policy (including local and mocked hostnames), so interactive browser QA **was not run**. Real GitHub Pages with PDF.js CDN/worker, drag/drop, clipboard, authentication and themes require user testing after deployment. Do not conflate source/mock verification with production validation.
+
+---
+
 # EWP Management Portal — V1.18 WEB: EWP Tools & Consolidate Material List
 
 **Release:** `EWP_Management_Portal_V1_18_WEB_FULL.zip` (October 23, 2026).  

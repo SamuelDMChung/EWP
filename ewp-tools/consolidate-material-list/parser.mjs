@@ -1,4 +1,4 @@
-/* EWP Management V1.18 — client-side Weyerhaeuser material report consolidation.
+/* EWP Management V1.19 — client-side Weyerhaeuser material report consolidation.
  * The active level and section deliberately survive PDF page breaks.
  * Only Framing Connector Summary and Total Lengths are read.
  */
@@ -140,8 +140,12 @@ export function combinedTsv(result,showLevels=false){
 export async function extractPdfPages(file,pdfjsLib,onPage=()=>{}){
   const array=new Uint8Array(await file.arrayBuffer());
   const task=pdfjsLib.getDocument({data:array});
-  const doc=await task.promise;const pages=[];
+  // Cleanup belongs to the PDFDocumentLoadingTask. PDFDocumentProxy.destroy()
+  // is not consistently available in the browser PDF.js build.
+  let doc;
+  const pages=[];
   try{
+    doc=await task.promise;
     for(let i=1;i<=doc.numPages;i++){
       const page=await doc.getPage(i), content=await page.getTextContent();
       // Rebuild physical rows instead of trusting arbitrary PDF text-stream order.
@@ -156,8 +160,13 @@ export async function extractPdfPages(file,pdfjsLib,onPage=()=>{}){
       rows.sort((a,b)=>b.y-a.y);
       pages.push(rows.map(row=>clean(row.items.sort((a,b)=>a.x-b.x).map(x=>x.text).join(' '))).filter(Boolean));
       onPage(i,doc.numPages);
-      page.cleanup();
+      // Page cache release should never erase a successful extraction.
+      try { if(typeof page.cleanup==='function')page.cleanup(); }
+      catch(error){console.warn('PDF page cleanup failed:',error);}
     }
     return pages;
-  }finally{await doc.destroy();}
+  }finally{
+    try { if(typeof task?.destroy==='function')await task.destroy(); }
+    catch(error){console.warn('PDF reader cleanup failed:',error);}
+  }
 }

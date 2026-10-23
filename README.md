@@ -1,3 +1,9 @@
+# EWP Management Portal — V1.19 WEB (Latest)
+
+The **canonical source release** is **V1.19 WEB**, built from the full V1.18 package. This version fixes Material List PDF.js cleanup (`getDocument` loading task), adds local PDF drag-and-drop plus Browse, and standardizes `V1.19 WEB · Developed by Samuel Chung` across every workspace header. **No SQL migration, Supabase writes, Edge Function redeployment, or iOS changes** are required. Follow `PORTAL_HANDOFF.md` for deployment and sample-PDF verification. All earlier functionality is retained.
+
+---
+
 # EWP Management Portal — V1.18 WEB
 
 Latest complete source release: **V1.18** (built from V1.17). New staff-visible Portal EWP Tools workspace and browser-local **Consolidate Material List** tool. Reads only Framing Connector Summary and Total Lengths from each `Level:` in Weyerhaeuser material list PDFs; handles sections spanning page breaks, sums across levels, offers optional breakdown and Excel-ready copy actions. No changes to production Supabase schema/data or Edge Functions; iOS remains unchanged. See `ewp-tools/README.md` and `PORTAL_HANDOFF.md` for operation, deployment and QA. Deploy full ZIP, not individual files.

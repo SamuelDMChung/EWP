@@ -1,9 +1,9 @@
-import {consolidatePages,extractPdfPages,toTsv,combinedTsv,formatFeet} from './parser.mjs';
+import {consolidatePages,extractPdfPages,toTsv,combinedTsv,formatFeet} from './parser.mjs?v=1.19';
 const $=id=>document.getElementById(id);
 const current={result:null,pdf:null,library:null,busy:false};
 
 function status(message,error=false){const node=$('materialStatus');node.textContent=message;node.classList.toggle('is-error',error);}
-function setBusy(on){current.busy=on;$('materialParse').disabled=on||!current.pdf;$('materialPdfFile').disabled=on;$('materialReset').disabled=on;}
+function setBusy(on){current.busy=on;$('materialParse').disabled=on||!current.pdf;$('materialPdfFile').disabled=on;$('materialReset').disabled=on;$('materialDropZone').classList.toggle('is-disabled',on);$('materialDropZone').setAttribute('aria-disabled',String(on));}
 async function loadPdfJs(){
  if(current.library)return current.library;
  const candidates=[
@@ -51,14 +51,80 @@ async function copyText(value,label){
   status(`${label} copied. Paste directly into Excel or a spreadsheet.`);
  }catch(e){status(`Could not copy automatically: ${e.message}. Try another browser.`,true);}
 }
-$('materialPdfFile').addEventListener('change',()=>{
- current.pdf=$('materialPdfFile').files?.[0]||null;
- current.result=null;$('showMaterialBreakdown').checked=false;renderResult();
- $('materialPdfName').textContent=current.pdf?.name||'No file selected';
- $('materialParse').disabled=!current.pdf;
- status(current.pdf?'PDF selected. Choose Consolidate to process all pages.':'');
+const zone=$('materialDropZone');
+const fileInput=$('materialPdfFile');
+function isValidPdf(file){return !!file && (/\.pdf$/i.test(file.name)||file.type==='application/pdf');}
+function selectMaterialFile(file){
+ if(current.busy)return;
+ current.result=null;
+ $('showMaterialBreakdown').checked=false;
+ renderResult();
+ current.pdf=null;
+ if(!file){
+   $('materialFileSelection').hidden=true;
+   $('materialPdfName').textContent='';
+   $('materialParse').disabled=true;
+   status('');
+   return;
+ }
+ if(!isValidPdf(file)){
+   fileInput.value='';
+   $('materialFileSelection').hidden=true;
+   $('materialParse').disabled=true;
+   status('Please choose one PDF document.',true);
+   return;
+ }
+ if(file.size>200*1024*1024){
+   fileInput.value='';
+   $('materialFileSelection').hidden=true;
+   $('materialParse').disabled=true;
+   status('This PDF exceeds 200 MB. Split it into smaller reports before consolidating.',true);
+   return;
+ }
+ current.pdf=file;
+ $('materialPdfName').textContent=file.name;
+ $('materialFileSelection').hidden=false;
+ $('materialParse').disabled=false;
+ status('PDF selected. Choose Consolidate to process all pages.');
+}
+fileInput.addEventListener('change',()=>selectMaterialFile(fileInput.files?.[0]||null));
+zone.addEventListener('keydown',event=>{
+ if(current.busy)return;
+ if(event.key==='Enter'||event.key===' '){event.preventDefault();fileInput.click();}
 });
-$('materialReset').addEventListener('click',()=>{current.pdf=null;current.result=null;$('materialPdfFile').value='';$('materialPdfName').textContent='No file selected';$('showMaterialBreakdown').checked=false;renderResult();status('');$('materialParse').disabled=true;});
+let dragDepth=0;
+function isFileDrag(event){return Array.from(event.dataTransfer?.types||[]).includes('Files');}
+zone.addEventListener('dragenter',event=>{
+ if(!isFileDrag(event))return;
+ event.preventDefault();dragDepth++;
+ if(!current.busy)zone.classList.add('is-dragover');
+});
+zone.addEventListener('dragover',event=>{
+ if(!isFileDrag(event))return;
+ event.preventDefault();
+ if(event.dataTransfer)event.dataTransfer.dropEffect=current.busy?'none':'copy';
+ if(!current.busy)zone.classList.add('is-dragover');
+});
+zone.addEventListener('dragleave',event=>{
+ if(!isFileDrag(event))return;
+ event.preventDefault();dragDepth=Math.max(0,dragDepth-1);
+ if(!dragDepth)zone.classList.remove('is-dragover');
+});
+zone.addEventListener('drop',event=>{
+ event.preventDefault();dragDepth=0;zone.classList.remove('is-dragover');
+ if(current.busy)return;
+ const files=Array.from(event.dataTransfer?.files||[]);
+ if(files.length!==1){status('Please drop exactly one PDF file.',true);return;}
+ fileInput.value=''; // Dropped File is tracked directly, not via FileList.
+ selectMaterialFile(files[0]);
+});
+// Prevent a PDF accidentally dropped outside the zone from navigating away.
+document.addEventListener('dragover',event=>{if(isFileDrag(event))event.preventDefault();});
+document.addEventListener('drop',event=>{if(isFileDrag(event)){event.preventDefault();dragDepth=0;zone.classList.remove('is-dragover');}});
+$('materialReset').addEventListener('click',()=>{
+ fileInput.value='';zone.classList.remove('is-dragover');dragDepth=0;
+ selectMaterialFile(null);
+});
 $('materialParse').addEventListener('click',async()=>{
  const file=current.pdf;if(!file||current.busy)return;
  if(!/\.pdf$/i.test(file.name)&&file.type!=='application/pdf'){status('Please choose a PDF document.',true);return;}

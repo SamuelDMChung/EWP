@@ -1,7 +1,8 @@
-/** Client-side read-only filtering of the already scoped salesperson's rows. */
-export function filterSalesRows(records,{query='',status='',phase='',type=''}={}){
+/** Client-side read-only filtering of the already loaded project rows. */
+export function filterSalesRows(records,{query='',status='',phase='',type='',sales=''}={}){
  const needle=String(query).trim().toLocaleLowerCase();
  return records.filter(row=>{
+  if(sales&&String(row.sales||'').toLocaleLowerCase()!==sales.toLocaleLowerCase())return false;
   if(status&&row.status!==status)return false;
   if(phase&&String(row.phase||'').toLocaleLowerCase()!==phase.toLocaleLowerCase())return false;
   if(type){

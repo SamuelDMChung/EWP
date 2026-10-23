@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="160" height="160" viewBox="0 0 160 160" role="img" aria-labelledby="title desc">
+<title id="title">EWP Tools icon</title>
+<desc id="desc">Scalable vector workspace icon for EWP Management Portal. Style 1.</desc>
+<defs><linearGradient id="tile" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FAF9E0"/><stop offset="1" stop-color="#F3F1CD"/></linearGradient></defs>
+<rect x="2" y="2" width="156" height="156" rx="28" fill="url(#tile)"/>
+<g stroke-linejoin="round" stroke-linecap="round">
+    <path d="M103 89 V48 Q103 40 95 40 H47 Q40 40 40 48 V111 Q40 119 49 119 H79" fill="none" stroke="#303032" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" />
+    <circle cx="54" cy="62" r="4" fill="#929300" stroke="none" stroke-width="0"/>
+    <line x1="66" y1="62" x2="94" y2="62" stroke="#303032" stroke-width="5" stroke-linecap="round"/>
+    <circle cx="54" cy="80" r="4" fill="#929300" stroke="none" stroke-width="0"/>
+    <line x1="66" y1="80" x2="96" y2="80" stroke="#303032" stroke-width="5" stroke-linecap="round"/>
+    <circle cx="54" cy="98" r="4" fill="#929300" stroke="none" stroke-width="0"/>
+    <line x1="66" y1="98" x2="85" y2="98" stroke="#303032" stroke-width="5" stroke-linecap="round"/>
+    <path d="M 104.00 85.00 L 107.82 85.33 L 110.16 90.09 L 113.00 91.41 L 118.14 90.15 L 120.85 92.86 L 119.59 98.00 L 120.91 100.84 L 125.67 103.18 L 126.00 107.00 L 121.73 110.13 L 120.91 113.16 L 123.05 118.00 L 120.85 121.14 L 115.57 120.79 L 113.00 122.59 L 111.52 127.67 L 107.82 128.67 L 104.00 125.00 L 100.87 124.73 L 96.48 127.67 L 93.00 126.05 L 92.43 120.79 L 90.21 118.57 L 84.95 118.00 L 83.33 114.52 L 86.27 110.13 L 86.00 107.00 L 82.33 103.18 L 83.33 99.48 L 88.41 98.00 L 90.21 95.43 L 89.86 90.15 L 93.00 87.95 L 97.84 90.09 L 100.87 89.27 Z" fill="#747300" stroke="none" stroke-width="0" stroke-linecap="round" stroke-linejoin="round" />
+    <circle cx="104" cy="107" r="10" fill="#F3F1CD" stroke="none" stroke-width="0"/>
+</g>
+</svg>

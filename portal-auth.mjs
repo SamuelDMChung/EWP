@@ -1,6 +1,6 @@
 import { restoreSession, signInWithPassword, signOut, getLastEmail, getAccessToken, EWP_AUTH_STORAGE_KEY } from "./forecast/auth.mjs?v=1.0-p3";
 import { SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY } from "./forecast/config.mjs";
-import { portalViewFromUrl, setWorkspaceView } from "./portal-views.mjs?v=1.22";
+import { portalViewFromUrl, setWorkspaceView } from "./portal-views.mjs?v=1.23";
 const $ = id => document.getElementById(id);
 let authenticated = false;
 let connectionAttempt = 0;

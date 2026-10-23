@@ -1,3 +1,9 @@
+# Sales Project Tracking — V1.23 WEB
+
+Adds **All Sales** as the first valid selection. The app reads all assigned salespeople's projects with existing authenticated, read-only Supabase REST GET requests; projects with blank `sales` fields are excluded. Active task rows and consolidated Coordination/Completed project rows retain the V1.17 rules. All Sales presents a client-side Salesperson filter in addition to search, status, phase and type; individual choice keeps the original exact salesperson query. Refresh/sorting/change selection work as before. This does not change database access permissions, schema, data or auth. See `../tests/V1_23_TEST_RESULTS.md`.
+
+---
+
 # Sales Project Tracking — V1.21 WEB
 
 After salesperson selection, the results list displays **Search** across visible columns plus **Status**, **Phase**, **Type** dropdowns and **Clear filters**. Filters combine with sorting and operate only on existing read-only rows fetched for that salesperson; refresh preserves filters; switching salesperson clears them. Counts show matches and source totals. Type Others covers stored free-text custom type descriptions. No schema/RLS/write changes. Test in light/dark modes and `?view=sales`.

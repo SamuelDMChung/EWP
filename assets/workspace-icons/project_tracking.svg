@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="160" height="160" viewBox="0 0 160 160" role="img" aria-labelledby="title desc">
+<title id="title">Project Tracking icon</title>
+<desc id="desc">Scalable vector workspace icon for EWP Management Portal. Style 1.</desc>
+<defs><linearGradient id="tile" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FAF9E0"/><stop offset="1" stop-color="#F3F1CD"/></linearGradient></defs>
+<rect x="2" y="2" width="156" height="156" rx="28" fill="url(#tile)"/>
+<g stroke-linejoin="round" stroke-linecap="round">
+    <rect x="40" y="42" width="81" height="76" rx="12" fill="none" stroke="#313132" stroke-width="6"/>
+    <line x1="41" y1="63" x2="120" y2="63" stroke="#313132" stroke-width="6" stroke-linecap="round"/>
+    <line x1="67" y1="64" x2="67" y2="117" stroke="#313132" stroke-width="5.28" stroke-linecap="round"/>
+    <line x1="94" y1="64" x2="94" y2="117" stroke="#313132" stroke-width="5.28" stroke-linecap="round"/>
+    <rect x="49" y="75" width="13" height="16" rx="3" fill="#929300" stroke="none" stroke-width="0"/>
+    <rect x="74" y="75" width="13" height="30" rx="3" fill="#929300" stroke="none" stroke-width="0"/>
+    <rect x="101" y="75" width="13" height="16" rx="3" fill="#929300" stroke="none" stroke-width="0"/>
+</g>
+</svg>

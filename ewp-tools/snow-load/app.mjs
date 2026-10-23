@@ -1,5 +1,5 @@
-import {SNOW_LOCATIONS} from './snow-data.mjs?v=1.22';
-import {calculateSnow, nearestThree, localMatches, normalizeGeoResults} from './calc.mjs?v=1.22';
+import {SNOW_LOCATIONS} from './snow-data.mjs?v=1.23';
+import {calculateSnow, nearestThree, localMatches, normalizeGeoResults} from './calc.mjs?v=1.23';
 const $=id=>document.getElementById(id);
 const state={mode:'location',chosen:null,source:null,querySequence:0,timer:0,controller:null};
 const nameOf=x=>x.name;

@@ -131,3 +131,8 @@ html[data-ewp-theme="dark"] .card-icon-tools{background:#363342;color:#d2beef}
 html[data-ewp-theme="dark"] .workspace-group-title{color:#f0eee7}
 @media(max-width:980px){.workspace-group .workspace-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:620px){.workspace-group .workspace-grid{grid-template-columns:1fr}.workspace-group .workspace-card{min-height:105px;padding:16px}}
+
+/* V1.23: user-supplied full-tile vector art, with classification colors baked in. */
+.workspace-group .card-icon--art { flex:0 0 56px; width:56px; height:56px; background:none !important; border-radius:0; overflow:visible; }
+.workspace-group .card-icon--art img { display:block; width:100%; height:100%; object-fit:contain; }
+@media(max-width:620px){.workspace-group .card-icon--art { flex-basis:48px; width:48px; height:48px; }}

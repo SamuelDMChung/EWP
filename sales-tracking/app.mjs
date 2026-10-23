@@ -1,4 +1,4 @@
-import {filterSalesRows} from './filters.mjs?v=1.22';
+import {filterSalesRows} from './filters.mjs?v=1.23';
 /** EWP V1.17 — read-only Sales Project Tracking. No POST/UPDATE/DELETE calls. */
 import { restoreSession, getAccessToken, EWP_AUTH_STORAGE_KEY } from '../forecast/auth.mjs?v=1.0-p3';
 import { SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY } from '../forecast/config.mjs';
@@ -7,6 +7,7 @@ import { startTrackerRealtime, stopTrackerRealtime } from '../tracker/realtime.m
 const $ = id => document.getElementById(id);
 const REST = `${SUPABASE_URL.replace(/\/$/, '')}/rest/v1`;
 const COORDINATION = new Set(['pending','in_review','delivering']);
+const ALL_SALES = '__all_sales__';
 const VALID_STATUSES = new Set(['queue','in_progress','pending','in_review','delivering','completed']);
 const names = {
   queue:'Queue', in_progress:'In Progress', pending:'Pending',
@@ -106,10 +107,10 @@ function compare(a,b,key) {
 }
 function currentFilters(){return {
   query:$('salesTrackerSearch').value,status:$('salesTrackerStatus').value,
-  phase:$('salesTrackerPhase').value,type:$('salesTrackerType').value
+  phase:$('salesTrackerPhase').value,type:$('salesTrackerType').value,sales:$('salesTrackerSales').value
 };}
 function clearSalesFilters(){
- for(const id of ['salesTrackerSearch','salesTrackerStatus','salesTrackerPhase','salesTrackerType'])$(id).value='';
+ for(const id of ['salesTrackerSearch','salesTrackerStatus','salesTrackerPhase','salesTrackerType','salesTrackerSales'])$(id).value='';
  renderTable();
 }
 function renderTable() {
@@ -144,7 +145,7 @@ function renderTable() {
     button.querySelector('span').textContent=active?(sort.direction==='asc'?'↑':'↓'):'';
   }
   $('salesTrackerTableWrap').hidden=visible.length===0;
-  if(!visible.length) showMessage(selectedRows.length?'No matches for these filters. Try Clear filters.':'No projects found for this salesperson.');
+  if(!visible.length) showMessage(selectedRows.length?'No matches for these filters. Try Clear filters.':'No projects found for this selection.');
   else resetMessage();
 }
 async function refreshSelected({silent=false}={}) {
@@ -157,18 +158,22 @@ async function refreshSelected({silent=false}={}) {
   try {
     const projects=await allRows('projects',
       'id,project_number,address_project_name,customer,sales,tracker_phase,tracker_project_type,tracker_project_type_other,project_type,tracker_due_date,tracker_status',
-      {sales:`eq.${localSales}`,order:'project_number.desc'});
+      localSales===ALL_SALES ? {order:'project_number.desc'} : {sales:`eq.${localSales}`,order:'project_number.desc'});
     if(mySequence!==sequence || salesperson!==localSales) return;
+    // The All Sales view includes every project with an assigned salesperson,
+    // even names no longer present in tracker_settings. No database writes.
+    const scopedProjects=localSales===ALL_SALES ? projects.filter(p=>String(p.sales||'').trim()) : projects;
     const tasks=[];
-    for(let i=0;i<projects.length;i+=75) {
-      const ids=projects.slice(i,i+75).map(p=>p.id);
+    for(let i=0;i<scopedProjects.length;i+=75) {
+      const ids=scopedProjects.slice(i,i+75).map(p=>p.id);
       if(!ids.length) continue;
       const batch=await allRows('tracker_work_items','id,project_id,task,status,created_at',
         {project_id:`in.(${ids.join(',')})`,order:'created_at.asc'});
       tasks.push(...batch);
       if(mySequence!==sequence || salesperson!==localSales) return;
     }
-    selectedRows=displayRows(projects,tasks);
+    selectedRows=displayRows(scopedProjects,tasks);
+    populateSalesFilter();
     renderTable();
     updateConnection('Shared data connected');
   } catch(error) {
@@ -179,12 +184,21 @@ async function refreshSelected({silent=false}={}) {
     }
   } finally {inFlight=Math.max(0,inFlight-1);$('salesTrackerRefresh').disabled=inFlight>0;}
 }
+function populateSalesFilter(){
+  const dropdown=$('salesTrackerSales');
+  const prior=dropdown.value;
+  const values=[...new Set(selectedRows.map(row=>String(row.sales||'').trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b,undefined,{sensitivity:'base'}));
+  dropdown.replaceChildren(new Option('All salespeople',''),...values.map(name=>new Option(name,name)));
+  if(values.includes(prior))dropdown.value=prior;
+}
 function showSelection() {
   sequence++;
   salesperson='';
   selectedRows=[];
-  for(const id of ['salesTrackerSearch','salesTrackerStatus','salesTrackerPhase','salesTrackerType'])$(id).value='';
+  for(const id of ['salesTrackerSearch','salesTrackerStatus','salesTrackerPhase','salesTrackerType','salesTrackerSales'])$(id).value='';
   $('salesTrackerSelect').value='';
+  $('salesTrackerSalesLabel').hidden=true;
+  $('salesTrackerSales').replaceChildren(new Option('All salespeople',''));
   $('salesTrackerSelectView').hidden=false;
   $('salesTrackerResultsView').hidden=true;
   resetMessage();
@@ -196,8 +210,10 @@ function chooseSalesperson(value) {
   salesperson=value;
   sort={key:'projectNumber',direction:'desc'};
   selectedRows=[];
-  for(const id of ['salesTrackerSearch','salesTrackerStatus','salesTrackerPhase','salesTrackerType'])$(id).value='';
-  $('salesTrackerSelectedName').textContent=value;
+  for(const id of ['salesTrackerSearch','salesTrackerStatus','salesTrackerPhase','salesTrackerType','salesTrackerSales'])$(id).value='';
+  $('salesTrackerSelectedName').textContent=value===ALL_SALES?'All Sales':value;
+  $('salesTrackerSalesLabel').hidden=value!==ALL_SALES;
+  $('salesTrackerSales').replaceChildren(new Option('All salespeople',''));
   $('salesTrackerCount').textContent='Loading projects…';
   $('salesTrackerSelectView').hidden=true;
   $('salesTrackerResultsView').hidden=false;
@@ -210,7 +226,7 @@ function scheduleRefresh() {
   realtimeTimer=setTimeout(()=>refreshSelected({silent:true}),400);
 }
 async function init() {
-  for(const id of ['salesTrackerSearch','salesTrackerStatus','salesTrackerPhase','salesTrackerType']){
+  for(const id of ['salesTrackerSearch','salesTrackerStatus','salesTrackerPhase','salesTrackerType','salesTrackerSales']){
     $(id).addEventListener(id==='salesTrackerSearch'?'input':'change',()=>renderTable());
   }
   $('salesTrackerClearFilters').addEventListener('click',clearSalesFilters);
@@ -246,10 +262,10 @@ async function loadSalesOptions() {
     const settings=await request('tracker_settings',new URLSearchParams({select:'sales',id:'eq.global',limit:'1'}));
     const sales=[...new Set((settings[0]?.sales||[]).map(s=>String(s||'').trim()).filter(Boolean))]
       .sort((a,b)=>a.localeCompare(b,undefined,{sensitivity:'base'}));
-    select.replaceChildren(new Option('Choose salesperson…',''),...sales.map(name=>new Option(name,name)));
+    select.replaceChildren(new Option('Choose salesperson…',''),new Option('All Sales',ALL_SALES),...sales.map(name=>new Option(name,name)));
     $('salesTrackerSelectHelp').textContent=sales.length ?
-      'Select one salesperson to open the read-only project list.' :
-      'No salespeople configured yet. Add them through Project Tracking Settings.';
+      'Select All Sales or a salesperson to open the read-only project list.' :
+      'All Sales remains available. Configure individual names in Project Tracking Settings.';
     updateConnection('Shared data connected');
   } catch(error) {
     updateConnection('Shared data connection issue',true);

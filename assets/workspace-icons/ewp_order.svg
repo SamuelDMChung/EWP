@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="160" height="160" viewBox="0 0 160 160" role="img" aria-labelledby="title desc">
+<title id="title">EWP Order icon</title>
+<desc id="desc">Scalable vector workspace icon for EWP Management Portal. Style 1.</desc>
+<defs><linearGradient id="tile" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#EAF7F4"/><stop offset="1" stop-color="#D9EEEA"/></linearGradient></defs>
+<rect x="2" y="2" width="156" height="156" rx="28" fill="url(#tile)"/>
+<g stroke-linejoin="round" stroke-linecap="round">
+    <line x1="23" y1="90" x2="34" y2="90" stroke="#278F85" stroke-width="5.5" stroke-linecap="round"/>
+    <line x1="29" y1="103" x2="39" y2="103" stroke="#278F85" stroke-width="5.5" stroke-linecap="round"/>
+    <rect x="46" y="55" width="64" height="59" rx="8" fill="#CFE8E2" stroke="#313132" stroke-width="6"/>
+    <path d="M110 70 H120 L135 87 V107 Q135 114 128 114 H108 V70 Z" fill="#FAF9E5" stroke="#313132" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M114 77 H121 L127 87 H114 Z" fill="#EEECCB" stroke="#313132" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" />
+    <circle cx="69" cy="113" r="12" fill="#FAF9E1" stroke="#313132" stroke-width="6"/>
+    <circle cx="117" cy="113" r="12" fill="#FAF9E1" stroke="#313132" stroke-width="6"/>
+</g>
+</svg>

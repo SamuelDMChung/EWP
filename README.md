@@ -1,3 +1,9 @@
+## V1.21 WEB latest
+
+V1.21 WEB is the next complete GitHub Pages source package from V1.20. New features: Both Tables Download PDF and moving combined actions to the top; EWP Tools Snow Load Calculator (BC Location / Custom, NRCan suggestion integration); read-only post-selection filters for Sales Project Tracking. Nine page credits. **No SQL migration or iOS changes.** Read `PORTAL_HANDOFF.md`, then `tests/V1_21_TEST_RESULTS.md` and `ewp-tools/snow-load/README.md` for critical BCBC data verification limits before using results in engineering work.
+
+---
+
 # EWP Management Portal V1.20 WEB — Full Source
 
 **Latest WEB version:** V1.20 (October 23, 2026), based on complete V1.19 source. **Next:** V1.21. **iOS EWP Connect:** unchanged.

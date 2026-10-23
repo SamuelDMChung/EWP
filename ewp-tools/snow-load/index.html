@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+ <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light">
+ <meta name="description" content="Simplified BCBC 2024 roof snow load calculation using custom Ss/Sr or British Columbia reference locations.">
+ <title>Snow Load Calculator — EWP Tools</title>
+ <link rel="stylesheet" href="../../portal-nav.css?v=1.21"><link rel="stylesheet" href="../../theme.css?v=1.21"><link rel="stylesheet" href="../tools.css?v=1.21"><link rel="stylesheet" href="./styles.css?v=1.21">
+ <script src="../../theme.js?v=1.21"></script>
+</head>
+<body>
+ <nav class="ewp-portal-nav" aria-label="EWP Management navigation">
+  <a class="ewp-portal-nav__brand" href="../../"><img class="ewp-portal-nav__mark" src="../../assets/griff-nav-icon.png" alt="">EWP Management</a>
+  <div class="ewp-portal-nav__links"><a class="ewp-portal-nav__link" href="../../">Portal</a><a class="ewp-portal-nav__link" href="../../tracker/">Project Tracking</a><a class="ewp-portal-nav__link" href="../../forecast/">EWP Forecast</a><a class="ewp-portal-nav__link" href="../" aria-current="page">EWP Tools</a></div>
+  <span id="ewpNavAccount" class="ewp-portal-nav__account" aria-live="polite"></span>
+ </nav>
+ <header class="tools-header"><div><span class="eyebrow">EWP TOOLS</span><h1>Snow Load Calculator</h1><p>V1.21 WEB · Developed by Samuel Chung</p></div><button id="ewpToolsSettings" type="button" class="tool-button ewp-settings-trigger">⚙ Settings</button></header>
+ <main class="tools-main snow-main">
+  <div class="tools-breadcrumb"><a href="../">← All EWP Tools</a></div>
+  <section class="tools-panel snow-panel">
+   <h2>Roof snow load (BCBC 2024)</h2>
+   <p class="small-hint">Simplified uniform load only. Assumes normal importance, wind Cw = 1, slope Cs = 1 and accumulation Ca = 1. Roof geometry, drifting, special conditions and wind uplift are not evaluated.</p>
+   <div class="snow-switch" role="radiogroup" aria-label="Climatic data source">
+    <label><input type="radio" name="snowMode" value="location" checked> BC Location</label>
+    <label><input type="radio" name="snowMode" value="custom"> Custom Ss / Sr</label>
+   </div>
+   <div id="snowLocationPanel" class="snow-input-block">
+    <label class="snow-label" for="snowCitySearch">Search a BC city, community or code-table location</label>
+    <input class="snow-field" id="snowCitySearch" type="search" autocomplete="off" spellcheck="false" placeholder="e.g. Port Coquitlam, Kelowna, 100 Mile House" aria-controls="snowSuggest" aria-expanded="false">
+    <p class="small-hint snow-data-audit"><strong>Data verification:</strong> City Ss/Sr entries are preliminary and have not all been independently checked against the official 2024 table. Confirm the selected values before design use.</p>
+    <p id="snowLocationHelp" class="small-hint" role="status" aria-live="polite">Code-table matches appear immediately. Other BC places use the free NRCan Geolocator service when online.</p>
+    <div id="snowSuggest" class="snow-suggest" hidden role="listbox" aria-label="Location matches"></div>
+    <div id="snowReferences" class="snow-references" hidden><h3>Nearby BCBC reference locations</h3><p class="small-hint">Straight-line distances based on approximate town centres, for comparison only. The nearest is not automatically the correct design location.</p><div id="snowReferenceChoices"></div></div>
+   </div>
+   <div id="snowCustomPanel" class="snow-input-block" hidden>
+    <div class="snow-dual">
+     <label class="snow-label" for="snowSs">Ground snow load, Ss (kPa)<input class="snow-field" id="snowSs" type="number" min="0" step="any" inputmode="decimal" placeholder="e.g. 2.6"></label>
+     <label class="snow-label" for="snowSr">Rain load, Sr (kPa)<input class="snow-field" id="snowSr" type="number" min="0" step="any" inputmode="decimal" placeholder="e.g. 0.3"></label>
+    </div>
+   </div>
+   <div class="snow-cb">
+    <label class="snow-label" for="snowCb">Basic roof snow load factor, Cb</label>
+    <select id="snowCb" class="snow-field">
+     <option value="0.8">0.80 — Part 4 (standard)</option>
+     <option value="0.55">0.55 — Part 9 (conservative vs narrow-roof provision)</option>
+     <option value="custom">Custom Cb</option>
+    </select>
+    <label id="snowCustomCbWrap" class="snow-label" for="snowCustomCb" hidden>Enter Cb<input class="snow-field" id="snowCustomCb" type="number" min="0.001" step="any" inputmode="decimal" placeholder="e.g. 0.8"></label>
+   </div>
+   <div id="snowChosen" class="snow-chosen" hidden role="status"></div>
+   <section class="snow-result" aria-label="Calculated snow load" aria-live="polite">
+    <span>Specified uniform roof snow load, S</span>
+    <strong id="snowResultKpa">— kPa</strong>
+    <span id="snowResultPsf">— psf</span>
+    <small id="snowEquation">Choose a BCBC location or enter custom loads.</small>
+   </section>
+   <p id="snowError" class="snow-error" hidden role="alert"></p>
+   <p class="snow-note">Important: Table C-2 values apply to the code-listed reference point and its elevation. Do not use a nearest-location match as an approved value for an unlisted site without verification. Confirm requirements with the EOR/local authority and, where needed, Environment and Climate Change Canada. Part 9 minimum of 1.0 kPa applies when selected. The result is not a complete roof design.</p>
+   <p class="small-hint">Sources: <a href="https://www2.gov.bc.ca/gov/content/industry/construction-industry/building-codes-standards/bc-codes/2024-bc-codes" target="_blank" rel="noopener noreferrer">BCBC 2024</a> · Division B, Appendix C, Table C-2; <a href="https://natural-resources.canada.ca/maps-tools-publications/satellite-elevation-air-photos/geolocation-service" target="_blank" rel="noopener noreferrer">NRCan Geolocator</a>.</p>
+  </section>
+ </main>
+ <footer class="tools-footer"><span>EWP Management Portal</span><span>V1.21 WEB · Developed by Samuel Chung</span></footer>
+ <script type="module" src="../../workspace-auth.mjs?v=1.21"></script>
+ <script type="module" src="./app.mjs?v=1.21"></script>
+ <script type="module" src="../../shared-settings.mjs?v=1.21"></script>
+</body></html>

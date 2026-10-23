@@ -1,3 +1,9 @@
+# Sales Project Tracking — V1.21 WEB
+
+After salesperson selection, the results list displays **Search** across visible columns plus **Status**, **Phase**, **Type** dropdowns and **Clear filters**. Filters combine with sorting and operate only on existing read-only rows fetched for that salesperson; refresh preserves filters; switching salesperson clears them. Counts show matches and source totals. Type Others covers stored free-text custom type descriptions. No schema/RLS/write changes. Test in light/dark modes and `?view=sales`.
+
+---
+
 # Sales Project Tracking — V1.17 WEB
 
 Sales-facing read-only view under `sales-tracking/`. Linked from Portal All and Sales display modes; no separate data storage or SQL migration.

@@ -1,3 +1,12 @@
+# EWP Tools — V1.21 WEB
+
+- Two utilities on the hub: **Consolidate Material List** and **Snow Load Calculator**.
+- Consolidate Material List prioritizes the Both Tables actions at the top and adds a paginated, client-generated **Download PDF** including per-level breakdown when selected; rich Outlook email copy and Excel TSV unchanged. jsPDF library loads on demand via CDN; material data stays local.
+- Snow Load Calculator: simplified BCBC 2024 formula with custom Ss/Sr, BC listed-city lookup, 0.80 / 0.55 / custom Cb and a client-side NRCan geolocator suggestion service. **Starter city data require full cross-check against BCBC 2024: the underlying upload was from BCBC 2018.** See `snow-load/README.md` before production use. Nearest city is not automatic design approval.
+- No SQL migration, no new Supabase tables or data writes. All/Sales portal visibility behavior unchanged. EWP Connect iOS unchanged.
+
+---
+
 # EWP Tools — V1.20 WEB
 
 **New in V1.20:** Connector models with standalone `INVERTED` mounting orientation are consolidated with the unmodified model. Source HGUS410 69 + HGUS410 INVERTED 2 = **71 pcs**. The 5-page sample includes L2=40, L3=31. Manufacturer no longer appears in summary or copied data. Each section and the combined output provide **Copy for Email** (compact, light-bordered HTML table via ClipboardItem, with accurate plain-text fallback notice) and **Copy for Excel** (TSV). Per-level checkbox affects both screen and clipboard tables. No changes to PDF page-break continuity, local processing, authentication or other workspaces. No SQL migration required.

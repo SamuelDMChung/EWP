@@ -1,3 +1,30 @@
+# EWP Management Portal — V1.21 WEB: Snow Load Calculator, Both-Table PDF, Sales Filters
+
+**Canonical input:** Complete V1.20 WEB source ZIP, uploaded October 23, 2026. **Release:** `EWP_Management_Portal_V1_21_WEB_FULL.zip`. **Next:** V1.22 WEB. **Scope:** WEB ONLY; EWP Connect iOS unchanged.
+
+## V1.21 changes
+
+1. **Consolidate Material List:** Moved **Both tables** commands above individual connector and length output. Added **Download PDF** alongside the existing HTML **Copy for Email** and TSV **Copy for Excel**. The new client-side vector PDF exporter paginates both Framing Connector Summary and Total Lengths; includes current per-level breakdown when checked and repeats Product/Total across multiple PDF horizontal level groups. Filename follows the uploaded PDF. Both existing copy outputs, input PDF extraction, page-break continuation and INVERTED hanger normalization remain unchanged. Runtime uses jsPDF 2.5.2 loaded on demand from CDN (with fallback). No PDF uploads.
+2. **Snow Load Calculator:** Added second EWP Tools hub utility at `ewp-tools/snow-load/`. Default **BC Location** lookup and **Custom Ss/Sr** entry. User-selectable 0.80 Part 4, 0.55 Part 9 (1.0 kPa minimum), or custom Cb. Computes simplified uniform S in kPa and psf (normal importance, Cw=Cs=Ca=1). No narrow-roof 0.45 option by request. Local suggestions for 113 BC reference entries; unlisted BC communities use Natural Resources Canada's free current Geolocator API and display three approximate geographically closest BCBC reference choices without silently assigning a design load. NRCan search is directly in browser, subject to live service/CORS. No Google billing/API key.
+3. **Sales Project Tracking:** After selecting a salesperson, the read-only results now show free-text Search plus Status, Phase and Project Type dropdown filters and Clear filters. Filters are applied client-side to the existing salesperson-scoped records, combine with existing nine-column sorting and remain active across Refresh. Counts show matching projects/rows vs totals. Switching salespeople resets filters. No database writes or extra tables.
+4. **Nine web pages** including the new Snow Load Calculator now display `V1.21 WEB · Developed by Samuel Chung`, with cache-busting `?v=1.21` on current page resources. Existing shared auth/navigation/Settings/themes and all eight previous workspaces retained.
+
+## Source provenance and design limitation — IMPORTANT
+
+The downloadable static snow-load reference list contains 113 entries **transcribed from the owner's supplied BCBC 2018 Table C-2 PDF**. Selected entries were cross-checked with BCBC 2024 Table C-2 excerpts available on the official BC government website. **The complete list was NOT independently audited row-by-row against BCBC 2024.** Do not treat this starter lookup as a fully verified BCBC 2024 design dataset until the full comparison is completed; confirm values with the current official code/EOR before engineering use. See `ewp-tools/snow-load/README.md`. The code shows a roof geometry/wind/drift limitation note and geographical-representativeness warning. For unlisted sites consult ECCC/local building authorities.
+
+## Database, preservation and release steps
+
+- **NO SQL migration.** Do not apply or rerun old `.sql` files; no changes to Supabase Auth, RLS, `projects`, Work Items, colors, Purchasing/Inventory, Sales forms, Resend, either Edge Function, or EWP Connect iOS.
+- Deploy **all** files from complete V1.21 ZIP to GitHub Pages root, preserving `.nojekyll` and existing paths. Ensure this is the WEB repo, not the iOS Capacitor project. Hard refresh after publication.
+- From Portal → All → EWP Tools, test both tools. For material PDF use TC26268 and verify HGUS410 71 pcs, IUS2.37/11.88 424 pcs, 11 7/8 TJI 230 4385 LF, PDF download with/without breakdown, email/Excel clipboard. Open the generated PDF in a PDF viewer. Test many levels and long tables.
+- Test BC code-list names and custom entry; compare values with official 2024 Table C-2 before engineering use; enter Port Coquitlam and inspect NRCan suggestions/3 nearby options; confirm no reference is auto-selected. Test internet-off fallback and BC-only filtering. Test 0.80, 0.55 and custom Cb and nonnegative value validation. Do not assume closest city is representative.
+- On Sales Project Tracking, choose a name, combine Search/Status/Phase/Type filters, sort, Refresh, Clear filters and Change Salesperson. Confirm counts and no writes. Regression-check All/Sales portal views, all prior workspaces, Settings, light/dark theme, auth/RLS and Project Tracking ↔ Forecast synchronization; Purchasing ledger (no writes required).
+
+**Testing boundary:** Automated local smoke tests and syntax/path checks are listed in `tests/V1_21_TEST_RESULTS.md`. They are not browser, live NRCan, native Outlook, production Supabase or fully audited 2024 engineering code-data tests. Do not call production validated until user tests it. The V1.20 website's deployment status is likewise not inferred.
+
+---
+
 # EWP Management Portal — V1.20 WEB: Hanger Normalization and Email-Ready Copy
 
 **Canonical input:** Complete V1.19 WEB source ZIP. **Release:** `EWP_Management_Portal_V1_20_WEB_FULL.zip` (October 23, 2026). **Next:** V1.21 WEB. **Scope:** WEB only; EWP Connect iOS unchanged.

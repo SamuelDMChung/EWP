@@ -37,3 +37,8 @@ html[data-ewp-theme=dark]{--tools-bg:#161815;--tools-paper:#242822;--tools-ink:#
 .material-table th+th,.material-table td+td{border-left:1px solid var(--tools-line)}
 .result-actions strong{font-size:13px}
 @media(max-width:740px){.material-copy-actions{width:100%}.material-copy-actions button{flex:1}.material-scroll{max-width:100%}}
+
+/* V1.21: prioritize exporting both tables above individual sections. */
+.material-primary-actions{border:1px solid var(--tools-line);border-radius:11px;padding:13px 14px;margin:5px 0 23px;background:color-mix(in srgb,var(--tools-soft) 24%,var(--tools-paper))}
+.material-primary-actions .small-hint{flex-basis:100%;margin:0!important}
+@media(max-width:650px){.material-primary-actions button{flex:1 1 130px}}

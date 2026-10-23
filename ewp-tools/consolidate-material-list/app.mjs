@@ -1,4 +1,5 @@
-import {consolidatePages,extractPdfPages,toTsv,combinedTsv,toEmailHtml,combinedEmailHtml,formatFeet} from './parser.mjs?v=1.20';
+import {downloadMaterialPdf} from './export-pdf.mjs?v=1.21';
+import {consolidatePages,extractPdfPages,toTsv,combinedTsv,toEmailHtml,combinedEmailHtml,formatFeet} from './parser.mjs?v=1.21';
 const $=id=>document.getElementById(id);
 const current={result:null,pdf:null,library:null,busy:false};
 
@@ -192,3 +193,14 @@ $('copyMaterialLengthsEmail').addEventListener('click',()=>current.result&&copyF
 $('copyMaterialLengthsExcel').addEventListener('click',()=>current.result&&copyText(toTsv(current.result.lengths,current.result.levels,'lengths',selectedBreakdown()),'Total lengths'));
 $('copyMaterialAllEmail').addEventListener('click',()=>current.result&&copyForEmail(combinedEmailHtml(current.result,selectedBreakdown()),combinedTsv(current.result,selectedBreakdown()),'Both tables'));
 $('copyMaterialAllExcel').addEventListener('click',()=>current.result&&copyText(combinedTsv(current.result,selectedBreakdown()),'Both tables'));
+
+$('downloadMaterialAllPdf').addEventListener('click',async()=>{
+ if(!current.result||current.busy)return;
+ const button=$('downloadMaterialAllPdf');button.disabled=true;
+ try{
+  status('Preparing your combined PDF…');
+  const exported=await downloadMaterialPdf(current.result,selectedBreakdown(),current.pdf?.name||'Material List');
+  status(`Downloaded combined material summary (${exported.pages} PDF page${exported.pages===1?'':'s'}).`);
+ }catch(error){status(`Could not download PDF: ${error?.message||'Unknown error'}`,true);}
+ finally{button.disabled=false;}
+});

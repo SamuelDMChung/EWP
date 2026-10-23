@@ -1,3 +1,9 @@
+# EWP Management Portal — V1.18 WEB
+
+Latest complete source release: **V1.18** (built from V1.17). New staff-visible Portal EWP Tools workspace and browser-local **Consolidate Material List** tool. Reads only Framing Connector Summary and Total Lengths from each `Level:` in Weyerhaeuser material list PDFs; handles sections spanning page breaks, sums across levels, offers optional breakdown and Excel-ready copy actions. No changes to production Supabase schema/data or Edge Functions; iOS remains unchanged. See `ewp-tools/README.md` and `PORTAL_HANDOFF.md` for operation, deployment and QA. Deploy full ZIP, not individual files.
+
+---
+
 # V1.17 WEB — Sales Project Tracking and Sales deep link (October 23, 2026)
 
 **Canonical WEB source:** `EWP_Management_Portal_V1_17_WEB_FULL.zip` from V1.16. Next sequential version V1.18. Read `PORTAL_HANDOFF.md` first.

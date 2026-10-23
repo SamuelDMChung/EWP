@@ -110,3 +110,7 @@ html[data-ewp-theme="dark"] .workspace-view-option.is-selected{background:#77760
 /* V1.17: Sales Project Tracking is the third Sales-view card; keep 2-column layout. */
 .card-icon-sales-tracking{background:#e7f4f0;color:#187e66}
 html[data-ewp-theme="dark"] .card-icon-sales-tracking{background:#343f34;color:#dbd777}
+
+/* V1.18: staff-only EWP Tools tile. Hidden by existing data-workspace-role filter. */
+.card-icon-tools{background:#ebe7f3;color:#66528d}
+html[data-ewp-theme="dark"] .card-icon-tools{background:#363342;color:#d2beef}

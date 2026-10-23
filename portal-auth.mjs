@@ -5,7 +5,7 @@ let authenticated = false;
 let connectionAttempt = 0;
 function safeNext() {
   const requested = new URLSearchParams(location.search).get("next") || "";
-  return /^(?:tracker|forecast|sales|orders)\/(?:\?[^#]*)?$/.test(requested) ? requested : "";
+  return /^(?:tracker|forecast|sales|orders|sales-tracking|ewp-tools|ewp-tools\/consolidate-material-list)\/(?:\?[^#]*)?$/.test(requested) ? requested : "";
 }
 function showError(message) { $("portalLoginError").textContent=message || "Could not sign in."; $("portalLoginError").hidden=!message; }
 function setStatus(state,label) {
@@ -52,7 +52,7 @@ function setWorkspaceView(view, { updateUrl=false } = {}) {
     button.classList.toggle('is-selected',active);
     button.setAttribute('aria-pressed',String(active));
   }
-  for(const card of document.querySelectorAll('.workspace-card[data-workspace-role="staff"]'))
+  for(const card of document.querySelectorAll('.workspace-card[data-workspace-role="staff"],.ewp-portal-nav__link[data-workspace-role="staff"]'))
     card.hidden=selected==='sales';
   if (updateUrl) {
     // Preserve other query parameters and hash, while keeping the All URL canonical.

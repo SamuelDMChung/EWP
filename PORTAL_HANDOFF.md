@@ -1,3 +1,25 @@
+# EWP Management Portal — V1.18 WEB: EWP Tools & Consolidate Material List
+
+**Release:** `EWP_Management_Portal_V1_18_WEB_FULL.zip` (October 23, 2026).  
+**Canonical input:** Complete V1.17 WEB release. **Next:** V1.19 WEB. iOS EWP Connect remains unchanged.
+
+## V1.18 changes
+
+- Added the **EWP Tools** Portal tile as a staff-only *visibility option* in the **All** view. It is absent from Sales view. EWP Tools has a separate hub page at `ewp-tools/` for future tools; first entry is `ewp-tools/consolidate-material-list/`.
+- Consolidate Material List accepts a PDF in the browser, reads only its **Framing Connector Summary** and **Total Lengths** for every `Level:` across the file, and aggregates identical product names across levels. Connector quantities are in pieces, total lengths in LF. It supports optional per-level breakdown, separate copy actions for connectors and lengths, and Copy Both in tab-delimited format for Excel.
+- **Page-break handling:** Keeps the active level/section across each PDF page. Ignores report title, job data, page footer, and repeated table headings rather than ending a section. Material lines spilling into the next page continue to be parsed until a real section heading or Level change. The included sample TC26268 spans 5 pages; expected HGUS410 **69 pcs**, IUS2.37/11.88 **424 pcs**, TJI 230 **4385 LF**.
+- File stays in browser memory. **No file upload to Supabase**, no database write, no SQL migration, no Edge Function changes, no email. Uses PDF.js 6.3.289 via the same on-demand CDN + fallback approach as Forecast. Selectable-text PDFs only; no OCR. Non-matching lines are counted and warned on. See `ewp-tools/README.md` for full behavior and regression checklist.
+- Updated navigation and shared Settings support for EWP Tools. Updated `workspace-auth.mjs` to generate portal login redirect from the module's root URL for nested subpages, and `portal-auth.mjs` login return allowlist to include Sales Tracking (existing V1.17 route) and EWP Tools routes. Existing authentication and Supabase configuration are retained. The Sales toggle is not a permission restriction: a direct URL remains reachable by any signed-in account unless a separate authorization scheme is introduced.
+
+## Deployment and verification
+
+- Deploy the **entire V1.18 ZIP** to the GitHub Pages repo root; include both `ewp-tools/` pages, parser, scripts, CSS, updated `index.html`, `portal-auth.mjs`, `workspace-auth.mjs`, `shared-settings.mjs` and styles. Hard refresh to pick up new versions.
+- **No Supabase changes.** Do not re-run old migrations for this feature. Do not upload the example PDF or expose credentials. The PDF-processing feature is independent of Tracker, Forecast, Purchasing, Sales submissions, and EWP Order.
+- Offline parser tests against the attached five-page sample and page-break simulations confirm numeric aggregates. All existing and new JavaScript files pass syntax checks. Production GitHub Pages, authenticated browser, Excel clipboard, and cross-user QA must be verified after deployment; source/static tests do not prove production operation.
+- QA: Test Portal All vs Sales; EWP Tools hub and import; parse 5-page sample; toggle levels; copy/paste into Excel; light/dark; login redirect from both tool routes; test V1.17 Sales view deep links; regression smoke test existing five workspaces and Purchasing.
+
+---
+
 # EWP Management Portal — V1.17 WEB: Sales Project Tracking & Shareable Sales Portal
 
 **Release:** `EWP_Management_Portal_V1_17_WEB_FULL.zip` (October 23, 2026).  

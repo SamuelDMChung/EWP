@@ -1,6 +1,6 @@
 /** Client-side, paginated vector PDF export for BOTH consolidated material tables.
  * No upload: source data remain in browser memory. jsPDF is loaded on demand. */
-import {formatFeet} from './parser.mjs?v=1.21';
+import {formatFeet} from './parser.mjs?v=1.22';
 let jsPdfPromise;
 async function loadJsPdf(){
  if(globalThis.jspdf?.jsPDF)return globalThis.jspdf.jsPDF;

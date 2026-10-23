@@ -1,3 +1,30 @@
+# EWP Management Portal — V1.22 WEB: Portal Workspaces + Strict Connector Columns
+
+**Canonical input:** `EWP_Management_Portal_V1_21_WEB_FULL.zip`, complete source package. **Release:** `EWP_Management_Portal_V1_22_WEB_FULL.zip` (October 23, 2026). **Next:** V1.23 WEB. **Scope:** WEB ONLY; EWP Connect iOS unchanged.
+
+## V1.22 approved changes
+
+1. **Portal — All / EWP / Sales:** Three persistable URL choices: root for All, `?view=ewp`, `?view=sales`. In All view, three-card EWP group (Project Tracking, EWP Forecast, EWP Tools) appears above three-card Sales group (New EWP Requests, EWP Order, Sales Project Tracking). EWP and Sales choices display only their group's three cards. Desktop: three columns; tablet: two; mobile: one. Olive top borders mark EWP, teal mark Sales. Existing icons, card navigation, sign-in, light/dark themes and Sales-view EWP Tools nav hiding are retained. Visibility settings are **not** RLS/database permissions; links remain subject to the original authorization model. New `portal-views.mjs` isolates view toggles and back/forward/shareable URLs without impacting auth.
+2. **Consolidate Material List — Qty/Product extraction fix:** `extractPdfPages()` now preserves PDF.js text positions and reads the repeated Framing Connector Summary header to identify `Qty`, `Product`, and the next-column boundary (`Face Nails`, etc.). The connector parser reads **only** Qty and Product coordinates. Manufacturer, Fasteners/Nails, Filler and Web Stiffener fields (including fragmented `No`, `Not R`, `Not Requ`, `Not Required`) are excluded *before* normalization rather than cleaned after concatenating whole rows. Column anchors persist onto a headerless continuation page; updated header positions can be relearned. If PDF header geometry is missing, the tool will **skip unsafe connector rows** rather than using potentially contaminated whole-row guesses. Standalone-string legacy tests preserve a text-only fallback for test/compatibility, never used for PDF row objects.
+3. **All nine HTML pages** show `V1.22 WEB · Developed by Samuel Chung`; active `?v=` cache tags are 1.22. No changes to calculations, Consolidate PDF export, Excel/Outlook copy format, Sales Tracking filters, Snow Load Calculator, Purchasing or Forecast flows.
+
+## Critical real-document regression (TC25161_R1 — Sherman Road Apartment)
+
+Input: user-supplied 12-page selectable-text Weyerhaeuser Material List PDF. Testing extracts real positioned text spans using PyMuPDF as a stand-in for browser PDF.js `getTextContent()` (see `tests/pdf_fixture_from_upload.py` and `tests/sherman_12pages_fixture.json`). The production JavaScript `extractPdfPages()` and `consolidatePages()` were executed over those data through a mocked PDF.js reader interface. This is a realistic position-based parsing test, **not** a direct live-browser PDF.js/CDN test.
+
+- `HUC610`: **50 pieces** total: L3 **17**, L4 **18**, L5 **15**, Roof **0**. The PDF's L5 `H16 | 1 | User | HUC610` row had two fragmented unrelated `Not Required` annotations in later columns; the parser now records exactly `HUC610` and `1`.
+- `HU410`: 10 pcs. `HU610`: 9 pcs. `IUS2.37/9.5`: 280 pcs. Custom connector description `Custom Saddle By Steel Supplier`: 1 pc. `HUC610X SKR30`: 19 pcs, **not** combined with HUC610.
+- Sum of `11 7/8" TJI 230 joist` Total Lengths across L3/L4/L5 is **20,244 LF** (7350 + 7564 + 5330), demonstrating cross-page section continuation. No `Not Required` contamination in connector names or HTML/TSV output; no unmatched rows in this particular fixture.
+- 23 new targeted assertions; original V1.21 31-assertion smoke suite still passes. Offline Chromium tests verified 3/3 cards in All, 3/0 in EWP, 0/3 in Sales, visual screenshots of light/dark and mobile. Tests use local mock authentication or skip sign-in — not live Supabase/Outlook testing. See `tests/V1_22_TEST_RESULTS.md`.
+
+## Protection and deployment
+
+- **No database changes, migrations, production reads/writes or replays of historic SQL.** No Supabase Auth/RLS/Realtime/edge functions/Resend changes. Tracker/Forecast synchronization, purchasing inventory and receipt audit, sales submissions and EWP Connect iOS are untouched.
+- Deploy complete V1.22 ZIP contents to the existing GitHub Pages repository root. Commit/push and hard-refresh to clear browser caches. No Supabase or Edge Function redeployment is necessary.
+- Confirm login/Settings, both themes, All/EWP/Sales toggles and deep links; upload actual 12-page Sherman Road PDF in Consolidate Material List and compare totals above; verify both Copy for Email/Excel, Download PDF and optional breakdown; verify original TC26268 hanger normalization and LF results; smoke-check both Sales Project Tracking filters and Snow Load Calculator. Do not treat local/synthetic tests as proof of production integration, and keep the existing snow-code data verification caveat from V1.21.
+
+---
+
 # EWP Management Portal — V1.21 WEB: Snow Load Calculator, Both-Table PDF, Sales Filters
 
 **Canonical input:** Complete V1.20 WEB source ZIP, uploaded October 23, 2026. **Release:** `EWP_Management_Portal_V1_21_WEB_FULL.zip`. **Next:** V1.22 WEB. **Scope:** WEB ONLY; EWP Connect iOS unchanged.

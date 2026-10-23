@@ -1,3 +1,9 @@
+# EWP Tools — V1.22 WEB
+
+Consolidate Material List now extracts only Qty and Product using the Framing Connector Summary's **PDF column coordinates** instead of cleaning the concatenated entire row. This excludes nailing, Filler and Web Stiffener columns, including `Not Required` notes on L5 HUC610 in the 12-page Sherman Road example. Column positions persist across PDF page breaks; unexpected formats without a detectable header skip unsafe rows and show a warning rather than guessing. Copy for Email, Copy for Excel, Download PDF, per-level options, inverted hanger normalization and Total Lengths remain unchanged. **Test report:** `tests/V1_22_TEST_RESULTS.md`. No Supabase upload or database changes. EWP and All Portal views show the tools; Sales hides them as a view preference only.
+
+---
+
 # EWP Tools — V1.21 WEB
 
 - Two utilities on the hub: **Consolidate Material List** and **Snow Load Calculator**.

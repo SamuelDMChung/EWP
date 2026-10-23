@@ -1,4 +1,4 @@
-/* EWP Management V1.20 — client-side Weyerhaeuser material report consolidation.
+/* EWP Management V1.22 — column-aware Weyerhaeuser material report consolidation.
  * The active level and section deliberately survive PDF page breaks.
  * Only Framing Connector Summary and Total Lengths are read.
  */
@@ -45,7 +45,22 @@ export function normalizeConnectorProduct(value){
     .replace(/\s{2,}/g, ' ')
     .trim();
 }
-function parseConnector(line){
+function parseConnector(line,sourceLine){
+  // When PDF text coordinates are available, ONLY Qty and Product column
+  // content can become a material. Filler/Web Stiffener and nailing notes
+  // must never be parsed as part of the product name.
+  if(sourceLine && typeof sourceLine==='object'){
+    if(!sourceLine.connectorCells)return null; // never fallback to whole-row PDF text
+    const plot=clean(line).match(/^([A-Za-z]{1,4}\d+[\w.'/\-]*)\b/)?.[1];
+    if(!plot||!/^H\w/i.test(plot))return null;
+    const {quantity,product}=sourceLine.connectorCells;
+    const qtyText=clean(quantity);
+    const qty=Number(qtyText);
+    if(!/^\d+$/.test(qtyText)||!Number.isSafeInteger(qty)||qty>1000000)return null;
+    const material=normalizeConnectorProduct(product);
+    if(!material||!/\w/.test(material))return null;
+    return {product:material,quantity:qty,plot};
+  }
   // Column-leading PlotID, Qty, Manuf, Product, then optional nailing schedule.
   const m=clean(line).match(/^([A-Za-z]{1,4}\d+[\w.'/-]*)\s+(\d+)\s+([A-Za-z][\w&.-]*)\s+(.+)$/);
   if(!m)return null;
@@ -57,7 +72,7 @@ function parseConnector(line){
   const material=normalizeConnectorProduct(tail
     .split(/\s+(?=\d+\s*-\s*(?:10d|SDS|Strong-Grip|16d|8d|Nail|Screw))/i)[0]);
   if(!material||!/\w/.test(material))return null;
-  return { product:material, manufacturer, quantity:qty, plot };
+  return { product:material, quantity:qty, plot };
 }
 function parseLength(line){
   const s=clean(line);
@@ -91,7 +106,7 @@ export function consolidatePages(pages){
       if(!activeLevel){activeLevel='Unspecified level';ensureLevel(activeLevel);warnings.push('A material section had no preceding Level heading.');}
       const level=ensureLevel(activeLevel);
       if(section==='connectors'){
-        const c=parseConnector(line);
+        const c=parseConnector(line,sourceLine);
         if(!c){skipped++;continue;}
         const key=c.product.toLowerCase();
         const old=level.connectors.get(key);
@@ -187,6 +202,7 @@ export async function extractPdfPages(file,pdfjsLib,onPage=()=>{}){
   // is not consistently available in the browser PDF.js build.
   let doc;
   const pages=[];
+  let connectorHeader=null;
   try{
     doc=await task.promise;
     for(let i=1;i<=doc.numPages;i++){
@@ -201,7 +217,37 @@ export async function extractPdfPages(file,pdfjsLib,onPage=()=>{}){
         row.items.push({x,text:str});
       }
       rows.sort((a,b)=>b.y-a.y);
-      pages.push(rows.map(row=>clean(row.items.sort((a,b)=>a.x-b.x).map(x=>x.text).join(' '))).filter(Boolean));
+      // Capture the PDF's actual column anchors from the repeated header.
+      // Keep the last layout through page breaks (a continuation page may
+      // omit its header). Positional extraction is much safer than stripping
+      // arbitrary Filler / Web Stiffener annotations from the complete row.
+      let header=connectorHeader;
+      const pageRows=[];
+      for(const row of rows){
+        const items=row.items.sort((a,b)=>a.x-b.x);
+        const text=clean(items.map(i=>i.text).join(' '));
+        if(!text)continue;
+        const heading=name=>items.find(i=>clean(i.text).toLowerCase()===name.toLowerCase());
+        const qty=heading('Qty'),product=heading('Product');
+        const next=['Face Nails','Top Nails','Member Nails','Filler','Web Stiff']
+          .map(heading).filter(Boolean).filter(i=>i.x>(product?.x??Infinity)).sort((a,b)=>a.x-b.x)[0];
+        if(qty&&product&&next&&qty.x<product.x){
+          const manuf=heading('Manuf');
+          header={qtyX:qty.x,qtyEnd:manuf?.x||product.x,productX:product.x,productEnd:next.x};
+        }
+        const source={text};
+        if(header && /^H[A-Za-z0-9.'\/-]*\d+\s/i.test(text)){
+          // Guard the Qty/Product boundaries. No value outside the Product
+          // column is allowed into the resulting connector's name.
+          source.connectorCells={
+            quantity:clean(items.filter(i=>i.x>=header.qtyX-1.5&&i.x<header.qtyEnd-0.5).map(i=>i.text).join(' ')),
+            product:clean(items.filter(i=>i.x>=header.productX-1.5&&i.x<header.productEnd-1.5).map(i=>i.text).join(' '))
+          };
+        }
+        pageRows.push(source);
+      }
+      connectorHeader=header;
+      pages.push(pageRows);
       onPage(i,doc.numPages);
       // Page cache release should never erase a successful extraction.
       try { if(typeof page.cleanup==='function')page.cleanup(); }

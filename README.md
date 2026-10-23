@@ -1,3 +1,11 @@
+## V1.22 WEB latest — grouped Portal and reliable connector columns
+
+Built from V1.21 complete source. Portal adds **All / EWP / Sales** display modes with shareable `?view=ewp` and `?view=sales`, clearly labeled three-card groups, and responsive styling. Consolidate Material List now reads connector **Qty and Product columns by their PDF text positions**, preventing unrelated `Not Required` Filler/Web Stiffener notes from becoming part of model names. The 12-page Sherman Road regression calculates HUC610 **50 pcs** (L3 17, L4 18, L5 15). All other V1.21 tools, including the Snow Load Calculator, Sales Tracking filters, Both Tables PDF export and earlier Purchasing controls are preserved. **No SQL migration, production database updates, Edge Function redeployment or iOS changes.**
+
+For testing/deployment and precautions, first read `PORTAL_HANDOFF.md`, then `tests/V1_22_TEST_RESULTS.md`. Original V1.21 historical notes remain below.
+
+---
+
 ## V1.21 WEB latest
 
 V1.21 WEB is the next complete GitHub Pages source package from V1.20. New features: Both Tables Download PDF and moving combined actions to the top; EWP Tools Snow Load Calculator (BC Location / Custom, NRCan suggestion integration); read-only post-selection filters for Sales Project Tracking. Nine page credits. **No SQL migration or iOS changes.** Read `PORTAL_HANDOFF.md`, then `tests/V1_21_TEST_RESULTS.md` and `ewp-tools/snow-load/README.md` for critical BCBC data verification limits before using results in engineering work.

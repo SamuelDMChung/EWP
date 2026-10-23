@@ -114,3 +114,20 @@ html[data-ewp-theme="dark"] .card-icon-sales-tracking{background:#343f34;color:#
 /* V1.18: staff-only EWP Tools tile. Hidden by existing data-workspace-role filter. */
 .card-icon-tools{background:#ebe7f3;color:#66528d}
 html[data-ewp-theme="dark"] .card-icon-tools{background:#363342;color:#d2beef}
+
+/* V1.22: clearly separated EWP and Sales, with three compact cards per row
+   at full desktop width. Views hide groups, not Supabase permissions. */
+.workspace-group{margin-bottom:29px}
+.workspace-group[hidden]{display:none!important}
+.workspace-group-title{display:flex;align-items:center;gap:9px;font:800 14px/1.4 var(--ewp-font,Inter,system-ui,sans-serif);margin:0 0 13px;color:var(--ink)}
+.workspace-group-mark{display:inline-block;width:5px;height:19px;border-radius:10px;background:#777600}
+.workspace-group-sales .workspace-group-mark{background:#228477}
+.workspace-group .workspace-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.workspace-group .workspace-card{min-width:0;min-height:148px;gap:13px;padding:20px 18px;border-top:3px solid #858300}
+.workspace-group-sales .workspace-card{border-top-color:#278f85}
+.workspace-group .card-title{font-size:clamp(17px,1.5vw,22px);line-height:1.18;overflow-wrap:break-word}
+.workspace-group .card-icon{flex-basis:51px;width:51px;height:51px}
+.workspace-group .workspace-arrow{font-size:22px}
+html[data-ewp-theme="dark"] .workspace-group-title{color:#f0eee7}
+@media(max-width:980px){.workspace-group .workspace-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:620px){.workspace-group .workspace-grid{grid-template-columns:1fr}.workspace-group .workspace-card{min-height:105px;padding:16px}}

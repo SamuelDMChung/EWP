@@ -1,5 +1,6 @@
 import { restoreSession, signInWithPassword, signOut, getLastEmail, getAccessToken, EWP_AUTH_STORAGE_KEY } from "./forecast/auth.mjs?v=1.0-p3";
 import { SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY } from "./forecast/config.mjs";
+import { portalViewFromUrl, setWorkspaceView } from "./portal-views.mjs?v=1.22";
 const $ = id => document.getElementById(id);
 let authenticated = false;
 let connectionAttempt = 0;
@@ -41,26 +42,6 @@ function setSession(session) {
     if(next){location.replace(new URL(next,location.href).href); return;}
     verifyConnection();
   } else {connectionAttempt++;setStatus('connecting','Connecting to shared data…');}
-}
-function portalViewFromUrl() {
-  return new URL(location.href).searchParams.get('view') === 'sales' ? 'sales' : 'all';
-}
-function setWorkspaceView(view, { updateUrl=false } = {}) {
-  const selected=view==='sales'?'sales':'all';
-  for(const button of document.querySelectorAll('[data-workspace-view]')) {
-    const active=button.dataset.workspaceView===selected;
-    button.classList.toggle('is-selected',active);
-    button.setAttribute('aria-pressed',String(active));
-  }
-  for(const card of document.querySelectorAll('.workspace-card[data-workspace-role="staff"],.ewp-portal-nav__link[data-workspace-role="staff"]'))
-    card.hidden=selected==='sales';
-  if (updateUrl) {
-    // Preserve other query parameters and hash, while keeping the All URL canonical.
-    const url=new URL(location.href);
-    if(selected==='sales') url.searchParams.set('view','sales');
-    else url.searchParams.delete('view');
-    if(url.href!==location.href) history.pushState({workspaceView:selected},'',url.href);
-  }
 }
 async function init() {
   for(const button of document.querySelectorAll('[data-workspace-view]'))

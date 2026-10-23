@@ -1,3 +1,13 @@
+# V1.17 WEB — Sales Project Tracking and Sales deep link (October 23, 2026)
+
+**Canonical WEB source:** `EWP_Management_Portal_V1_17_WEB_FULL.zip` from V1.16. Next sequential version V1.18. Read `PORTAL_HANDOFF.md` first.
+
+- Fifth Portal workspace **Sales Project Tracking**, present in All and Sales display modes, and accessible at `sales-tracking/`. Choose exactly one salesperson from shared `tracker_settings.sales`; the list shows the nine requested sortable fields; return using **Change Salesperson**. Uses existing authenticated shared Project Tracking data **read-only**.
+- Shareable **Sales Portal** link: `https://samueldmchung.github.io/EWP-Forecast/?view=sales`. Refresh and browser history preserve All vs Sales; All retains the normal root URL. UI-only toggle; not access control.
+- No V1.17 SQL migration, emails/Edge Function changes or EWP Connect iOS modifications. Keep preexisting RLS, shared Supabase and all other workspaces intact. Deploy the complete source directory to the current GitHub Pages root.
+
+---
+
 # EWP Management Portal V1.16 WEB
 
 Latest release: V1.16 WEB (Oct 22, 2026), built on V1.15 full baseline. Added Duplex, Multiplex, Townhome to Tracker and Forecast project-type dropdowns and separated Follow-up filters; provides 265-project stress-test classification and incremental import-audit SQL. `PORTAL_HANDOFF.md` is the authoritative detailed handoff.

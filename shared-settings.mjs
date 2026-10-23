@@ -1,4 +1,4 @@
-/* V1.8: exactly one Settings interface and Supabase writer for Portal, Tracker, Forecast, New EWP Requests and EWP Order. */
+/* V1.8: exactly one Settings interface and Supabase writer for Portal, Tracker, Forecast, Sales Project Tracking, New EWP Requests and EWP Order. */
 import { loadTrackerSettings, saveTrackerSettings } from './tracker/cloud.mjs?v=1.12';
 const CHANGE_SIGNAL='ewp_tracker_settings_modified_v18';
 const categories=[
@@ -96,7 +96,7 @@ window.EWPSharedSettings={open};
 $('.ewp-settings-close').addEventListener('click',()=>dialog.close());
 dialog.addEventListener('click',event=>{if(event.target===dialog)dialog.close();});
 $('#ewpSharedThemeSelect').addEventListener('change',event=>window.EWPTheme?.apply(event.target.value,true));
-for(const id of ['portalSettingsButton','forecastSettingsButton']){
+for(const id of ['portalSettingsButton','forecastSettingsButton','salesTrackerSettings']){
   document.getElementById(id)?.addEventListener('click',open);
 }
 window.addEventListener('storage',event=>{if(event.key===CHANGE_SIGNAL&&dialog.open)reload().catch(error=>message(error.message,true));});

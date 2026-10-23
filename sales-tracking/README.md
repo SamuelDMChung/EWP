@@ -1,0 +1,23 @@
+# Sales Project Tracking — V1.17 WEB
+
+Sales-facing read-only view under `sales-tracking/`. Linked from Portal All and Sales display modes; no separate data storage or SQL migration.
+
+## UI
+
+- Initial single-select dropdown of salesperson names from `tracker_settings.sales`, sorted alphabetically. Selection immediately opens the project list.
+- Results screen hides the salesperson dropdown completely, displays the selected name and **Change Salesperson** button to return to the empty dropdown.
+- Table columns in requested order: Project #, Address, Task, Status, Customer, Sales, Phase, Type, Project Due. Sortable by header; project number descending initially. Horizontal scroll on narrow screens.
+- Active on-plate projects: one row per independent work item, with task-level status (`done` displayed In Review, matching the main Tracking Board's completed individual task card).
+- Coordination or Completed projects: one row per project; merged names of tasks shown in Task field (blank displays `—`), status from `projects.tracker_status`.
+- Project Type supports SFD, Multi, Duplex, Multiplex, Townhome, Others, with an existing detailed Others description displayed where stored. Blank project due dates display `—`.
+
+## Database / security
+
+- Uses existing shared `forecast/auth.mjs` session, Supabase publishable key and authenticated REST GET requests. **No new tables, writes, or access policies.** RLS on existing `projects`, `tracker_work_items`, `tracker_settings` still applies. The Sales Portal toggle controls presentation only and **does not restrict permissions**.
+- Fetches configured names first; on selection filters `projects` by exact Sales name on the Supabase server, then loads work items for only those projects in 75-ID chunks. Page through batches of up to 1000 rows. No duplicate project data created.
+- Reuses Tracker Realtime subscription for opportunistic refresh; also refreshes on focus, tab visibility and cross-tab Tracker change signals; Refresh button available.
+- Shared Settings button uses `shared-settings.mjs`. Theme follows existing `theme.js` local preference.
+
+## QA
+
+Open the Portal with `?view=sales`, then navigate to the Sales Project Tracking card. Test one salesperson with a multi-task project, one with Coordination/Delivering records, changed tasks/statuses in another Tracker tab, and switching back to choose another name. Verify the list cannot edit records. Confirm auth redirects to `../?next=sales-tracking%2F` when signed out, that the same session persists on refresh, and that light/dark mode remain readable.

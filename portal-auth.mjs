@@ -42,7 +42,10 @@ function setSession(session) {
     verifyConnection();
   } else {connectionAttempt++;setStatus('connecting','Connecting to shared data…');}
 }
-function setWorkspaceView(view) {
+function portalViewFromUrl() {
+  return new URL(location.href).searchParams.get('view') === 'sales' ? 'sales' : 'all';
+}
+function setWorkspaceView(view, { updateUrl=false } = {}) {
   const selected=view==='sales'?'sales':'all';
   for(const button of document.querySelectorAll('[data-workspace-view]')) {
     const active=button.dataset.workspaceView===selected;
@@ -51,11 +54,19 @@ function setWorkspaceView(view) {
   }
   for(const card of document.querySelectorAll('.workspace-card[data-workspace-role="staff"]'))
     card.hidden=selected==='sales';
+  if (updateUrl) {
+    // Preserve other query parameters and hash, while keeping the All URL canonical.
+    const url=new URL(location.href);
+    if(selected==='sales') url.searchParams.set('view','sales');
+    else url.searchParams.delete('view');
+    if(url.href!==location.href) history.pushState({workspaceView:selected},'',url.href);
+  }
 }
 async function init() {
   for(const button of document.querySelectorAll('[data-workspace-view]'))
-    button.addEventListener('click',()=>setWorkspaceView(button.dataset.workspaceView));
-  setWorkspaceView('all');
+    button.addEventListener('click',()=>setWorkspaceView(button.dataset.workspaceView,{updateUrl:true}));
+  window.addEventListener('popstate',()=>setWorkspaceView(portalViewFromUrl()));
+  setWorkspaceView(portalViewFromUrl());
   $("portalLoginEmail").value=getLastEmail();
   $("portalLoginForm").addEventListener('submit',async event=>{
     event.preventDefault();const button=$("portalLoginButton");button.disabled=true;button.textContent='Signing in…';showError('');

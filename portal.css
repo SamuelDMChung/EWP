@@ -106,3 +106,7 @@ html[data-ewp-theme="dark"] .workspace-view-option.is-selected{background:#77760
 
 /* V1.12 fourth workspace: EWP Order shares the reserved second-row slot. */
 .card-icon-order{background:#f2efd4;color:#747300}
+
+/* V1.17: Sales Project Tracking is the third Sales-view card; keep 2-column layout. */
+.card-icon-sales-tracking{background:#e7f4f0;color:#187e66}
+html[data-ewp-theme="dark"] .card-icon-sales-tracking{background:#343f34;color:#dbd777}

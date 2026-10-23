@@ -1,3 +1,25 @@
+# EWP Management Portal — V1.17 WEB: Sales Project Tracking & Shareable Sales Portal
+
+**Release:** `EWP_Management_Portal_V1_17_WEB_FULL.zip` (October 23, 2026).  
+**Canonical input:** V1.16 full WEB ZIP. **Next:** V1.18 WEB. EWP Connect iOS remains unchanged.
+
+## Changes
+
+1. Added fifth Portal workspace **Sales Project Tracking** under `sales-tracking/`. This link is visible when the Portal toggle is set to **Sales**, as well as **All**; staff-only Project Tracking and EWP Forecast cards remain hidden in Sales mode. Existing New EWP Requests and EWP Order remain present and unchanged.
+2. Sales Project Tracking loads configured salesperson names from Supabase `tracker_settings.sales` into **one dropdown**. Users can choose **exactly one**; choosing automatically hides the dropdown and displays the project list. **Change Salesperson** clears the choice and returns to the initial selection screen.
+3. Read-only, nine-column list in order: Project #, Address, Task, Status, Customer, Sales, Phase, Type, Project Due. Active projects show one row per task with the corresponding task status. Coordination/Completed projects show one merged project row with all task names and the project's saved status. Task/project type and status semantics follow the primary Tracker; imported blank tasks/due dates display `—`. Headers sort the list (default Project # descending). No writes, edit controls, or project mutation endpoints on the new page.
+4. The Portal Sales toggle now changes the URL to **`?view=sales`** using `history.pushState`. Direct visits and refreshes to `/?view=sales` start in Sales mode, with existing authentication intact. Switching back to All removes the `view` parameter and keeps the canonical root URL. Browser Back/Forward follows `popstate`. Other query parameters and URL fragments are preserved. This is a **presentation selection, not an RLS/authorization restriction**.
+5. Updated the shared route authentication allowlist to support returning to `sales-tracking/` after Portal login; added navigation link and shared Settings/light-dark support. Supabase Realtime (optional), tab focus/visibility fallback and Refresh update the table from shared projects/work items/settings.
+
+## Deployment / prerequisites
+
+- **No V1.17 SQL migration or Edge Function changes.** Use the existing `projects`, `tracker_work_items`, `tracker_settings` tables with their current RLS policies and authenticated sessions. Verify existing required V1.15 and V1.16 migrations remain present from prior release; don't reapply them for V1.17. Production Oct 22 confirmed V1.15 color function, V1.16 import-audit table, and 265 Delivering imported projects.
+- Back up the current website, then deploy the **entire** V1.17 ZIP directory to the GitHub Pages repo root. Include new `sales-tracking/` and changed `portal-auth.mjs`, `workspace-auth.mjs`, `shared-settings.mjs`, portal CSS/HTML and route navigation pages. Hard refresh to clear cached assets.
+- Test Portal direct link `https://samueldmchung.github.io/EWP-Forecast/?view=sales` logged in and logged out, toggle All ↔ Sales, reload, Back/Forward. In Sales Project Tracking, choose salespeople with both active split tickets and Delivering (e.g. from the 265 records); verify one row per task while on-plate, one per project once merged, sorting, change-selection, blank due dates, settings, themes, refresh and project status changes from a second tab/account. Test existing Tracker, Forecast, Purchasing, New EWP Requests, EWP Order and email flows for regression.
+- **Verification distinction:** JavaScript syntax/static source/data-logic tests were run locally. Browser automation was blocked in the execution environment; live Supabase authenticated browser QA and GitHub Pages publishing are **not yet confirmed**. No production data, SQL, storage, or Edge Functions were changed for V1.17.
+
+---
+
 # EWP Management Portal — V1.16 WEB: Project Type Expansion & Scheduling Log Import
 
 **Release:** `EWP_Management_Portal_V1_16_WEB_FULL.zip` (October 22, 2026).  

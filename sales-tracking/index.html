@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <meta name="description" content="Read-only sales project progress powered by EWP Project Tracking.">
+  <title>Sales Project Tracking — EWP Management</title>
+  <link rel="stylesheet" href="../portal-nav.css?v=1.17">
+  <link rel="stylesheet" href="../theme.css?v=1.17">
+  <link rel="stylesheet" href="./styles.css?v=1.17">
+  <script src="../theme.js?v=1.17"></script>
+</head>
+<body>
+<nav class="ewp-portal-nav" aria-label="EWP Management navigation">
+  <a class="ewp-portal-nav__brand" href="../?view=sales"><img class="ewp-portal-nav__mark" src="../assets/griff-nav-icon.png" alt="">EWP Management</a>
+  <div class="ewp-portal-nav__links">
+    <a class="ewp-portal-nav__link" href="../?view=sales">Portal</a>
+    <a class="ewp-portal-nav__link" href="../tracker/">Project Tracking</a>
+    <a class="ewp-portal-nav__link" href="../forecast/">EWP Forecast</a>
+    <a class="ewp-portal-nav__link" href="../sales/">New EWP Requests</a>
+    <a class="ewp-portal-nav__link" href="../orders/">EWP Order</a>
+    <a class="ewp-portal-nav__link" href="./" aria-current="page">Sales Project Tracking</a>
+  </div>
+  <span class="ewp-portal-nav__account" id="ewpNavAccount" aria-live="polite"></span>
+</nav>
+<header class="sales-tracking-header">
+  <div>
+    <span class="eyebrow">EWP MANAGEMENT</span>
+    <h1>Sales Project Tracking</h1>
+    <p>Project status and progress · Read-only view</p>
+  </div>
+  <div class="header-actions">
+    <span id="salesTrackerConnection" role="status" aria-live="polite" class="connection-label">Connecting to shared data…</span>
+    <button type="button" class="header-button" id="salesTrackerRefresh">↻ Refresh</button>
+    <button type="button" class="header-button ewp-settings-trigger" id="salesTrackerSettings">⚙ Settings</button>
+  </div>
+</header>
+<main class="sales-tracking-main">
+  <section id="salesTrackerSelectView" class="choice-panel" hidden>
+    <label for="salesTrackerSelect">Choose a salesperson</label>
+    <p>Select one salesperson to see their active and historical projects.</p>
+    <select id="salesTrackerSelect" aria-describedby="salesTrackerSelectHelp">
+      <option value="">Choose salesperson…</option>
+    </select>
+    <p class="helper" id="salesTrackerSelectHelp">The list is managed through Project Tracking Settings.</p>
+  </section>
+  <section id="salesTrackerResultsView" hidden>
+    <div class="results-toolbar">
+      <div><span class="eyebrow">PROJECT LIST</span><h2 id="salesTrackerSelectedName"></h2><p id="salesTrackerCount" aria-live="polite">Loading projects…</p></div>
+      <button type="button" class="change-button" id="salesTrackerChange">← Change Salesperson</button>
+    </div>
+    <p id="salesTrackerResultsMessage" class="status-message" role="status" aria-live="polite" hidden></p>
+    <div class="table-scroll" id="salesTrackerTableWrap" hidden>
+      <table class="sales-tracking-table">
+        <thead><tr>
+          <th scope="col" aria-sort="descending"><button type="button" data-sort="projectNumber">Project # <span aria-hidden="true">↓</span></button></th>
+          <th scope="col"><button type="button" data-sort="address">Address <span aria-hidden="true"></span></button></th>
+          <th scope="col"><button type="button" data-sort="task">Task <span aria-hidden="true"></span></button></th>
+          <th scope="col"><button type="button" data-sort="status">Status <span aria-hidden="true"></span></button></th>
+          <th scope="col"><button type="button" data-sort="customer">Customer <span aria-hidden="true"></span></button></th>
+          <th scope="col"><button type="button" data-sort="sales">Sales <span aria-hidden="true"></span></button></th>
+          <th scope="col"><button type="button" data-sort="phase">Phase <span aria-hidden="true"></span></button></th>
+          <th scope="col"><button type="button" data-sort="type">Type <span aria-hidden="true"></span></button></th>
+          <th scope="col"><button type="button" data-sort="due">Project Due <span aria-hidden="true"></span></button></th>
+        </tr></thead>
+        <tbody id="salesTrackerRows"></tbody>
+      </table>
+    </div>
+  </section>
+  <div id="salesTrackerLoading" class="loading-message" role="status" aria-live="polite">Checking your shared Supabase session…</div>
+</main>
+<footer class="sales-tracking-footer"><span>EWP Management Portal</span><span>Version V1.17 · Developed by Samuel Chung</span></footer>
+<script type="module" src="../workspace-auth.mjs?v=1.17"></script>
+<script type="module" src="./app.mjs?v=1.17"></script>
+<script type="module" src="../shared-settings.mjs?v=1.17"></script>
+</body>
+</html>

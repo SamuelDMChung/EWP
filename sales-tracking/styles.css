@@ -1,0 +1,64 @@
+:root{--sales-paper:#f8f6f2;--sales-ink:#3c3935;--sales-muted:#655f57;--sales-border:#ddd7cc;--sales-surface:#fff;--sales-accent:#747300}
+*,*::before,*::after{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{margin:0;min-height:100%;background:var(--sales-paper);color:var(--sales-ink)}
+body{font:14px/1.5 Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;display:flex;flex-direction:column;min-height:100vh}
+.sales-tracking-header{display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap;background:var(--sales-surface);border-bottom:1px solid var(--sales-border);padding:23px clamp(20px,4vw,56px)}
+.eyebrow{font-size:11px;letter-spacing:.13em;font-weight:850;color:var(--sales-accent)}
+h1{font-size:clamp(25px,3vw,36px);letter-spacing:-.035em;line-height:1.2;margin:5px 0}
+.sales-tracking-header p{color:var(--sales-muted);margin:0}
+.header-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.connection-label{font-size:12px;color:var(--sales-muted)}
+.header-button,.change-button{cursor:pointer;min-height:38px;padding:9px 14px;border:1px solid var(--sales-border);border-radius:9px;background:#f0eee8;color:var(--sales-ink);font:inherit;font-size:13px;font-weight:750}
+.header-button:hover,.change-button:hover{background:#eae6dd}
+.header-button:focus-visible,.change-button:focus-visible,select:focus-visible,.sales-tracking-table th button:focus-visible{outline:2px solid var(--sales-accent);outline-offset:3px}
+.ewp-settings-trigger{background:#f0efd5;border-color:#d4d0a5;color:#595700}
+.sales-tracking-main{width:min(1400px,calc(100% - 40px));margin:0 auto;flex:1;padding:28px 0 70px}
+.choice-panel{background:var(--sales-surface);border:1px solid var(--sales-border);border-radius:14px;padding:30px;max-width:640px;box-shadow:0 6px 24px #3c39350a}
+.choice-panel label{display:block;font-size:18px;font-weight:800;margin-bottom:3px}
+.choice-panel p{margin:0 0 16px;color:var(--sales-muted)}
+.choice-panel select{display:block;width:100%;font:inherit;font-size:15px;padding:13px;border:1px solid #bdb8aa;border-radius:9px;background:var(--sales-surface);color:var(--sales-ink);cursor:pointer}
+.choice-panel .helper{font-size:12px;margin:12px 0 0}
+.results-toolbar{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;margin:0 0 16px}
+.results-toolbar h2{font-size:clamp(21px,2.5vw,28px);margin:3px 0;line-height:1.2}
+.results-toolbar p{font-size:13px;color:var(--sales-muted);margin:0}
+.status-message,.loading-message{border:1px solid var(--sales-border);background:var(--sales-surface);padding:18px 20px;border-radius:10px;color:var(--sales-muted)}
+.status-message.error{border-color:#ca7b72;color:#a33126}
+.table-scroll{max-width:100%;overflow-x:auto;border:1px solid var(--sales-border);border-radius:12px;background:var(--sales-surface)}
+.sales-tracking-table{width:100%;border-collapse:collapse;min-width:1120px;table-layout:auto;font-size:12.5px}
+.sales-tracking-table th{position:sticky;top:0;background:#efede7;color:var(--sales-ink);border-bottom:1px solid var(--sales-border);text-align:left;white-space:nowrap;padding:0}
+.sales-tracking-table th button{cursor:pointer;font:inherit;font-weight:800;color:inherit;border:0;background:transparent;display:flex;gap:6px;align-items:center;text-align:left;width:100%;padding:12px 14px}
+.sales-tracking-table th button:hover{background:#e3e0d5}
+.sales-tracking-table td{border-bottom:1px solid #ebe6dc;padding:12px 14px;vertical-align:top;overflow-wrap:anywhere}
+.sales-tracking-table tbody tr:last-child td{border-bottom:0}
+.sales-tracking-table tbody tr:hover{background:#f6f6ed}
+.sales-tracking-table td:first-child{font-weight:800;white-space:nowrap;color:#5f6000}
+.sales-tracking-table td:nth-child(2){min-width:215px}
+.sales-tracking-table td:nth-child(3){min-width:120px}
+.sales-tracking-table td:nth-child(5){min-width:150px}
+.sales-tracking-table td:nth-child(6){min-width:110px}
+.sales-tracking-table td:nth-child(9){white-space:nowrap}
+.status-pill{display:inline-block;border-radius:20px;padding:3px 9px;background:#e9ece9;color:#36483b;white-space:nowrap;font-size:11px;font-weight:800}
+.status-pill.status-queue{background:#e8edf7;color:#2e527b}
+.status-pill.status-in_progress{background:#fff0d5;color:#875b12}
+.status-pill.status-in_review{background:#e7e7ff;color:#4e4495}
+.status-pill.status-pending{background:#f6e7dd;color:#915225}
+.status-pill.status-delivering{background:#e4f3e6;color:#246136}
+.status-pill.status-completed{background:#e2efe9;color:#176a58}
+.sales-tracking-footer{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:19px clamp(20px,4vw,56px);border-top:1px solid var(--sales-border);color:var(--sales-muted);font-size:11px}
+html[data-ewp-theme="dark"]{--sales-paper:#161815;--sales-ink:#f0eee7;--sales-muted:#b9b6ac;--sales-border:#41463d;--sales-surface:#20231e;--sales-accent:#d4d36c}
+html[data-ewp-theme="dark"] .header-button,html[data-ewp-theme="dark"] .change-button{background:#30352e;color:var(--sales-ink);border-color:#565d50}
+html[data-ewp-theme="dark"] .header-button:hover,html[data-ewp-theme="dark"] .change-button:hover{background:#44493f}
+html[data-ewp-theme="dark"] .ewp-settings-trigger{background:#343820;color:#ecebb6}
+html[data-ewp-theme="dark"] .sales-tracking-table th{background:#30352e}
+html[data-ewp-theme="dark"] .sales-tracking-table th button:hover,html[data-ewp-theme="dark"] .sales-tracking-table tbody tr:hover{background:#343a31}
+html[data-ewp-theme="dark"] .sales-tracking-table td{border-color:#41463d}
+html[data-ewp-theme="dark"] .sales-tracking-table td:first-child{color:#d8d66a}
+html[data-ewp-theme="dark"] .status-pill{background:#303c36;color:#b0d7bd}
+html[data-ewp-theme="dark"] .status-pill.status-queue{background:#27384d;color:#aed1ff}
+html[data-ewp-theme="dark"] .status-pill.status-in_progress{background:#4c3a25;color:#ffd39a}
+html[data-ewp-theme="dark"] .status-pill.status-in_review{background:#39324f;color:#d3bdff}
+html[data-ewp-theme="dark"] .status-pill.status-pending{background:#513529;color:#ffbea0}
+html[data-ewp-theme="dark"] .status-pill.status-delivering{background:#263e2d;color:#bde7c5}
+html[data-ewp-theme="dark"] .status-pill.status-completed{background:#233d39;color:#9fe2d3}
+@media(max-width:650px){.sales-tracking-main{width:calc(100% - 24px);padding-top:20px}.choice-panel{padding:22px}.sales-tracking-header{padding:19px 16px}.header-actions{width:100%}.results-toolbar{align-items:flex-start}.change-button{width:100%}}

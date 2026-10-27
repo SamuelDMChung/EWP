@@ -1,3 +1,11 @@
+# EWP Management Portal V1.25 WEB
+
+**New EWP Tools utility: Steel Beam Width.** Four linked imperial/metric designation fields map to the exact two dimensions (flange width and actual depth, decimal inches) for **196 rolled W sections** from the supplied Varsteel Reference Book (PDF pages 10–14). Visit **EWP Tools → Steel Beam Width**. Test W12×14 / W310×21 for **3.97 in flange** and **11.91 in depth**. Unlisted members are rejected; nothing is approximated. All other workspaces and the two previous tools are retained. See `PORTAL_HANDOFF.md`, `ewp-tools/steel-beam-width/README.md`, and `tests/V1_25_TEST_RESULTS.md`.
+
+**Deploy:** copy all files in the full V1.25 ZIP into the GitHub Pages repository root, commit, hard-refresh; no SQL or Supabase deployment. Relative URLs support both `/ewp/` and `/EWP-Forecast/`. No production testing performed.
+
+---
+
 # EWP Management Portal — V1.24 WEB (current)
 
 The complete **V1.24 WEB** release is built from V1.23 WEB with a dedicated **Quick Unit Converter (kPa ↔ psf)** under EWP Tools → Snow Load Calculator. It has two instantly synchronized editable numeric fields and a Clear control, visually separate from the snow-load design panel; it does **not change roof snow-load results or any other Portal module**. All nine page credits and cache versions have been updated. No SQL migration, Supabase data write, or EWP Connect iOS change. Read `PORTAL_HANDOFF.md` first for exact release changes and deployment, then `tests/V1_24_TEST_RESULTS.md` for tested versus untested environments. Next planned version V1.25 WEB.

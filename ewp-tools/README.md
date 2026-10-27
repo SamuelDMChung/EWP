@@ -1,3 +1,9 @@
+# EWP Tools — V1.25 WEB
+
+Third utility **Steel Beam Width** added under `steel-beam-width/`: 196 Varsteel rolled W shapes, exact cross-linked imperial W(depth in × lb/ft) and metric W(depth mm × kg/m), outputs actual flange width and depth to 2 decimal inches, no approximations. Existing material consolidation and snow-load utilities unchanged. View remains EWP. See `steel-beam-width/README.md` and `tests/V1_25_TEST_RESULTS.md`. No SQL or Supabase changes.
+
+---
+
 # V1.24 WEB — Quick Unit Converter
 
 The Snow Load Calculator page now has a separate kPa/psf converter card below its existing snow design panel. Either input can drive conversion immediately, and Clear resets both. No dependencies or database writes; the existing Ss/Sr/Cb calculation and all other tools are unchanged. See `snow-load/README.md` and the root `PORTAL_HANDOFF.md`.

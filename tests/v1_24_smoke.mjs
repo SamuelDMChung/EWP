@@ -43,6 +43,6 @@ check('unrelated snow load inputs and output unchanged',()=>{assert.deepEqual(Ob
 check('snow calculation unchanged',()=>assert.equal(calculateSnow(2.6,.3,.8).kpa,2.38));
 const html=readFileSync(new URL('../ewp-tools/snow-load/index.html',import.meta.url),'utf8');
 check('converter is structurally outside snow calculation panel',()=>assert.match(html,/<\/section>\s*<div class="snow-converter-separator"[\s\S]*?<section class="tools-panel snow-converter-panel"/));
-check('converter script installed once',()=>assert.equal((html.match(/pressure-converter\.mjs\?v=1\.24/g)||[]).length,1));
+check('converter script installed once',()=>assert.equal((html.match(/pressure-converter\.mjs\?v=1\.25/g)||[]).length,1));
 check('converter visible under existing snow result',()=>assert.ok(html.indexOf('id="pressureKpa"')>html.indexOf('id="snowResultKpa"')));
 console.log(`V1.24 converter: ${assertions} assertions passed`);

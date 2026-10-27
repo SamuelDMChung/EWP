@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+ <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light">
+ <meta name="description" content="Exact W-beam flange width and depth lookup with linked imperial and metric designations.">
+ <title>Steel Beam Width — EWP Tools</title>
+ <link rel="stylesheet" href="../../portal-nav.css?v=1.25"><link rel="stylesheet" href="../../theme.css?v=1.25"><link rel="stylesheet" href="../tools.css?v=1.25"><link rel="stylesheet" href="./styles.css?v=1.25">
+ <script src="../../theme.js?v=1.25"></script>
+</head>
+<body>
+ <nav class="ewp-portal-nav" aria-label="EWP Management navigation">
+    <a class="ewp-portal-nav__brand" href="../../?view=ewp"><img class="ewp-portal-nav__mark" src="../../assets/griff-nav-icon.png" alt="" />EWP Management</a>
+    <div class="ewp-portal-nav__links">
+      <a class="ewp-portal-nav__link" href="../../?view=ewp">Portal</a>
+      <div class="ewp-portal-nav__group ewp-portal-nav__group--ewp" aria-label="EWP workspaces">
+        <span class="ewp-portal-nav__group-label">EWP</span>
+        <a class="ewp-portal-nav__link" href="../../tracker/">Project Tracking</a>
+        <a class="ewp-portal-nav__link" href="../../forecast/">EWP Forecast</a>
+        <a class="ewp-portal-nav__link" href="../../ewp-tools/" aria-current="page">EWP Tools</a>
+      </div>
+      <div class="ewp-portal-nav__group ewp-portal-nav__group--sales" aria-label="Sales workspaces">
+        <span class="ewp-portal-nav__group-label">Sales</span>
+        <a class="ewp-portal-nav__link" href="../../sales/">New EWP Requests</a>
+        <a class="ewp-portal-nav__link" href="../../orders/">EWP Order</a>
+        <a class="ewp-portal-nav__link" href="../../sales-tracking/">Sales Project Tracking</a>
+      </div>
+    </div>
+    <span class="ewp-portal-nav__account" id="ewpNavAccount" aria-live="polite"></span>
+  </nav>
+ <header class="tools-header"><div><span class="eyebrow">EWP TOOLS</span><h1>Steel Beam Width</h1><p>V1.25 WEB · Developed by Samuel Chung</p></div><button id="ewpToolsSettings" type="button" class="tool-button ewp-settings-trigger">⚙ Settings</button></header>
+ <main class="tools-main steel-main">
+  <div class="tools-breadcrumb"><a href="../">← All EWP Tools</a></div>
+  <section class="tools-panel steel-panel">
+   <h2>Wide-flange (W) beam lookup</h2>
+   <p class="small-hint">Enter nominal depth and weight in <strong>either</strong> designation system. The other system fills automatically when a published W section is matched.</p>
+   <div class="steel-grid" id="beamInputs">
+    <section class="steel-group" aria-labelledby="beamImperialHeading">
+     <h3 id="beamImperialHeading">Imperial (ASTM)<small>W nominal depth × weight per foot</small></h3>
+     <div class="steel-fields">
+      <label class="steel-label" for="beamImperialDepth">Nominal depth (in)
+       <input class="steel-field" id="beamImperialDepth" type="text" inputmode="numeric" autocomplete="off" list="beamImperialDepthList" placeholder="12" />
+      </label>
+      <label class="steel-label" for="beamImperialWeight">Weight (lb/ft)
+       <input class="steel-field" id="beamImperialWeight" type="text" inputmode="numeric" autocomplete="off" list="beamImperialWeightList" placeholder="14" />
+      </label>
+     </div>
+     <datalist id="beamImperialDepthList"></datalist><datalist id="beamImperialWeightList"></datalist>
+     <p class="steel-example">Example: W12×14</p>
+    </section>
+    <section class="steel-group" aria-labelledby="beamMetricHeading">
+     <h3 id="beamMetricHeading">Metric (Canadian)<small>W nominal depth × mass per metre</small></h3>
+     <div class="steel-fields">
+      <label class="steel-label" for="beamMetricDepth">Nominal depth (mm)
+       <input class="steel-field" id="beamMetricDepth" type="text" inputmode="numeric" autocomplete="off" list="beamMetricDepthList" placeholder="310" />
+      </label>
+      <label class="steel-label" for="beamMetricMass">Mass (kg/m)
+       <input class="steel-field" id="beamMetricMass" type="text" inputmode="numeric" autocomplete="off" list="beamMetricMassList" placeholder="21" />
+      </label>
+     </div>
+     <datalist id="beamMetricDepthList"></datalist><datalist id="beamMetricMassList"></datalist>
+     <p class="steel-example">Example: W310×21</p>
+    </section>
+   </div>
+   <div class="steel-actions">
+    <p class="steel-status" id="beamStatus" role="status" aria-live="polite">Loading W-beam reference…</p>
+    <button id="beamClear" class="tool-button" type="button">Clear</button>
+   </div>
+   <section class="steel-result" aria-label="Actual beam dimensions" aria-live="polite">
+    <h3>Actual beam dimensions</h3>
+    <p class="steel-result-title" id="beamMatchedTitle">No section selected</p>
+    <div class="steel-results-grid">
+     <div><span class="steel-measure-label">Flange width (bf)</span><strong class="steel-measure-value" id="beamFlangeWidth">—</strong></div>
+     <div><span class="steel-measure-label">Actual depth (d)</span><strong class="steel-measure-value" id="beamActualDepth">—</strong></div>
+    </div>
+   </section>
+   <p class="steel-note">Reference: Varsteel Reference Book, Wide Flange Beams, printed pp. 4–8 (PDF pp. 10–14); <span id="beamCount">—</span> listed rolled W sections. Values are published dimensions in decimal inches, not nominal designation sizes. Metric/imperial names are table equivalents, not exact unit conversions. WWF welded beams, S beams and HP piles are not included. Confirm the current project specifications and supplier data where required.</p>
+  </section>
+ </main>
+ <footer class="tools-footer"><span>EWP Management Portal</span><span>V1.25 WEB · Developed by Samuel Chung</span></footer>
+ <script type="module" src="../../workspace-auth.mjs?v=1.25"></script>
+ <script type="module" src="./app.mjs?v=1.25"></script>
+ <script type="module" src="../../shared-settings.mjs?v=1.25"></script>
+</body></html>

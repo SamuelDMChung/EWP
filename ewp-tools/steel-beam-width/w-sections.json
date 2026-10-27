@@ -1,0 +1,1374 @@
+[
+  {
+    "imperial": "W4x13",
+    "metric": "W100x19",
+    "flangeWidthIn": 4.06,
+    "depthIn": 4.16,
+    "sourcePage": 10
+  },
+  {
+    "imperial": "W5x16",
+    "metric": "W130x24",
+    "flangeWidthIn": 5.0,
+    "depthIn": 5.01,
+    "sourcePage": 10
+  },
+  {
+    "imperial": "W5x19",
+    "metric": "W130x28",
+    "flangeWidthIn": 5.03,
+    "depthIn": 5.15,
+    "sourcePage": 10
+  },
+  {
+    "imperial": "W6x9",
+    "metric": "W150x14",
+    "flangeWidthIn": 3.94,
+    "depthIn": 5.9,
+    "sourcePage": 10
+  },
+  {
+    "imperial": "W6x12",
+    "metric": "W150x18",
+    "flangeWidthIn": 4.0,
+    "depthIn": 6.03,
+    "sourcePage": 10
+  },
+  {
+    "imperial": "W6x16",
+    "metric": "W150x24",
+    "flangeWidthIn": 4.03,
+    "depthIn": 6.28,
+    "sourcePage": 10
+  },
+  {
+    "imperial": "W6x15",
+    "metric": "W150x22",
+    "flangeWidthIn": 5.99,
+    "depthIn": 5.99,
+    "sourcePage": 10
+  },
+  {
+    "imperial": "W6x20",
+    "metric": "W150x30",
+    "flangeWidthIn": 6.02,
+    "depthIn": 6.2,
+    "sourcePage": 10
+  },
+  {
+    "imperial": "W6x25",
+    "metric": "W150x37",
+    "flangeWidthIn": 6.08,
+    "depthIn": 6.38,
+    "sourcePage": 10
+  },
+  {
+    "imperial": "W8x10",
+    "metric": "W200x15",
+    "flangeWidthIn": 3.94,
+    "depthIn": 7.89,
+    "sourcePage": 10
+  },
+  {
+    "imperial": "W8x13",
+    "metric": "W200x19",
+    "flangeWidthIn": 4.0,
+    "depthIn": 7.99,
+    "sourcePage": 10
+  },
+  {
+    "imperial": "W8x15",
+    "metric": "W200x22",
+    "flangeWidthIn": 4.02,
+    "depthIn": 8.11,
+    "sourcePage": 10
+  },
+  {
+    "imperial": "W8x14",
+    "metric": "W200x21",
+    "flangeWidthIn": 5.21,
+    "depthIn": 7.98,
+    "sourcePage": 10
+  },
+  {
+    "imperial": "W8x18",
+    "metric": "W200x27",
+    "flangeWidthIn": 5.25,
+    "depthIn": 8.14,
+    "sourcePage": 10
+  },
+  {
+    "imperial": "W8x21",
+    "metric": "W200x31",
+    "flangeWidthIn": 5.27,
+    "depthIn": 8.28,
+    "sourcePage": 10
+  },
+  {
+    "imperial": "W8x24",
+    "metric": "W200x36",
+    "flangeWidthIn": 6.5,
+    "depthIn": 7.93,
+    "sourcePage": 10
+  },
+  {
+    "imperial": "W8x28",
+    "metric": "W200x42",
+    "flangeWidthIn": 6.54,
+    "depthIn": 8.06,
+    "sourcePage": 10
+  },
+  {
+    "imperial": "W8x31",
+    "metric": "W200x46",
+    "flangeWidthIn": 8.0,
+    "depthIn": 8.0,
+    "sourcePage": 10
+  },
+  {
+    "imperial": "W8x35",
+    "metric": "W200x52",
+    "flangeWidthIn": 8.02,
+    "depthIn": 8.12,
+    "sourcePage": 10
+  },
+  {
+    "imperial": "W8x40",
+    "metric": "W200x59",
+    "flangeWidthIn": 8.07,
+    "depthIn": 8.25,
+    "sourcePage": 10
+  },
+  {
+    "imperial": "W8x48",
+    "metric": "W200x71",
+    "flangeWidthIn": 8.11,
+    "depthIn": 8.5,
+    "sourcePage": 10
+  },
+  {
+    "imperial": "W8x58",
+    "metric": "W200x86",
+    "flangeWidthIn": 8.22,
+    "depthIn": 8.75,
+    "sourcePage": 10
+  },
+  {
+    "imperial": "W8x67",
+    "metric": "W200x100",
+    "flangeWidthIn": 8.28,
+    "depthIn": 9.0,
+    "sourcePage": 10
+  },
+  {
+    "imperial": "W10x12",
+    "metric": "W250x18",
+    "flangeWidthIn": 3.96,
+    "depthIn": 9.87,
+    "sourcePage": 10
+  },
+  {
+    "imperial": "W10x15",
+    "metric": "W250x22",
+    "flangeWidthIn": 4.0,
+    "depthIn": 9.99,
+    "sourcePage": 10
+  },
+  {
+    "imperial": "W10x17",
+    "metric": "W250x25",
+    "flangeWidthIn": 4.01,
+    "depthIn": 10.11,
+    "sourcePage": 10
+  },
+  {
+    "imperial": "W10x19",
+    "metric": "W250x28",
+    "flangeWidthIn": 4.02,
+    "depthIn": 10.24,
+    "sourcePage": 10
+  },
+  {
+    "imperial": "W10x16",
+    "metric": "W250x24",
+    "flangeWidthIn": 5.71,
+    "depthIn": 9.95,
+    "sourcePage": 10
+  },
+  {
+    "imperial": "W10x22",
+    "metric": "W250x33",
+    "flangeWidthIn": 5.75,
+    "depthIn": 10.17,
+    "sourcePage": 10
+  },
+  {
+    "imperial": "W10x26",
+    "metric": "W250x39",
+    "flangeWidthIn": 5.77,
+    "depthIn": 10.33,
+    "sourcePage": 10
+  },
+  {
+    "imperial": "W10x30",
+    "metric": "W250x45",
+    "flangeWidthIn": 5.81,
+    "depthIn": 10.47,
+    "sourcePage": 10
+  },
+  {
+    "imperial": "W10x33",
+    "metric": "W250x49",
+    "flangeWidthIn": 7.96,
+    "depthIn": 9.73,
+    "sourcePage": 10
+  },
+  {
+    "imperial": "W10x39",
+    "metric": "W250x58",
+    "flangeWidthIn": 7.98,
+    "depthIn": 9.92,
+    "sourcePage": 10
+  },
+  {
+    "imperial": "W10x45",
+    "metric": "W250x67",
+    "flangeWidthIn": 8.02,
+    "depthIn": 10.1,
+    "sourcePage": 10
+  },
+  {
+    "imperial": "W10x49",
+    "metric": "W250x73",
+    "flangeWidthIn": 10.0,
+    "depthIn": 9.98,
+    "sourcePage": 10
+  },
+  {
+    "imperial": "W10x54",
+    "metric": "W250x80",
+    "flangeWidthIn": 10.03,
+    "depthIn": 10.09,
+    "sourcePage": 10
+  },
+  {
+    "imperial": "W10x60",
+    "metric": "W250x89",
+    "flangeWidthIn": 10.08,
+    "depthIn": 10.22,
+    "sourcePage": 10
+  },
+  {
+    "imperial": "W10x68",
+    "metric": "W250x101",
+    "flangeWidthIn": 10.13,
+    "depthIn": 10.4,
+    "sourcePage": 10
+  },
+  {
+    "imperial": "W10x77",
+    "metric": "W250x115",
+    "flangeWidthIn": 10.19,
+    "depthIn": 10.6,
+    "sourcePage": 10
+  },
+  {
+    "imperial": "W10x88",
+    "metric": "W250x131",
+    "flangeWidthIn": 10.26,
+    "depthIn": 10.84,
+    "sourcePage": 10
+  },
+  {
+    "imperial": "W10x100",
+    "metric": "W250x149",
+    "flangeWidthIn": 10.34,
+    "depthIn": 11.1,
+    "sourcePage": 10
+  },
+  {
+    "imperial": "W12x14",
+    "metric": "W310x21",
+    "flangeWidthIn": 3.97,
+    "depthIn": 11.91,
+    "sourcePage": 11
+  },
+  {
+    "imperial": "W12x16",
+    "metric": "W310x24",
+    "flangeWidthIn": 3.99,
+    "depthIn": 11.99,
+    "sourcePage": 11
+  },
+  {
+    "imperial": "W12x19",
+    "metric": "W310x28",
+    "flangeWidthIn": 4.0,
+    "depthIn": 12.16,
+    "sourcePage": 11
+  },
+  {
+    "imperial": "W12x22",
+    "metric": "W310x33",
+    "flangeWidthIn": 4.03,
+    "depthIn": 12.31,
+    "sourcePage": 11
+  },
+  {
+    "imperial": "W12x21",
+    "metric": "W310x31",
+    "flangeWidthIn": 6.45,
+    "depthIn": 12.04,
+    "sourcePage": 11
+  },
+  {
+    "imperial": "W12x26",
+    "metric": "W310x39",
+    "flangeWidthIn": 6.49,
+    "depthIn": 12.22,
+    "sourcePage": 11
+  },
+  {
+    "imperial": "W12x30",
+    "metric": "W310x45",
+    "flangeWidthIn": 6.52,
+    "depthIn": 12.34,
+    "sourcePage": 11
+  },
+  {
+    "imperial": "W12x35",
+    "metric": "W310x52",
+    "flangeWidthIn": 6.56,
+    "depthIn": 12.5,
+    "sourcePage": 11
+  },
+  {
+    "imperial": "W12x40",
+    "metric": "W310x60",
+    "flangeWidthIn": 8.0,
+    "depthIn": 11.94,
+    "sourcePage": 11
+  },
+  {
+    "imperial": "W12x45",
+    "metric": "W310x67",
+    "flangeWidthIn": 8.04,
+    "depthIn": 12.06,
+    "sourcePage": 11
+  },
+  {
+    "imperial": "W12x50",
+    "metric": "W310x74",
+    "flangeWidthIn": 8.08,
+    "depthIn": 12.19,
+    "sourcePage": 11
+  },
+  {
+    "imperial": "W12x53",
+    "metric": "W310x79",
+    "flangeWidthIn": 10.0,
+    "depthIn": 12.06,
+    "sourcePage": 11
+  },
+  {
+    "imperial": "W12x58",
+    "metric": "W310x86",
+    "flangeWidthIn": 10.01,
+    "depthIn": 12.19,
+    "sourcePage": 11
+  },
+  {
+    "imperial": "W12x65",
+    "metric": "W310x97",
+    "flangeWidthIn": 12.0,
+    "depthIn": 12.12,
+    "sourcePage": 11
+  },
+  {
+    "imperial": "W12x72",
+    "metric": "W310x107",
+    "flangeWidthIn": 12.04,
+    "depthIn": 12.25,
+    "sourcePage": 11
+  },
+  {
+    "imperial": "W12x79",
+    "metric": "W310x118",
+    "flangeWidthIn": 12.08,
+    "depthIn": 12.38,
+    "sourcePage": 11
+  },
+  {
+    "imperial": "W12x87",
+    "metric": "W310x129",
+    "flangeWidthIn": 12.12,
+    "depthIn": 12.53,
+    "sourcePage": 11
+  },
+  {
+    "imperial": "W12x96",
+    "metric": "W310x143",
+    "flangeWidthIn": 12.16,
+    "depthIn": 12.71,
+    "sourcePage": 11
+  },
+  {
+    "imperial": "W12x106",
+    "metric": "W310x158",
+    "flangeWidthIn": 12.22,
+    "depthIn": 12.89,
+    "sourcePage": 11
+  },
+  {
+    "imperial": "W12x120",
+    "metric": "W310x179",
+    "flangeWidthIn": 12.32,
+    "depthIn": 13.12,
+    "sourcePage": 11
+  },
+  {
+    "imperial": "W12x136",
+    "metric": "W310x202",
+    "flangeWidthIn": 12.4,
+    "depthIn": 13.41,
+    "sourcePage": 11
+  },
+  {
+    "imperial": "W12x152",
+    "metric": "W310x226",
+    "flangeWidthIn": 12.48,
+    "depthIn": 13.71,
+    "sourcePage": 11
+  },
+  {
+    "imperial": "W12x170",
+    "metric": "W310x253",
+    "flangeWidthIn": 12.57,
+    "depthIn": 14.03,
+    "sourcePage": 11
+  },
+  {
+    "imperial": "W12x190",
+    "metric": "W310x283",
+    "flangeWidthIn": 12.67,
+    "depthIn": 14.38,
+    "sourcePage": 11
+  },
+  {
+    "imperial": "W12x210",
+    "metric": "W310x313",
+    "flangeWidthIn": 12.8,
+    "depthIn": 14.72,
+    "sourcePage": 11
+  },
+  {
+    "imperial": "W12x230",
+    "metric": "W310x342",
+    "flangeWidthIn": 12.91,
+    "depthIn": 15.04,
+    "sourcePage": 11
+  },
+  {
+    "imperial": "W12x252",
+    "metric": "W310x375",
+    "flangeWidthIn": 12.99,
+    "depthIn": 15.39,
+    "sourcePage": 11
+  },
+  {
+    "imperial": "W12x279",
+    "metric": "W310x415",
+    "flangeWidthIn": 13.15,
+    "depthIn": 15.87,
+    "sourcePage": 11
+  },
+  {
+    "imperial": "W12x305",
+    "metric": "W310x454",
+    "flangeWidthIn": 13.23,
+    "depthIn": 16.34,
+    "sourcePage": 11
+  },
+  {
+    "imperial": "W12x336",
+    "metric": "W310x500",
+    "flangeWidthIn": 13.39,
+    "depthIn": 16.81,
+    "sourcePage": 11
+  },
+  {
+    "imperial": "W14x22",
+    "metric": "W360x33",
+    "flangeWidthIn": 5.0,
+    "depthIn": 13.74,
+    "sourcePage": 11
+  },
+  {
+    "imperial": "W14x26",
+    "metric": "W360x39",
+    "flangeWidthIn": 5.02,
+    "depthIn": 13.91,
+    "sourcePage": 11
+  },
+  {
+    "imperial": "W14x30",
+    "metric": "W360x45",
+    "flangeWidthIn": 6.73,
+    "depthIn": 13.84,
+    "sourcePage": 11
+  },
+  {
+    "imperial": "W14x34",
+    "metric": "W360x51",
+    "flangeWidthIn": 6.74,
+    "depthIn": 13.98,
+    "sourcePage": 11
+  },
+  {
+    "imperial": "W14x38",
+    "metric": "W360x57",
+    "flangeWidthIn": 6.77,
+    "depthIn": 14.1,
+    "sourcePage": 11
+  },
+  {
+    "imperial": "W14x43",
+    "metric": "W360x64",
+    "flangeWidthIn": 8.0,
+    "depthIn": 13.66,
+    "sourcePage": 11
+  },
+  {
+    "imperial": "W14x48",
+    "metric": "W360x72",
+    "flangeWidthIn": 8.03,
+    "depthIn": 13.79,
+    "sourcePage": 11
+  },
+  {
+    "imperial": "W14x53",
+    "metric": "W360x79",
+    "flangeWidthIn": 8.06,
+    "depthIn": 13.92,
+    "sourcePage": 11
+  },
+  {
+    "imperial": "W14x61",
+    "metric": "W360x91",
+    "flangeWidthIn": 10.0,
+    "depthIn": 13.89,
+    "sourcePage": 11
+  },
+  {
+    "imperial": "W14x68",
+    "metric": "W360x101",
+    "flangeWidthIn": 10.04,
+    "depthIn": 14.04,
+    "sourcePage": 11
+  },
+  {
+    "imperial": "W14x74",
+    "metric": "W360x110",
+    "flangeWidthIn": 10.07,
+    "depthIn": 14.17,
+    "sourcePage": 11
+  },
+  {
+    "imperial": "W14x82",
+    "metric": "W360x122",
+    "flangeWidthIn": 10.13,
+    "depthIn": 14.31,
+    "sourcePage": 11
+  },
+  {
+    "imperial": "W14x90",
+    "metric": "W360x134",
+    "flangeWidthIn": 14.52,
+    "depthIn": 14.02,
+    "sourcePage": 12
+  },
+  {
+    "imperial": "W14x99",
+    "metric": "W360x147",
+    "flangeWidthIn": 14.56,
+    "depthIn": 14.16,
+    "sourcePage": 12
+  },
+  {
+    "imperial": "W14x109",
+    "metric": "W360x162",
+    "flangeWidthIn": 14.6,
+    "depthIn": 14.32,
+    "sourcePage": 12
+  },
+  {
+    "imperial": "W14x120",
+    "metric": "W360x179",
+    "flangeWidthIn": 14.67,
+    "depthIn": 14.48,
+    "sourcePage": 12
+  },
+  {
+    "imperial": "W14x132",
+    "metric": "W360x196",
+    "flangeWidthIn": 14.72,
+    "depthIn": 14.66,
+    "sourcePage": 12
+  },
+  {
+    "imperial": "W14x145",
+    "metric": "W360x216",
+    "flangeWidthIn": 15.5,
+    "depthIn": 14.78,
+    "sourcePage": 12
+  },
+  {
+    "imperial": "W14x159",
+    "metric": "W360x237",
+    "flangeWidthIn": 15.56,
+    "depthIn": 14.98,
+    "sourcePage": 12
+  },
+  {
+    "imperial": "W14x176",
+    "metric": "W360x262",
+    "flangeWidthIn": 15.65,
+    "depthIn": 15.22,
+    "sourcePage": 12
+  },
+  {
+    "imperial": "W14x193",
+    "metric": "W360x287",
+    "flangeWidthIn": 15.71,
+    "depthIn": 15.48,
+    "sourcePage": 12
+  },
+  {
+    "imperial": "W14x211",
+    "metric": "W360x314",
+    "flangeWidthIn": 15.8,
+    "depthIn": 15.72,
+    "sourcePage": 12
+  },
+  {
+    "imperial": "W14x233",
+    "metric": "W360x347",
+    "flangeWidthIn": 15.89,
+    "depthIn": 16.04,
+    "sourcePage": 12
+  },
+  {
+    "imperial": "W14x257",
+    "metric": "W360x382",
+    "flangeWidthIn": 16.0,
+    "depthIn": 16.38,
+    "sourcePage": 12
+  },
+  {
+    "imperial": "W14x283",
+    "metric": "W360x421",
+    "flangeWidthIn": 16.11,
+    "depthIn": 16.74,
+    "sourcePage": 12
+  },
+  {
+    "imperial": "W14x311",
+    "metric": "W360x463",
+    "flangeWidthIn": 16.23,
+    "depthIn": 17.12,
+    "sourcePage": 12
+  },
+  {
+    "imperial": "W14x342",
+    "metric": "W360x509",
+    "flangeWidthIn": 16.36,
+    "depthIn": 17.54,
+    "sourcePage": 12
+  },
+  {
+    "imperial": "W14x370",
+    "metric": "W360x551",
+    "flangeWidthIn": 16.48,
+    "depthIn": 17.92,
+    "sourcePage": 12
+  },
+  {
+    "imperial": "W14x398",
+    "metric": "W360x592",
+    "flangeWidthIn": 16.59,
+    "depthIn": 18.29,
+    "sourcePage": 12
+  },
+  {
+    "imperial": "W14x426",
+    "metric": "W360x634",
+    "flangeWidthIn": 16.7,
+    "depthIn": 18.67,
+    "sourcePage": 12
+  },
+  {
+    "imperial": "W14x455",
+    "metric": "W360x677",
+    "flangeWidthIn": 16.84,
+    "depthIn": 19.02,
+    "sourcePage": 12
+  },
+  {
+    "imperial": "W14x500",
+    "metric": "W360x744",
+    "flangeWidthIn": 17.01,
+    "depthIn": 19.6,
+    "sourcePage": 12
+  },
+  {
+    "imperial": "W14x550",
+    "metric": "W360x818",
+    "flangeWidthIn": 17.2,
+    "depthIn": 20.24,
+    "sourcePage": 12
+  },
+  {
+    "imperial": "W14x605",
+    "metric": "W360x900",
+    "flangeWidthIn": 17.42,
+    "depthIn": 20.92,
+    "sourcePage": 12
+  },
+  {
+    "imperial": "W14x665",
+    "metric": "W360x990",
+    "flangeWidthIn": 17.65,
+    "depthIn": 21.64,
+    "sourcePage": 12
+  },
+  {
+    "imperial": "W14x730",
+    "metric": "W360x1086",
+    "flangeWidthIn": 17.89,
+    "depthIn": 22.42,
+    "sourcePage": 12
+  },
+  {
+    "imperial": "W16x26",
+    "metric": "W410x39",
+    "flangeWidthIn": 5.5,
+    "depthIn": 15.69,
+    "sourcePage": 12
+  },
+  {
+    "imperial": "W16x31",
+    "metric": "W410x46",
+    "flangeWidthIn": 5.52,
+    "depthIn": 15.88,
+    "sourcePage": 12
+  },
+  {
+    "imperial": "W16x36",
+    "metric": "W410x54",
+    "flangeWidthIn": 6.98,
+    "depthIn": 15.86,
+    "sourcePage": 12
+  },
+  {
+    "imperial": "W16x40",
+    "metric": "W410x60",
+    "flangeWidthIn": 7.0,
+    "depthIn": 16.01,
+    "sourcePage": 12
+  },
+  {
+    "imperial": "W16x45",
+    "metric": "W410x67",
+    "flangeWidthIn": 7.04,
+    "depthIn": 16.13,
+    "sourcePage": 12
+  },
+  {
+    "imperial": "W16x50",
+    "metric": "W410x74",
+    "flangeWidthIn": 7.07,
+    "depthIn": 16.26,
+    "sourcePage": 12
+  },
+  {
+    "imperial": "W16x57",
+    "metric": "W410x85",
+    "flangeWidthIn": 7.12,
+    "depthIn": 16.43,
+    "sourcePage": 12
+  },
+  {
+    "imperial": "W16x67",
+    "metric": "W410x100",
+    "flangeWidthIn": 10.24,
+    "depthIn": 16.33,
+    "sourcePage": 12
+  },
+  {
+    "imperial": "W16x77",
+    "metric": "W410x114",
+    "flangeWidthIn": 10.3,
+    "depthIn": 16.52,
+    "sourcePage": 12
+  },
+  {
+    "imperial": "W16x89",
+    "metric": "W410x132",
+    "flangeWidthIn": 10.36,
+    "depthIn": 16.75,
+    "sourcePage": 12
+  },
+  {
+    "imperial": "W16x100",
+    "metric": "W410x149",
+    "flangeWidthIn": 10.42,
+    "depthIn": 16.97,
+    "sourcePage": 12
+  },
+  {
+    "imperial": "W18x35",
+    "metric": "W460x52",
+    "flangeWidthIn": 6.0,
+    "depthIn": 17.7,
+    "sourcePage": 13
+  },
+  {
+    "imperial": "W18x40",
+    "metric": "W460x60",
+    "flangeWidthIn": 6.02,
+    "depthIn": 17.9,
+    "sourcePage": 13
+  },
+  {
+    "imperial": "W18x46",
+    "metric": "W460x68",
+    "flangeWidthIn": 6.06,
+    "depthIn": 18.06,
+    "sourcePage": 13
+  },
+  {
+    "imperial": "W18x41",
+    "metric": "W460x61",
+    "flangeWidthIn": 7.45,
+    "depthIn": 17.7,
+    "sourcePage": 13
+  },
+  {
+    "imperial": "W18x45",
+    "metric": "W460x67",
+    "flangeWidthIn": 7.48,
+    "depthIn": 17.86,
+    "sourcePage": 13
+  },
+  {
+    "imperial": "W18x50",
+    "metric": "W460x74",
+    "flangeWidthIn": 7.5,
+    "depthIn": 17.99,
+    "sourcePage": 13
+  },
+  {
+    "imperial": "W18x55",
+    "metric": "W460x82",
+    "flangeWidthIn": 7.53,
+    "depthIn": 18.11,
+    "sourcePage": 13
+  },
+  {
+    "imperial": "W18x60",
+    "metric": "W460x89",
+    "flangeWidthIn": 7.56,
+    "depthIn": 18.24,
+    "sourcePage": 13
+  },
+  {
+    "imperial": "W18x65",
+    "metric": "W460x97",
+    "flangeWidthIn": 7.59,
+    "depthIn": 18.35,
+    "sourcePage": 13
+  },
+  {
+    "imperial": "W18x71",
+    "metric": "W460x106",
+    "flangeWidthIn": 7.64,
+    "depthIn": 18.47,
+    "sourcePage": 13
+  },
+  {
+    "imperial": "W18x76",
+    "metric": "W460x113",
+    "flangeWidthIn": 11.04,
+    "depthIn": 18.21,
+    "sourcePage": 13
+  },
+  {
+    "imperial": "W18x86",
+    "metric": "W460x128",
+    "flangeWidthIn": 11.09,
+    "depthIn": 18.39,
+    "sourcePage": 13
+  },
+  {
+    "imperial": "W18x97",
+    "metric": "W460x144",
+    "flangeWidthIn": 11.14,
+    "depthIn": 18.59,
+    "sourcePage": 13
+  },
+  {
+    "imperial": "W18x106",
+    "metric": "W460x158",
+    "flangeWidthIn": 11.2,
+    "depthIn": 18.73,
+    "sourcePage": 13
+  },
+  {
+    "imperial": "W18x119",
+    "metric": "W460x177",
+    "flangeWidthIn": 11.26,
+    "depthIn": 18.97,
+    "sourcePage": 13
+  },
+  {
+    "imperial": "W21x44",
+    "metric": "W530x66",
+    "flangeWidthIn": 6.5,
+    "depthIn": 20.66,
+    "sourcePage": 13
+  },
+  {
+    "imperial": "W21x50",
+    "metric": "W530x74",
+    "flangeWidthIn": 6.53,
+    "depthIn": 20.83,
+    "sourcePage": 13
+  },
+  {
+    "imperial": "W21x57",
+    "metric": "W530x85",
+    "flangeWidthIn": 6.56,
+    "depthIn": 21.06,
+    "sourcePage": 13
+  },
+  {
+    "imperial": "W21x48",
+    "metric": "W530x72",
+    "flangeWidthIn": 8.14,
+    "depthIn": 20.62,
+    "sourcePage": 13
+  },
+  {
+    "imperial": "W21x55",
+    "metric": "W530x82",
+    "flangeWidthIn": 8.22,
+    "depthIn": 20.8,
+    "sourcePage": 13
+  },
+  {
+    "imperial": "W21x62",
+    "metric": "W530x92",
+    "flangeWidthIn": 8.24,
+    "depthIn": 20.99,
+    "sourcePage": 13
+  },
+  {
+    "imperial": "W21x68",
+    "metric": "W530x101",
+    "flangeWidthIn": 8.27,
+    "depthIn": 21.13,
+    "sourcePage": 13
+  },
+  {
+    "imperial": "W21x73",
+    "metric": "W530x109",
+    "flangeWidthIn": 8.3,
+    "depthIn": 21.24,
+    "sourcePage": 13
+  },
+  {
+    "imperial": "W21x83",
+    "metric": "W530x123",
+    "flangeWidthIn": 8.36,
+    "depthIn": 21.43,
+    "sourcePage": 13
+  },
+  {
+    "imperial": "W21x93",
+    "metric": "W530x138",
+    "flangeWidthIn": 8.42,
+    "depthIn": 21.62,
+    "sourcePage": 13
+  },
+  {
+    "imperial": "W21x101",
+    "metric": "W530x150",
+    "flangeWidthIn": 12.29,
+    "depthIn": 21.36,
+    "sourcePage": 13
+  },
+  {
+    "imperial": "W21x111",
+    "metric": "W530x165",
+    "flangeWidthIn": 12.34,
+    "depthIn": 21.51,
+    "sourcePage": 13
+  },
+  {
+    "imperial": "W21x122",
+    "metric": "W530x182",
+    "flangeWidthIn": 12.39,
+    "depthIn": 21.68,
+    "sourcePage": 13
+  },
+  {
+    "imperial": "W21x132",
+    "metric": "W530x196",
+    "flangeWidthIn": 12.44,
+    "depthIn": 21.83,
+    "sourcePage": 13
+  },
+  {
+    "imperial": "W21x147",
+    "metric": "W530x219",
+    "flangeWidthIn": 12.51,
+    "depthIn": 22.06,
+    "sourcePage": 13
+  },
+  {
+    "imperial": "W24x55",
+    "metric": "W610x82",
+    "flangeWidthIn": 7.0,
+    "depthIn": 23.57,
+    "sourcePage": 13
+  },
+  {
+    "imperial": "W24x62",
+    "metric": "W610x92",
+    "flangeWidthIn": 7.04,
+    "depthIn": 23.74,
+    "sourcePage": 13
+  },
+  {
+    "imperial": "W24x56",
+    "metric": "W610x84",
+    "flangeWidthIn": 8.9,
+    "depthIn": 23.48,
+    "sourcePage": 13
+  },
+  {
+    "imperial": "W24x61",
+    "metric": "W610x91",
+    "flangeWidthIn": 8.93,
+    "depthIn": 23.56,
+    "sourcePage": 13
+  },
+  {
+    "imperial": "W24x68",
+    "metric": "W610x101",
+    "flangeWidthIn": 8.96,
+    "depthIn": 23.73,
+    "sourcePage": 13
+  },
+  {
+    "imperial": "W24x76",
+    "metric": "W610x113",
+    "flangeWidthIn": 8.99,
+    "depthIn": 23.92,
+    "sourcePage": 13
+  },
+  {
+    "imperial": "W24x84",
+    "metric": "W610x125",
+    "flangeWidthIn": 9.02,
+    "depthIn": 24.1,
+    "sourcePage": 13
+  },
+  {
+    "imperial": "W24x94",
+    "metric": "W610x140",
+    "flangeWidthIn": 9.06,
+    "depthIn": 24.31,
+    "sourcePage": 13
+  },
+  {
+    "imperial": "W24x104",
+    "metric": "W610x155",
+    "flangeWidthIn": 12.75,
+    "depthIn": 24.06,
+    "sourcePage": 13
+  },
+  {
+    "imperial": "W24x117",
+    "metric": "W610x174",
+    "flangeWidthIn": 12.8,
+    "depthIn": 24.26,
+    "sourcePage": 13
+  },
+  {
+    "imperial": "W24x131",
+    "metric": "W610x195",
+    "flangeWidthIn": 12.86,
+    "depthIn": 24.48,
+    "sourcePage": 13
+  },
+  {
+    "imperial": "W24x146",
+    "metric": "W610x217",
+    "flangeWidthIn": 12.9,
+    "depthIn": 24.74,
+    "sourcePage": 13
+  },
+  {
+    "imperial": "W24x162",
+    "metric": "W610x241",
+    "flangeWidthIn": 12.96,
+    "depthIn": 25.0,
+    "sourcePage": 13
+  },
+  {
+    "imperial": "W27x84",
+    "metric": "W690x125",
+    "flangeWidthIn": 9.96,
+    "depthIn": 26.71,
+    "sourcePage": 14
+  },
+  {
+    "imperial": "W27x94",
+    "metric": "W690x140",
+    "flangeWidthIn": 9.99,
+    "depthIn": 26.92,
+    "sourcePage": 14
+  },
+  {
+    "imperial": "W27x102",
+    "metric": "W690x152",
+    "flangeWidthIn": 10.02,
+    "depthIn": 27.09,
+    "sourcePage": 14
+  },
+  {
+    "imperial": "W27x114",
+    "metric": "W690x170",
+    "flangeWidthIn": 10.07,
+    "depthIn": 27.29,
+    "sourcePage": 14
+  },
+  {
+    "imperial": "W27x146",
+    "metric": "W690x217",
+    "flangeWidthIn": 13.96,
+    "depthIn": 27.38,
+    "sourcePage": 14
+  },
+  {
+    "imperial": "W27x161",
+    "metric": "W690x240",
+    "flangeWidthIn": 14.02,
+    "depthIn": 27.59,
+    "sourcePage": 14
+  },
+  {
+    "imperial": "W27x178",
+    "metric": "W690x265",
+    "flangeWidthIn": 14.08,
+    "depthIn": 27.81,
+    "sourcePage": 14
+  },
+  {
+    "imperial": "W30x90",
+    "metric": "W760x134",
+    "flangeWidthIn": 10.4,
+    "depthIn": 29.53,
+    "sourcePage": 14
+  },
+  {
+    "imperial": "W30x99",
+    "metric": "W760x147",
+    "flangeWidthIn": 10.45,
+    "depthIn": 29.65,
+    "sourcePage": 14
+  },
+  {
+    "imperial": "W30x108",
+    "metric": "W760x161",
+    "flangeWidthIn": 10.48,
+    "depthIn": 29.83,
+    "sourcePage": 14
+  },
+  {
+    "imperial": "W30x116",
+    "metric": "W760x173",
+    "flangeWidthIn": 10.5,
+    "depthIn": 30.01,
+    "sourcePage": 14
+  },
+  {
+    "imperial": "W30x124",
+    "metric": "W760x185",
+    "flangeWidthIn": 10.52,
+    "depthIn": 30.17,
+    "sourcePage": 14
+  },
+  {
+    "imperial": "W30x132",
+    "metric": "W760x196",
+    "flangeWidthIn": 10.54,
+    "depthIn": 30.31,
+    "sourcePage": 14
+  },
+  {
+    "imperial": "W30x173",
+    "metric": "W760x257",
+    "flangeWidthIn": 14.98,
+    "depthIn": 30.44,
+    "sourcePage": 14
+  },
+  {
+    "imperial": "W30x191",
+    "metric": "W760x284",
+    "flangeWidthIn": 15.04,
+    "depthIn": 30.68,
+    "sourcePage": 14
+  },
+  {
+    "imperial": "W30x211",
+    "metric": "W760x314",
+    "flangeWidthIn": 15.1,
+    "depthIn": 30.94,
+    "sourcePage": 14
+  },
+  {
+    "imperial": "W33x118",
+    "metric": "W840x176",
+    "flangeWidthIn": 11.48,
+    "depthIn": 32.86,
+    "sourcePage": 14
+  },
+  {
+    "imperial": "W33x130",
+    "metric": "W840x193",
+    "flangeWidthIn": 11.51,
+    "depthIn": 33.09,
+    "sourcePage": 14
+  },
+  {
+    "imperial": "W33x141",
+    "metric": "W840x210",
+    "flangeWidthIn": 11.54,
+    "depthIn": 33.3,
+    "sourcePage": 14
+  },
+  {
+    "imperial": "W33x152",
+    "metric": "W840x226",
+    "flangeWidthIn": 11.56,
+    "depthIn": 33.49,
+    "sourcePage": 14
+  },
+  {
+    "imperial": "W33x201",
+    "metric": "W840x299",
+    "flangeWidthIn": 15.74,
+    "depthIn": 33.68,
+    "sourcePage": 14
+  },
+  {
+    "imperial": "W33x221",
+    "metric": "W840x329",
+    "flangeWidthIn": 15.8,
+    "depthIn": 33.93,
+    "sourcePage": 14
+  },
+  {
+    "imperial": "W33x241",
+    "metric": "W840x359",
+    "flangeWidthIn": 15.86,
+    "depthIn": 34.18,
+    "sourcePage": 14
+  },
+  {
+    "imperial": "W36x135",
+    "metric": "W920x201",
+    "flangeWidthIn": 11.95,
+    "depthIn": 35.55,
+    "sourcePage": 14
+  },
+  {
+    "imperial": "W36x150",
+    "metric": "W920x223",
+    "flangeWidthIn": 11.98,
+    "depthIn": 35.85,
+    "sourcePage": 14
+  },
+  {
+    "imperial": "W36x160",
+    "metric": "W920x238",
+    "flangeWidthIn": 12.0,
+    "depthIn": 36.01,
+    "sourcePage": 14
+  },
+  {
+    "imperial": "W36x170",
+    "metric": "W920x253",
+    "flangeWidthIn": 12.03,
+    "depthIn": 36.17,
+    "sourcePage": 14
+  },
+  {
+    "imperial": "W36x182",
+    "metric": "W920x271",
+    "flangeWidthIn": 12.08,
+    "depthIn": 36.33,
+    "sourcePage": 14
+  },
+  {
+    "imperial": "W36x194",
+    "metric": "W920x289",
+    "flangeWidthIn": 12.12,
+    "depthIn": 36.49,
+    "sourcePage": 14
+  },
+  {
+    "imperial": "W36x210",
+    "metric": "W920x313",
+    "flangeWidthIn": 12.18,
+    "depthIn": 36.69,
+    "sourcePage": 14
+  },
+  {
+    "imperial": "W36x231",
+    "metric": "W920x345",
+    "flangeWidthIn": 16.47,
+    "depthIn": 36.49,
+    "sourcePage": 14
+  },
+  {
+    "imperial": "W36x247",
+    "metric": "W920x368",
+    "flangeWidthIn": 16.51,
+    "depthIn": 36.67,
+    "sourcePage": 14
+  },
+  {
+    "imperial": "W36x262",
+    "metric": "W920x390",
+    "flangeWidthIn": 16.55,
+    "depthIn": 36.85,
+    "sourcePage": 14
+  },
+  {
+    "imperial": "W36x282",
+    "metric": "W920x420",
+    "flangeWidthIn": 16.6,
+    "depthIn": 37.11,
+    "sourcePage": 14
+  },
+  {
+    "imperial": "W36x302",
+    "metric": "W920x449",
+    "flangeWidthIn": 16.66,
+    "depthIn": 37.33,
+    "sourcePage": 14
+  }
+]

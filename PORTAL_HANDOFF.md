@@ -1,3 +1,29 @@
+# EWP Management Portal — V1.25 WEB: Steel Beam Width
+
+**Canonical input:** Full `EWP_Management_Portal_V1_24_WEB_FULL.zip`. **Release:** `EWP_Management_Portal_V1_25_WEB_FULL.zip` (October 27, 2026). **Next:** V1.26 WEB. **WEB ONLY**; EWP Connect iOS unchanged.
+
+## What changed
+
+- Added a third EWP Tools utility: **Steel Beam Width**, at `ewp-tools/steel-beam-width/`. The hub now has Consolidate Material List, Snow Load Calculator, and Steel Beam Width. The new utility stays in the **EWP** workspace; Portal/Griff links return to `?view=ewp` and breadcrumb returns to the EWP Tools hub.
+- Four linked, user-editable designation fields: Imperial nominal depth (in), weight (lb/ft); Canadian metric nominal depth (mm), mass (kg/m). Completing a valid *pair* in either system automatically fills the opposite pair. The two **and only two measured outputs** are actual flange width (bf) and actual depth (d), each in decimal inches to two places. The source designation pair and Varsteel PDF page are shown for traceability. Invalid/unlisted combinations clear previous dimensions and display a warning, never a guessed conversion. Field suggestions are limited to catalogued depths and appropriate weights. Clear empties all four fields and results.
+- Static `w-sections.json` contains **196** unique rolled W-beam designations, exact published imperial/metric designation pairings and two measured dimensions, extracted from the user's 68-page **Varsteel Reference Book**, PDF pages **10–14** (printed 4–8). Families W4, W5, W6, W8, W10, W12, W14, W16, W18, W21, W24, W27, W30, W33, W36. Automated column-position extraction and manual sample checks used; reproducible extractor: `tests/extract_varsteel_w.py` (requires the separately provided Varsteel PDF). **This is the full rolled-W table in that supplied book, not a claim to every historical/current North American W shape.** WWF welded wide flanges, S shapes, HP sections and unlisted sections are excluded. No rounding-based designation synthesis is permitted. Example W12×14 ↔ W310×21 → flange 3.97 in, depth 11.91 in.
+- Preserved every existing workspace, sales tracking and All Sales selection, material PDF normalization, Snow Load Calculator and standalone kPa/psf converter, theme choices, Supabase Auth/RLS/shared tables, Edge Functions/Resend, purchasing and inventory. No SQL migration, database/production write, or iOS change is required.
+- All **10** HTML pages now show `V1.25 WEB · Developed by Samuel Chung` and use `?v=1.25` on their entrypoint JS/CSS references. Paths are repository-relative, compatible with GitHub Pages `/ewp/` and the former `/EWP-Forecast/`.
+
+## Testing and deployment
+
+- `tests/v1_25_smoke.mjs`: 33 assertions, including all 196 bidirectional designation mappings, 12 manually checked pairs across all PDF pages, invalid inputs, third tool card, 4 fields and 2 outputs, and 10-page version credits.
+- `tests/browser_smoke_v1_25.py`: **5 offline Chromium in-memory test scenarios** using the actual lookup module, HTML and styles; two-way inputs, invalid/clear, layout at 1350 and 390 px under light/dark. This **does not test HTTP JSON fetching, live Supabase authentication or deployed GitHub Pages**. Screenshots retained under `tests/`.
+- Existing V1.21 and V1.22 parser regressions, V1.24 pressure converter tests, JS syntax, local relative references, unchanged SQL and ZIP integrity are checked in `tests/V1_25_TEST_RESULTS.md`.
+- **Deploy:** Extract the full V1.25 ZIP into the GitHub Pages repository root, replacing existing WEB files; commit/push and hard-refresh. Check Portal → EWP → EWP Tools → Steel Beam Width, test W12×14 ↔ W310×21 and an invalid beam, then verify both earlier tools, dark mode and mobile. Use `/ewp/` if the repo was renamed, otherwise `/EWP-Forecast/`. No SQL, Supabase, Resend or Edge Function deployment necessary.
+
+## Pre-existing caveats
+
+- Snow Load Calculator's BC city Ss/Sr data have not been exhaustively audited against BCBC 2024.
+- No live Outlook, production Supabase, GitHub Pages or live NRCan integration test performed in V1.25.
+
+---
+
 # EWP Management Portal — V1.24 WEB: Independent kPa ↔ psf Converter
 
 **Canonical input:** Complete `EWP_Management_Portal_V1_23_WEB_FULL.zip`. **Release:** `EWP_Management_Portal_V1_24_WEB_FULL.zip` (October 27, 2026). **Next:** V1.25 WEB. **Scope:** WEB ONLY; EWP Connect iOS untouched.

@@ -4,6 +4,9 @@
     "metric": "W100x19",
     "flangeWidthIn": 4.06,
     "depthIn": 4.16,
+    "flangeThicknessIn": 0.345,
+    "webThicknessIn": 0.28,
+    "sectionModulusIn3": 5.43,
     "sourcePage": 10
   },
   {
@@ -11,6 +14,9 @@
     "metric": "W130x24",
     "flangeWidthIn": 5.0,
     "depthIn": 5.01,
+    "flangeThicknessIn": 0.36,
+    "webThicknessIn": 0.24,
+    "sectionModulusIn3": 8.55,
     "sourcePage": 10
   },
   {
@@ -18,6 +24,9 @@
     "metric": "W130x28",
     "flangeWidthIn": 5.03,
     "depthIn": 5.15,
+    "flangeThicknessIn": 0.43,
+    "webThicknessIn": 0.27,
+    "sectionModulusIn3": 10.2,
     "sourcePage": 10
   },
   {
@@ -25,6 +34,9 @@
     "metric": "W150x14",
     "flangeWidthIn": 3.94,
     "depthIn": 5.9,
+    "flangeThicknessIn": 0.215,
+    "webThicknessIn": 0.17,
+    "sectionModulusIn3": 5.56,
     "sourcePage": 10
   },
   {
@@ -32,6 +44,9 @@
     "metric": "W150x18",
     "flangeWidthIn": 4.0,
     "depthIn": 6.03,
+    "flangeThicknessIn": 0.28,
+    "webThicknessIn": 0.23,
+    "sectionModulusIn3": 7.31,
     "sourcePage": 10
   },
   {
@@ -39,6 +54,9 @@
     "metric": "W150x24",
     "flangeWidthIn": 4.03,
     "depthIn": 6.28,
+    "flangeThicknessIn": 0.405,
+    "webThicknessIn": 0.26,
+    "sectionModulusIn3": 10.2,
     "sourcePage": 10
   },
   {
@@ -46,6 +64,9 @@
     "metric": "W150x22",
     "flangeWidthIn": 5.99,
     "depthIn": 5.99,
+    "flangeThicknessIn": 0.26,
+    "webThicknessIn": 0.23,
+    "sectionModulusIn3": 9.72,
     "sourcePage": 10
   },
   {
@@ -53,6 +74,9 @@
     "metric": "W150x30",
     "flangeWidthIn": 6.02,
     "depthIn": 6.2,
+    "flangeThicknessIn": 0.365,
+    "webThicknessIn": 0.26,
+    "sectionModulusIn3": 13.4,
     "sourcePage": 10
   },
   {
@@ -60,6 +84,9 @@
     "metric": "W150x37",
     "flangeWidthIn": 6.08,
     "depthIn": 6.38,
+    "flangeThicknessIn": 0.455,
+    "webThicknessIn": 0.32,
+    "sectionModulusIn3": 16.7,
     "sourcePage": 10
   },
   {
@@ -67,6 +94,9 @@
     "metric": "W200x15",
     "flangeWidthIn": 3.94,
     "depthIn": 7.89,
+    "flangeThicknessIn": 0.205,
+    "webThicknessIn": 0.17,
+    "sectionModulusIn3": 7.81,
     "sourcePage": 10
   },
   {
@@ -74,6 +104,9 @@
     "metric": "W200x19",
     "flangeWidthIn": 4.0,
     "depthIn": 7.99,
+    "flangeThicknessIn": 0.255,
+    "webThicknessIn": 0.23,
+    "sectionModulusIn3": 9.91,
     "sourcePage": 10
   },
   {
@@ -81,6 +114,9 @@
     "metric": "W200x22",
     "flangeWidthIn": 4.02,
     "depthIn": 8.11,
+    "flangeThicknessIn": 0.315,
+    "webThicknessIn": 0.245,
+    "sectionModulusIn3": 11.8,
     "sourcePage": 10
   },
   {
@@ -88,6 +124,9 @@
     "metric": "W200x21",
     "flangeWidthIn": 5.21,
     "depthIn": 7.98,
+    "flangeThicknessIn": 0.25,
+    "webThicknessIn": 0.195,
+    "sectionModulusIn3": 11.8,
     "sourcePage": 10
   },
   {
@@ -95,6 +134,9 @@
     "metric": "W200x27",
     "flangeWidthIn": 5.25,
     "depthIn": 8.14,
+    "flangeThicknessIn": 0.33,
+    "webThicknessIn": 0.23,
+    "sectionModulusIn3": 15.2,
     "sourcePage": 10
   },
   {
@@ -102,6 +144,9 @@
     "metric": "W200x31",
     "flangeWidthIn": 5.27,
     "depthIn": 8.28,
+    "flangeThicknessIn": 0.4,
+    "webThicknessIn": 0.25,
+    "sectionModulusIn3": 18.2,
     "sourcePage": 10
   },
   {
@@ -109,6 +154,9 @@
     "metric": "W200x36",
     "flangeWidthIn": 6.5,
     "depthIn": 7.93,
+    "flangeThicknessIn": 0.4,
+    "webThicknessIn": 0.245,
+    "sectionModulusIn3": 20.9,
     "sourcePage": 10
   },
   {
@@ -116,6 +164,9 @@
     "metric": "W200x42",
     "flangeWidthIn": 6.54,
     "depthIn": 8.06,
+    "flangeThicknessIn": 0.465,
+    "webThicknessIn": 0.285,
+    "sectionModulusIn3": 24.3,
     "sourcePage": 10
   },
   {
@@ -123,6 +174,9 @@
     "metric": "W200x46",
     "flangeWidthIn": 8.0,
     "depthIn": 8.0,
+    "flangeThicknessIn": 0.435,
+    "webThicknessIn": 0.285,
+    "sectionModulusIn3": 27.5,
     "sourcePage": 10
   },
   {
@@ -130,6 +184,9 @@
     "metric": "W200x52",
     "flangeWidthIn": 8.02,
     "depthIn": 8.12,
+    "flangeThicknessIn": 0.495,
+    "webThicknessIn": 0.31,
+    "sectionModulusIn3": 31.2,
     "sourcePage": 10
   },
   {
@@ -137,6 +194,9 @@
     "metric": "W200x59",
     "flangeWidthIn": 8.07,
     "depthIn": 8.25,
+    "flangeThicknessIn": 0.56,
+    "webThicknessIn": 0.36,
+    "sectionModulusIn3": 35.5,
     "sourcePage": 10
   },
   {
@@ -144,6 +204,9 @@
     "metric": "W200x71",
     "flangeWidthIn": 8.11,
     "depthIn": 8.5,
+    "flangeThicknessIn": 0.685,
+    "webThicknessIn": 0.4,
+    "sectionModulusIn3": 43.3,
     "sourcePage": 10
   },
   {
@@ -151,6 +214,9 @@
     "metric": "W200x86",
     "flangeWidthIn": 8.22,
     "depthIn": 8.75,
+    "flangeThicknessIn": 0.81,
+    "webThicknessIn": 0.51,
+    "sectionModulusIn3": 52.0,
     "sourcePage": 10
   },
   {
@@ -158,6 +224,9 @@
     "metric": "W200x100",
     "flangeWidthIn": 8.28,
     "depthIn": 9.0,
+    "flangeThicknessIn": 0.935,
+    "webThicknessIn": 0.57,
+    "sectionModulusIn3": 60.4,
     "sourcePage": 10
   },
   {
@@ -165,6 +234,9 @@
     "metric": "W250x18",
     "flangeWidthIn": 3.96,
     "depthIn": 9.87,
+    "flangeThicknessIn": 0.21,
+    "webThicknessIn": 0.19,
+    "sectionModulusIn3": 10.9,
     "sourcePage": 10
   },
   {
@@ -172,6 +244,9 @@
     "metric": "W250x22",
     "flangeWidthIn": 4.0,
     "depthIn": 9.99,
+    "flangeThicknessIn": 0.27,
+    "webThicknessIn": 0.23,
+    "sectionModulusIn3": 13.8,
     "sourcePage": 10
   },
   {
@@ -179,6 +254,9 @@
     "metric": "W250x25",
     "flangeWidthIn": 4.01,
     "depthIn": 10.11,
+    "flangeThicknessIn": 0.33,
+    "webThicknessIn": 0.24,
+    "sectionModulusIn3": 16.2,
     "sourcePage": 10
   },
   {
@@ -186,6 +264,9 @@
     "metric": "W250x28",
     "flangeWidthIn": 4.02,
     "depthIn": 10.24,
+    "flangeThicknessIn": 0.395,
+    "webThicknessIn": 0.25,
+    "sectionModulusIn3": 18.8,
     "sourcePage": 10
   },
   {
@@ -193,6 +274,9 @@
     "metric": "W250x24",
     "flangeWidthIn": 5.71,
     "depthIn": 9.95,
+    "flangeThicknessIn": 0.25,
+    "webThicknessIn": 0.195,
+    "sectionModulusIn3": 16.6,
     "sourcePage": 10
   },
   {
@@ -200,6 +284,9 @@
     "metric": "W250x33",
     "flangeWidthIn": 5.75,
     "depthIn": 10.17,
+    "flangeThicknessIn": 0.36,
+    "webThicknessIn": 0.24,
+    "sectionModulusIn3": 23.2,
     "sourcePage": 10
   },
   {
@@ -207,6 +294,9 @@
     "metric": "W250x39",
     "flangeWidthIn": 5.77,
     "depthIn": 10.33,
+    "flangeThicknessIn": 0.44,
+    "webThicknessIn": 0.26,
+    "sectionModulusIn3": 27.9,
     "sourcePage": 10
   },
   {
@@ -214,6 +304,9 @@
     "metric": "W250x45",
     "flangeWidthIn": 5.81,
     "depthIn": 10.47,
+    "flangeThicknessIn": 0.51,
+    "webThicknessIn": 0.3,
+    "sectionModulusIn3": 32.4,
     "sourcePage": 10
   },
   {
@@ -221,6 +314,9 @@
     "metric": "W250x49",
     "flangeWidthIn": 7.96,
     "depthIn": 9.73,
+    "flangeThicknessIn": 0.435,
+    "webThicknessIn": 0.29,
+    "sectionModulusIn3": 35.0,
     "sourcePage": 10
   },
   {
@@ -228,6 +324,9 @@
     "metric": "W250x58",
     "flangeWidthIn": 7.98,
     "depthIn": 9.92,
+    "flangeThicknessIn": 0.53,
+    "webThicknessIn": 0.315,
+    "sectionModulusIn3": 42.1,
     "sourcePage": 10
   },
   {
@@ -235,6 +334,9 @@
     "metric": "W250x67",
     "flangeWidthIn": 8.02,
     "depthIn": 10.1,
+    "flangeThicknessIn": 0.62,
+    "webThicknessIn": 0.35,
+    "sectionModulusIn3": 49.1,
     "sourcePage": 10
   },
   {
@@ -242,6 +344,9 @@
     "metric": "W250x73",
     "flangeWidthIn": 10.0,
     "depthIn": 9.98,
+    "flangeThicknessIn": 0.56,
+    "webThicknessIn": 0.34,
+    "sectionModulusIn3": 54.6,
     "sourcePage": 10
   },
   {
@@ -249,6 +354,9 @@
     "metric": "W250x80",
     "flangeWidthIn": 10.03,
     "depthIn": 10.09,
+    "flangeThicknessIn": 0.615,
+    "webThicknessIn": 0.37,
+    "sectionModulusIn3": 60.0,
     "sourcePage": 10
   },
   {
@@ -256,6 +364,9 @@
     "metric": "W250x89",
     "flangeWidthIn": 10.08,
     "depthIn": 10.22,
+    "flangeThicknessIn": 0.68,
+    "webThicknessIn": 0.42,
+    "sectionModulusIn3": 66.7,
     "sourcePage": 10
   },
   {
@@ -263,6 +374,9 @@
     "metric": "W250x101",
     "flangeWidthIn": 10.13,
     "depthIn": 10.4,
+    "flangeThicknessIn": 0.77,
+    "webThicknessIn": 0.47,
+    "sectionModulusIn3": 75.7,
     "sourcePage": 10
   },
   {
@@ -270,6 +384,9 @@
     "metric": "W250x115",
     "flangeWidthIn": 10.19,
     "depthIn": 10.6,
+    "flangeThicknessIn": 0.87,
+    "webThicknessIn": 0.53,
+    "sectionModulusIn3": 85.9,
     "sourcePage": 10
   },
   {
@@ -277,6 +394,9 @@
     "metric": "W250x131",
     "flangeWidthIn": 10.26,
     "depthIn": 10.84,
+    "flangeThicknessIn": 0.99,
+    "webThicknessIn": 0.605,
+    "sectionModulusIn3": 98.5,
     "sourcePage": 10
   },
   {
@@ -284,6 +404,9 @@
     "metric": "W250x149",
     "flangeWidthIn": 10.34,
     "depthIn": 11.1,
+    "flangeThicknessIn": 1.12,
+    "webThicknessIn": 0.68,
+    "sectionModulusIn3": 112.0,
     "sourcePage": 10
   },
   {
@@ -291,6 +414,9 @@
     "metric": "W310x21",
     "flangeWidthIn": 3.97,
     "depthIn": 11.91,
+    "flangeThicknessIn": 0.225,
+    "webThicknessIn": 0.2,
+    "sectionModulusIn3": 14.9,
     "sourcePage": 11
   },
   {
@@ -298,6 +424,9 @@
     "metric": "W310x24",
     "flangeWidthIn": 3.99,
     "depthIn": 11.99,
+    "flangeThicknessIn": 0.265,
+    "webThicknessIn": 0.22,
+    "sectionModulusIn3": 17.1,
     "sourcePage": 11
   },
   {
@@ -305,6 +434,9 @@
     "metric": "W310x28",
     "flangeWidthIn": 4.0,
     "depthIn": 12.16,
+    "flangeThicknessIn": 0.35,
+    "webThicknessIn": 0.235,
+    "sectionModulusIn3": 21.3,
     "sourcePage": 11
   },
   {
@@ -312,6 +444,9 @@
     "metric": "W310x33",
     "flangeWidthIn": 4.03,
     "depthIn": 12.31,
+    "flangeThicknessIn": 0.425,
+    "webThicknessIn": 0.26,
+    "sectionModulusIn3": 25.4,
     "sourcePage": 11
   },
   {
@@ -319,6 +454,9 @@
     "metric": "W310x31",
     "flangeWidthIn": 6.45,
     "depthIn": 12.04,
+    "flangeThicknessIn": 0.29,
+    "webThicknessIn": 0.195,
+    "sectionModulusIn3": 26.7,
     "sourcePage": 11
   },
   {
@@ -326,6 +464,9 @@
     "metric": "W310x39",
     "flangeWidthIn": 6.49,
     "depthIn": 12.22,
+    "flangeThicknessIn": 0.38,
+    "webThicknessIn": 0.23,
+    "sectionModulusIn3": 33.4,
     "sourcePage": 11
   },
   {
@@ -333,6 +474,9 @@
     "metric": "W310x45",
     "flangeWidthIn": 6.52,
     "depthIn": 12.34,
+    "flangeThicknessIn": 0.44,
+    "webThicknessIn": 0.26,
+    "sectionModulusIn3": 38.6,
     "sourcePage": 11
   },
   {
@@ -340,6 +484,9 @@
     "metric": "W310x52",
     "flangeWidthIn": 6.56,
     "depthIn": 12.5,
+    "flangeThicknessIn": 0.52,
+    "webThicknessIn": 0.3,
+    "sectionModulusIn3": 45.6,
     "sourcePage": 11
   },
   {
@@ -347,6 +494,9 @@
     "metric": "W310x60",
     "flangeWidthIn": 8.0,
     "depthIn": 11.94,
+    "flangeThicknessIn": 0.515,
+    "webThicknessIn": 0.295,
+    "sectionModulusIn3": 51.9,
     "sourcePage": 11
   },
   {
@@ -354,6 +504,9 @@
     "metric": "W310x67",
     "flangeWidthIn": 8.04,
     "depthIn": 12.06,
+    "flangeThicknessIn": 0.575,
+    "webThicknessIn": 0.335,
+    "sectionModulusIn3": 58.1,
     "sourcePage": 11
   },
   {
@@ -361,6 +514,9 @@
     "metric": "W310x74",
     "flangeWidthIn": 8.08,
     "depthIn": 12.19,
+    "flangeThicknessIn": 0.64,
+    "webThicknessIn": 0.37,
+    "sectionModulusIn3": 64.7,
     "sourcePage": 11
   },
   {
@@ -368,6 +524,9 @@
     "metric": "W310x79",
     "flangeWidthIn": 10.0,
     "depthIn": 12.06,
+    "flangeThicknessIn": 0.575,
+    "webThicknessIn": 0.345,
+    "sectionModulusIn3": 70.6,
     "sourcePage": 11
   },
   {
@@ -375,6 +534,9 @@
     "metric": "W310x86",
     "flangeWidthIn": 10.01,
     "depthIn": 12.19,
+    "flangeThicknessIn": 0.64,
+    "webThicknessIn": 0.36,
+    "sectionModulusIn3": 78.0,
     "sourcePage": 11
   },
   {
@@ -382,6 +544,9 @@
     "metric": "W310x97",
     "flangeWidthIn": 12.0,
     "depthIn": 12.12,
+    "flangeThicknessIn": 0.605,
+    "webThicknessIn": 0.39,
+    "sectionModulusIn3": 87.9,
     "sourcePage": 11
   },
   {
@@ -389,6 +554,9 @@
     "metric": "W310x107",
     "flangeWidthIn": 12.04,
     "depthIn": 12.25,
+    "flangeThicknessIn": 0.67,
+    "webThicknessIn": 0.43,
+    "sectionModulusIn3": 97.4,
     "sourcePage": 11
   },
   {
@@ -396,6 +564,9 @@
     "metric": "W310x118",
     "flangeWidthIn": 12.08,
     "depthIn": 12.38,
+    "flangeThicknessIn": 0.735,
+    "webThicknessIn": 0.47,
+    "sectionModulusIn3": 107.0,
     "sourcePage": 11
   },
   {
@@ -403,6 +574,9 @@
     "metric": "W310x129",
     "flangeWidthIn": 12.12,
     "depthIn": 12.53,
+    "flangeThicknessIn": 0.81,
+    "webThicknessIn": 0.515,
+    "sectionModulusIn3": 118.0,
     "sourcePage": 11
   },
   {
@@ -410,6 +584,9 @@
     "metric": "W310x143",
     "flangeWidthIn": 12.16,
     "depthIn": 12.71,
+    "flangeThicknessIn": 0.9,
+    "webThicknessIn": 0.55,
+    "sectionModulusIn3": 131.0,
     "sourcePage": 11
   },
   {
@@ -417,6 +594,9 @@
     "metric": "W310x158",
     "flangeWidthIn": 12.22,
     "depthIn": 12.89,
+    "flangeThicknessIn": 0.99,
+    "webThicknessIn": 0.61,
+    "sectionModulusIn3": 145.0,
     "sourcePage": 11
   },
   {
@@ -424,6 +604,9 @@
     "metric": "W310x179",
     "flangeWidthIn": 12.32,
     "depthIn": 13.12,
+    "flangeThicknessIn": 1.1,
+    "webThicknessIn": 0.71,
+    "sectionModulusIn3": 163.0,
     "sourcePage": 11
   },
   {
@@ -431,6 +614,9 @@
     "metric": "W310x202",
     "flangeWidthIn": 12.4,
     "depthIn": 13.41,
+    "flangeThicknessIn": 1.25,
+    "webThicknessIn": 0.79,
+    "sectionModulusIn3": 186.0,
     "sourcePage": 11
   },
   {
@@ -438,6 +624,9 @@
     "metric": "W310x226",
     "flangeWidthIn": 12.48,
     "depthIn": 13.71,
+    "flangeThicknessIn": 1.4,
+    "webThicknessIn": 0.87,
+    "sectionModulusIn3": 209.0,
     "sourcePage": 11
   },
   {
@@ -445,6 +634,9 @@
     "metric": "W310x253",
     "flangeWidthIn": 12.57,
     "depthIn": 14.03,
+    "flangeThicknessIn": 1.56,
+    "webThicknessIn": 0.96,
+    "sectionModulusIn3": 235.0,
     "sourcePage": 11
   },
   {
@@ -452,6 +644,9 @@
     "metric": "W310x283",
     "flangeWidthIn": 12.67,
     "depthIn": 14.38,
+    "flangeThicknessIn": 1.74,
+    "webThicknessIn": 1.06,
+    "sectionModulusIn3": 263.0,
     "sourcePage": 11
   },
   {
@@ -459,6 +654,9 @@
     "metric": "W310x313",
     "flangeWidthIn": 12.8,
     "depthIn": 14.72,
+    "flangeThicknessIn": 1.9,
+    "webThicknessIn": 1.18,
+    "sectionModulusIn3": 292.0,
     "sourcePage": 11
   },
   {
@@ -466,6 +664,9 @@
     "metric": "W310x342",
     "flangeWidthIn": 12.91,
     "depthIn": 15.04,
+    "flangeThicknessIn": 2.07,
+    "webThicknessIn": 1.28,
+    "sectionModulusIn3": 321.0,
     "sourcePage": 11
   },
   {
@@ -473,6 +674,9 @@
     "metric": "W310x375",
     "flangeWidthIn": 12.99,
     "depthIn": 15.39,
+    "flangeThicknessIn": 2.25,
+    "webThicknessIn": 1.39,
+    "sectionModulusIn3": 351.0,
     "sourcePage": 11
   },
   {
@@ -480,6 +684,9 @@
     "metric": "W310x415",
     "flangeWidthIn": 13.15,
     "depthIn": 15.87,
+    "flangeThicknessIn": 2.47,
+    "webThicknessIn": 1.53,
+    "sectionModulusIn3": 394.0,
     "sourcePage": 11
   },
   {
@@ -487,6 +694,9 @@
     "metric": "W310x454",
     "flangeWidthIn": 13.23,
     "depthIn": 16.34,
+    "flangeThicknessIn": 2.7,
+    "webThicknessIn": 1.63,
+    "sectionModulusIn3": 435.0,
     "sourcePage": 11
   },
   {
@@ -494,6 +704,9 @@
     "metric": "W310x500",
     "flangeWidthIn": 13.39,
     "depthIn": 16.81,
+    "flangeThicknessIn": 2.96,
+    "webThicknessIn": 1.78,
+    "sectionModulusIn3": 483.0,
     "sourcePage": 11
   },
   {
@@ -501,6 +714,9 @@
     "metric": "W360x33",
     "flangeWidthIn": 5.0,
     "depthIn": 13.74,
+    "flangeThicknessIn": 0.335,
+    "webThicknessIn": 0.23,
+    "sectionModulusIn3": 29.0,
     "sourcePage": 11
   },
   {
@@ -508,6 +724,9 @@
     "metric": "W360x39",
     "flangeWidthIn": 5.02,
     "depthIn": 13.91,
+    "flangeThicknessIn": 0.42,
+    "webThicknessIn": 0.255,
+    "sectionModulusIn3": 35.3,
     "sourcePage": 11
   },
   {
@@ -515,6 +734,9 @@
     "metric": "W360x45",
     "flangeWidthIn": 6.73,
     "depthIn": 13.84,
+    "flangeThicknessIn": 0.385,
+    "webThicknessIn": 0.27,
+    "sectionModulusIn3": 42.0,
     "sourcePage": 11
   },
   {
@@ -522,6 +744,9 @@
     "metric": "W360x51",
     "flangeWidthIn": 6.74,
     "depthIn": 13.98,
+    "flangeThicknessIn": 0.455,
+    "webThicknessIn": 0.285,
+    "sectionModulusIn3": 48.6,
     "sourcePage": 11
   },
   {
@@ -529,6 +754,9 @@
     "metric": "W360x57",
     "flangeWidthIn": 6.77,
     "depthIn": 14.1,
+    "flangeThicknessIn": 0.515,
+    "webThicknessIn": 0.31,
+    "sectionModulusIn3": 54.6,
     "sourcePage": 11
   },
   {
@@ -536,6 +764,9 @@
     "metric": "W360x64",
     "flangeWidthIn": 8.0,
     "depthIn": 13.66,
+    "flangeThicknessIn": 0.53,
+    "webThicknessIn": 0.305,
+    "sectionModulusIn3": 62.7,
     "sourcePage": 11
   },
   {
@@ -543,6 +774,9 @@
     "metric": "W360x72",
     "flangeWidthIn": 8.03,
     "depthIn": 13.79,
+    "flangeThicknessIn": 0.595,
+    "webThicknessIn": 0.34,
+    "sectionModulusIn3": 70.3,
     "sourcePage": 11
   },
   {
@@ -550,6 +784,9 @@
     "metric": "W360x79",
     "flangeWidthIn": 8.06,
     "depthIn": 13.92,
+    "flangeThicknessIn": 0.66,
+    "webThicknessIn": 0.37,
+    "sectionModulusIn3": 77.8,
     "sourcePage": 11
   },
   {
@@ -557,6 +794,9 @@
     "metric": "W360x91",
     "flangeWidthIn": 10.0,
     "depthIn": 13.89,
+    "flangeThicknessIn": 0.645,
+    "webThicknessIn": 0.375,
+    "sectionModulusIn3": 92.2,
     "sourcePage": 11
   },
   {
@@ -564,6 +804,9 @@
     "metric": "W360x101",
     "flangeWidthIn": 10.04,
     "depthIn": 14.04,
+    "flangeThicknessIn": 0.72,
+    "webThicknessIn": 0.415,
+    "sectionModulusIn3": 103.0,
     "sourcePage": 11
   },
   {
@@ -571,6 +814,9 @@
     "metric": "W360x110",
     "flangeWidthIn": 10.07,
     "depthIn": 14.17,
+    "flangeThicknessIn": 0.785,
+    "webThicknessIn": 0.45,
+    "sectionModulusIn3": 112.0,
     "sourcePage": 11
   },
   {
@@ -578,6 +824,9 @@
     "metric": "W360x122",
     "flangeWidthIn": 10.13,
     "depthIn": 14.31,
+    "flangeThicknessIn": 0.855,
+    "webThicknessIn": 0.51,
+    "sectionModulusIn3": 123.0,
     "sourcePage": 11
   },
   {
@@ -585,6 +834,9 @@
     "metric": "W360x134",
     "flangeWidthIn": 14.52,
     "depthIn": 14.02,
+    "flangeThicknessIn": 0.71,
+    "webThicknessIn": 0.44,
+    "sectionModulusIn3": 143.0,
     "sourcePage": 12
   },
   {
@@ -592,6 +844,9 @@
     "metric": "W360x147",
     "flangeWidthIn": 14.56,
     "depthIn": 14.16,
+    "flangeThicknessIn": 0.78,
+    "webThicknessIn": 0.485,
+    "sectionModulusIn3": 157.0,
     "sourcePage": 12
   },
   {
@@ -599,6 +854,9 @@
     "metric": "W360x162",
     "flangeWidthIn": 14.6,
     "depthIn": 14.32,
+    "flangeThicknessIn": 0.86,
+    "webThicknessIn": 0.525,
+    "sectionModulusIn3": 173.0,
     "sourcePage": 12
   },
   {
@@ -606,6 +864,9 @@
     "metric": "W360x179",
     "flangeWidthIn": 14.67,
     "depthIn": 14.48,
+    "flangeThicknessIn": 0.94,
+    "webThicknessIn": 0.59,
+    "sectionModulusIn3": 190.0,
     "sourcePage": 12
   },
   {
@@ -613,6 +874,9 @@
     "metric": "W360x196",
     "flangeWidthIn": 14.72,
     "depthIn": 14.66,
+    "flangeThicknessIn": 1.03,
+    "webThicknessIn": 0.645,
+    "sectionModulusIn3": 209.0,
     "sourcePage": 12
   },
   {
@@ -620,6 +884,9 @@
     "metric": "W360x216",
     "flangeWidthIn": 15.5,
     "depthIn": 14.78,
+    "flangeThicknessIn": 1.09,
+    "webThicknessIn": 0.68,
+    "sectionModulusIn3": 232.0,
     "sourcePage": 12
   },
   {
@@ -627,6 +894,9 @@
     "metric": "W360x237",
     "flangeWidthIn": 15.56,
     "depthIn": 14.98,
+    "flangeThicknessIn": 1.19,
+    "webThicknessIn": 0.745,
+    "sectionModulusIn3": 254.0,
     "sourcePage": 12
   },
   {
@@ -634,6 +904,9 @@
     "metric": "W360x262",
     "flangeWidthIn": 15.65,
     "depthIn": 15.22,
+    "flangeThicknessIn": 1.31,
+    "webThicknessIn": 0.83,
+    "sectionModulusIn3": 281.0,
     "sourcePage": 12
   },
   {
@@ -641,6 +914,9 @@
     "metric": "W360x287",
     "flangeWidthIn": 15.71,
     "depthIn": 15.48,
+    "flangeThicknessIn": 1.44,
+    "webThicknessIn": 0.89,
+    "sectionModulusIn3": 310.0,
     "sourcePage": 12
   },
   {
@@ -648,6 +924,9 @@
     "metric": "W360x314",
     "flangeWidthIn": 15.8,
     "depthIn": 15.72,
+    "flangeThicknessIn": 1.56,
+    "webThicknessIn": 0.98,
+    "sectionModulusIn3": 338.0,
     "sourcePage": 12
   },
   {
@@ -655,6 +934,9 @@
     "metric": "W360x347",
     "flangeWidthIn": 15.89,
     "depthIn": 16.04,
+    "flangeThicknessIn": 1.72,
+    "webThicknessIn": 1.07,
+    "sectionModulusIn3": 375.0,
     "sourcePage": 12
   },
   {
@@ -662,6 +944,9 @@
     "metric": "W360x382",
     "flangeWidthIn": 16.0,
     "depthIn": 16.38,
+    "flangeThicknessIn": 1.89,
+    "webThicknessIn": 1.18,
+    "sectionModulusIn3": 415.0,
     "sourcePage": 12
   },
   {
@@ -669,6 +954,9 @@
     "metric": "W360x421",
     "flangeWidthIn": 16.11,
     "depthIn": 16.74,
+    "flangeThicknessIn": 2.07,
+    "webThicknessIn": 1.29,
+    "sectionModulusIn3": 459.0,
     "sourcePage": 12
   },
   {
@@ -676,6 +964,9 @@
     "metric": "W360x463",
     "flangeWidthIn": 16.23,
     "depthIn": 17.12,
+    "flangeThicknessIn": 2.26,
+    "webThicknessIn": 1.41,
+    "sectionModulusIn3": 506.0,
     "sourcePage": 12
   },
   {
@@ -683,6 +974,9 @@
     "metric": "W360x509",
     "flangeWidthIn": 16.36,
     "depthIn": 17.54,
+    "flangeThicknessIn": 2.47,
+    "webThicknessIn": 1.54,
+    "sectionModulusIn3": 559.0,
     "sourcePage": 12
   },
   {
@@ -690,6 +984,9 @@
     "metric": "W360x551",
     "flangeWidthIn": 16.48,
     "depthIn": 17.92,
+    "flangeThicknessIn": 2.66,
+    "webThicknessIn": 1.66,
+    "sectionModulusIn3": 607.0,
     "sourcePage": 12
   },
   {
@@ -697,6 +994,9 @@
     "metric": "W360x592",
     "flangeWidthIn": 16.59,
     "depthIn": 18.29,
+    "flangeThicknessIn": 2.84,
+    "webThicknessIn": 1.77,
+    "sectionModulusIn3": 656.0,
     "sourcePage": 12
   },
   {
@@ -704,6 +1004,9 @@
     "metric": "W360x634",
     "flangeWidthIn": 16.7,
     "depthIn": 18.67,
+    "flangeThicknessIn": 3.04,
+    "webThicknessIn": 1.88,
+    "sectionModulusIn3": 707.0,
     "sourcePage": 12
   },
   {
@@ -711,6 +1014,9 @@
     "metric": "W360x677",
     "flangeWidthIn": 16.84,
     "depthIn": 19.02,
+    "flangeThicknessIn": 3.21,
+    "webThicknessIn": 2.02,
+    "sectionModulusIn3": 756.0,
     "sourcePage": 12
   },
   {
@@ -718,6 +1024,9 @@
     "metric": "W360x744",
     "flangeWidthIn": 17.01,
     "depthIn": 19.6,
+    "flangeThicknessIn": 3.5,
+    "webThicknessIn": 2.19,
+    "sectionModulusIn3": 838.0,
     "sourcePage": 12
   },
   {
@@ -725,6 +1034,9 @@
     "metric": "W360x818",
     "flangeWidthIn": 17.2,
     "depthIn": 20.24,
+    "flangeThicknessIn": 3.82,
+    "webThicknessIn": 2.38,
+    "sectionModulusIn3": 931.0,
     "sourcePage": 12
   },
   {
@@ -732,6 +1044,9 @@
     "metric": "W360x900",
     "flangeWidthIn": 17.42,
     "depthIn": 20.92,
+    "flangeThicknessIn": 4.16,
+    "webThicknessIn": 2.6,
+    "sectionModulusIn3": 1040.0,
     "sourcePage": 12
   },
   {
@@ -739,6 +1054,9 @@
     "metric": "W360x990",
     "flangeWidthIn": 17.65,
     "depthIn": 21.64,
+    "flangeThicknessIn": 4.52,
+    "webThicknessIn": 2.83,
+    "sectionModulusIn3": 1150.0,
     "sourcePage": 12
   },
   {
@@ -746,6 +1064,9 @@
     "metric": "W360x1086",
     "flangeWidthIn": 17.89,
     "depthIn": 22.42,
+    "flangeThicknessIn": 4.91,
+    "webThicknessIn": 3.07,
+    "sectionModulusIn3": 1280.0,
     "sourcePage": 12
   },
   {
@@ -753,6 +1074,9 @@
     "metric": "W410x39",
     "flangeWidthIn": 5.5,
     "depthIn": 15.69,
+    "flangeThicknessIn": 0.345,
+    "webThicknessIn": 0.25,
+    "sectionModulusIn3": 38.4,
     "sourcePage": 12
   },
   {
@@ -760,6 +1084,9 @@
     "metric": "W410x46",
     "flangeWidthIn": 5.52,
     "depthIn": 15.88,
+    "flangeThicknessIn": 0.44,
+    "webThicknessIn": 0.275,
+    "sectionModulusIn3": 47.2,
     "sourcePage": 12
   },
   {
@@ -767,6 +1094,9 @@
     "metric": "W410x54",
     "flangeWidthIn": 6.98,
     "depthIn": 15.86,
+    "flangeThicknessIn": 0.43,
+    "webThicknessIn": 0.295,
+    "sectionModulusIn3": 56.5,
     "sourcePage": 12
   },
   {
@@ -774,6 +1104,9 @@
     "metric": "W410x60",
     "flangeWidthIn": 7.0,
     "depthIn": 16.01,
+    "flangeThicknessIn": 0.505,
+    "webThicknessIn": 0.305,
+    "sectionModulusIn3": 64.7,
     "sourcePage": 12
   },
   {
@@ -781,6 +1114,9 @@
     "metric": "W410x67",
     "flangeWidthIn": 7.04,
     "depthIn": 16.13,
+    "flangeThicknessIn": 0.565,
+    "webThicknessIn": 0.345,
+    "sectionModulusIn3": 72.7,
     "sourcePage": 12
   },
   {
@@ -788,6 +1124,9 @@
     "metric": "W410x74",
     "flangeWidthIn": 7.07,
     "depthIn": 16.26,
+    "flangeThicknessIn": 0.63,
+    "webThicknessIn": 0.38,
+    "sectionModulusIn3": 81.0,
     "sourcePage": 12
   },
   {
@@ -795,6 +1134,9 @@
     "metric": "W410x85",
     "flangeWidthIn": 7.12,
     "depthIn": 16.43,
+    "flangeThicknessIn": 0.715,
+    "webThicknessIn": 0.43,
+    "sectionModulusIn3": 92.2,
     "sourcePage": 12
   },
   {
@@ -802,6 +1144,9 @@
     "metric": "W410x100",
     "flangeWidthIn": 10.24,
     "depthIn": 16.33,
+    "flangeThicknessIn": 0.665,
+    "webThicknessIn": 0.395,
+    "sectionModulusIn3": 117.0,
     "sourcePage": 12
   },
   {
@@ -809,6 +1154,9 @@
     "metric": "W410x114",
     "flangeWidthIn": 10.3,
     "depthIn": 16.52,
+    "flangeThicknessIn": 0.76,
+    "webThicknessIn": 0.455,
+    "sectionModulusIn3": 134.0,
     "sourcePage": 12
   },
   {
@@ -816,6 +1164,9 @@
     "metric": "W410x132",
     "flangeWidthIn": 10.36,
     "depthIn": 16.75,
+    "flangeThicknessIn": 0.875,
+    "webThicknessIn": 0.525,
+    "sectionModulusIn3": 155.0,
     "sourcePage": 12
   },
   {
@@ -823,6 +1174,9 @@
     "metric": "W410x149",
     "flangeWidthIn": 10.42,
     "depthIn": 16.97,
+    "flangeThicknessIn": 0.985,
+    "webThicknessIn": 0.585,
+    "sectionModulusIn3": 175.0,
     "sourcePage": 12
   },
   {
@@ -830,6 +1184,9 @@
     "metric": "W460x52",
     "flangeWidthIn": 6.0,
     "depthIn": 17.7,
+    "flangeThicknessIn": 0.425,
+    "webThicknessIn": 0.3,
+    "sectionModulusIn3": 57.6,
     "sourcePage": 13
   },
   {
@@ -837,6 +1194,9 @@
     "metric": "W460x60",
     "flangeWidthIn": 6.02,
     "depthIn": 17.9,
+    "flangeThicknessIn": 0.525,
+    "webThicknessIn": 0.315,
+    "sectionModulusIn3": 68.4,
     "sourcePage": 13
   },
   {
@@ -844,6 +1204,9 @@
     "metric": "W460x68",
     "flangeWidthIn": 6.06,
     "depthIn": 18.06,
+    "flangeThicknessIn": 0.605,
+    "webThicknessIn": 0.36,
+    "sectionModulusIn3": 78.8,
     "sourcePage": 13
   },
   {
@@ -851,6 +1214,9 @@
     "metric": "W460x61",
     "flangeWidthIn": 7.45,
     "depthIn": 17.7,
+    "flangeThicknessIn": 0.425,
+    "webThicknessIn": 0.32,
+    "sectionModulusIn3": 70.3,
     "sourcePage": 13
   },
   {
@@ -858,6 +1224,9 @@
     "metric": "W460x67",
     "flangeWidthIn": 7.48,
     "depthIn": 17.86,
+    "flangeThicknessIn": 0.499,
+    "webThicknessIn": 0.335,
+    "sectionModulusIn3": 80.5,
     "sourcePage": 13
   },
   {
@@ -865,6 +1234,9 @@
     "metric": "W460x74",
     "flangeWidthIn": 7.5,
     "depthIn": 17.99,
+    "flangeThicknessIn": 0.57,
+    "webThicknessIn": 0.355,
+    "sectionModulusIn3": 88.9,
     "sourcePage": 13
   },
   {
@@ -872,6 +1244,9 @@
     "metric": "W460x82",
     "flangeWidthIn": 7.53,
     "depthIn": 18.11,
+    "flangeThicknessIn": 0.63,
+    "webThicknessIn": 0.39,
+    "sectionModulusIn3": 98.3,
     "sourcePage": 13
   },
   {
@@ -879,6 +1254,9 @@
     "metric": "W460x89",
     "flangeWidthIn": 7.56,
     "depthIn": 18.24,
+    "flangeThicknessIn": 0.695,
+    "webThicknessIn": 0.415,
+    "sectionModulusIn3": 108.0,
     "sourcePage": 13
   },
   {
@@ -886,6 +1264,9 @@
     "metric": "W460x97",
     "flangeWidthIn": 7.59,
     "depthIn": 18.35,
+    "flangeThicknessIn": 0.75,
+    "webThicknessIn": 0.45,
+    "sectionModulusIn3": 117.0,
     "sourcePage": 13
   },
   {
@@ -893,6 +1274,9 @@
     "metric": "W460x106",
     "flangeWidthIn": 7.64,
     "depthIn": 18.47,
+    "flangeThicknessIn": 0.81,
+    "webThicknessIn": 0.495,
+    "sectionModulusIn3": 127.0,
     "sourcePage": 13
   },
   {
@@ -900,6 +1284,9 @@
     "metric": "W460x113",
     "flangeWidthIn": 11.04,
     "depthIn": 18.21,
+    "flangeThicknessIn": 0.68,
+    "webThicknessIn": 0.425,
+    "sectionModulusIn3": 146.0,
     "sourcePage": 13
   },
   {
@@ -907,6 +1294,9 @@
     "metric": "W460x128",
     "flangeWidthIn": 11.09,
     "depthIn": 18.39,
+    "flangeThicknessIn": 0.77,
+    "webThicknessIn": 0.48,
+    "sectionModulusIn3": 166.0,
     "sourcePage": 13
   },
   {
@@ -914,6 +1304,9 @@
     "metric": "W460x144",
     "flangeWidthIn": 11.14,
     "depthIn": 18.59,
+    "flangeThicknessIn": 0.87,
+    "webThicknessIn": 0.535,
+    "sectionModulusIn3": 188.0,
     "sourcePage": 13
   },
   {
@@ -921,6 +1314,9 @@
     "metric": "W460x158",
     "flangeWidthIn": 11.2,
     "depthIn": 18.73,
+    "flangeThicknessIn": 0.94,
+    "webThicknessIn": 0.59,
+    "sectionModulusIn3": 204.0,
     "sourcePage": 13
   },
   {
@@ -928,6 +1324,9 @@
     "metric": "W460x177",
     "flangeWidthIn": 11.26,
     "depthIn": 18.97,
+    "flangeThicknessIn": 1.06,
+    "webThicknessIn": 0.655,
+    "sectionModulusIn3": 231.0,
     "sourcePage": 13
   },
   {
@@ -935,6 +1334,9 @@
     "metric": "W530x66",
     "flangeWidthIn": 6.5,
     "depthIn": 20.66,
+    "flangeThicknessIn": 0.45,
+    "webThicknessIn": 0.35,
+    "sectionModulusIn3": 81.6,
     "sourcePage": 13
   },
   {
@@ -942,6 +1344,9 @@
     "metric": "W530x74",
     "flangeWidthIn": 6.53,
     "depthIn": 20.83,
+    "flangeThicknessIn": 0.535,
+    "webThicknessIn": 0.38,
+    "sectionModulusIn3": 94.5,
     "sourcePage": 13
   },
   {
@@ -949,6 +1354,9 @@
     "metric": "W530x85",
     "flangeWidthIn": 6.56,
     "depthIn": 21.06,
+    "flangeThicknessIn": 0.65,
+    "webThicknessIn": 0.405,
+    "sectionModulusIn3": 111.0,
     "sourcePage": 13
   },
   {
@@ -956,6 +1364,9 @@
     "metric": "W530x72",
     "flangeWidthIn": 8.14,
     "depthIn": 20.62,
+    "flangeThicknessIn": 0.43,
+    "webThicknessIn": 0.35,
+    "sectionModulusIn3": 93.8,
     "sourcePage": 13
   },
   {
@@ -963,6 +1374,9 @@
     "metric": "W530x82",
     "flangeWidthIn": 8.22,
     "depthIn": 20.8,
+    "flangeThicknessIn": 0.522,
+    "webThicknessIn": 0.375,
+    "sectionModulusIn3": 110.0,
     "sourcePage": 13
   },
   {
@@ -970,6 +1384,9 @@
     "metric": "W530x92",
     "flangeWidthIn": 8.24,
     "depthIn": 20.99,
+    "flangeThicknessIn": 0.615,
+    "webThicknessIn": 0.4,
+    "sectionModulusIn3": 127.0,
     "sourcePage": 13
   },
   {
@@ -977,6 +1394,9 @@
     "metric": "W530x101",
     "flangeWidthIn": 8.27,
     "depthIn": 21.13,
+    "flangeThicknessIn": 0.685,
+    "webThicknessIn": 0.43,
+    "sectionModulusIn3": 140.0,
     "sourcePage": 13
   },
   {
@@ -984,6 +1404,9 @@
     "metric": "W530x109",
     "flangeWidthIn": 8.3,
     "depthIn": 21.24,
+    "flangeThicknessIn": 0.74,
+    "webThicknessIn": 0.455,
+    "sectionModulusIn3": 151.0,
     "sourcePage": 13
   },
   {
@@ -991,6 +1414,9 @@
     "metric": "W530x123",
     "flangeWidthIn": 8.36,
     "depthIn": 21.43,
+    "flangeThicknessIn": 0.835,
+    "webThicknessIn": 0.515,
+    "sectionModulusIn3": 171.0,
     "sourcePage": 13
   },
   {
@@ -998,6 +1424,9 @@
     "metric": "W530x138",
     "flangeWidthIn": 8.42,
     "depthIn": 21.62,
+    "flangeThicknessIn": 0.93,
+    "webThicknessIn": 0.58,
+    "sectionModulusIn3": 192.0,
     "sourcePage": 13
   },
   {
@@ -1005,6 +1434,9 @@
     "metric": "W530x150",
     "flangeWidthIn": 12.29,
     "depthIn": 21.36,
+    "flangeThicknessIn": 0.8,
+    "webThicknessIn": 0.5,
+    "sectionModulusIn3": 227.0,
     "sourcePage": 13
   },
   {
@@ -1012,6 +1444,9 @@
     "metric": "W530x165",
     "flangeWidthIn": 12.34,
     "depthIn": 21.51,
+    "flangeThicknessIn": 0.875,
+    "webThicknessIn": 0.55,
+    "sectionModulusIn3": 249.0,
     "sourcePage": 13
   },
   {
@@ -1019,6 +1454,9 @@
     "metric": "W530x182",
     "flangeWidthIn": 12.39,
     "depthIn": 21.68,
+    "flangeThicknessIn": 0.96,
+    "webThicknessIn": 0.6,
+    "sectionModulusIn3": 273.0,
     "sourcePage": 13
   },
   {
@@ -1026,6 +1464,9 @@
     "metric": "W530x196",
     "flangeWidthIn": 12.44,
     "depthIn": 21.83,
+    "flangeThicknessIn": 1.04,
+    "webThicknessIn": 0.65,
+    "sectionModulusIn3": 295.0,
     "sourcePage": 13
   },
   {
@@ -1033,6 +1474,9 @@
     "metric": "W530x219",
     "flangeWidthIn": 12.51,
     "depthIn": 22.06,
+    "flangeThicknessIn": 1.15,
+    "webThicknessIn": 0.72,
+    "sectionModulusIn3": 329.0,
     "sourcePage": 13
   },
   {
@@ -1040,6 +1484,9 @@
     "metric": "W610x82",
     "flangeWidthIn": 7.0,
     "depthIn": 23.57,
+    "flangeThicknessIn": 0.505,
+    "webThicknessIn": 0.395,
+    "sectionModulusIn3": 114.0,
     "sourcePage": 13
   },
   {
@@ -1047,6 +1494,9 @@
     "metric": "W610x92",
     "flangeWidthIn": 7.04,
     "depthIn": 23.74,
+    "flangeThicknessIn": 0.59,
+    "webThicknessIn": 0.43,
+    "sectionModulusIn3": 131.0,
     "sourcePage": 13
   },
   {
@@ -1054,6 +1504,9 @@
     "metric": "W610x84",
     "flangeWidthIn": 8.9,
     "depthIn": 23.48,
+    "flangeThicknessIn": 0.46,
+    "webThicknessIn": 0.355,
+    "sectionModulusIn3": 126.0,
     "sourcePage": 13
   },
   {
@@ -1061,6 +1514,9 @@
     "metric": "W610x91",
     "flangeWidthIn": 8.93,
     "depthIn": 23.56,
+    "flangeThicknessIn": 0.5,
+    "webThicknessIn": 0.38,
+    "sectionModulusIn3": 136.0,
     "sourcePage": 13
   },
   {
@@ -1068,6 +1524,9 @@
     "metric": "W610x101",
     "flangeWidthIn": 8.96,
     "depthIn": 23.73,
+    "flangeThicknessIn": 0.585,
+    "webThicknessIn": 0.415,
+    "sectionModulusIn3": 154.0,
     "sourcePage": 13
   },
   {
@@ -1075,6 +1534,9 @@
     "metric": "W610x113",
     "flangeWidthIn": 8.99,
     "depthIn": 23.92,
+    "flangeThicknessIn": 0.68,
+    "webThicknessIn": 0.44,
+    "sectionModulusIn3": 176.0,
     "sourcePage": 13
   },
   {
@@ -1082,6 +1544,9 @@
     "metric": "W610x125",
     "flangeWidthIn": 9.02,
     "depthIn": 24.1,
+    "flangeThicknessIn": 0.77,
+    "webThicknessIn": 0.47,
+    "sectionModulusIn3": 196.0,
     "sourcePage": 13
   },
   {
@@ -1089,6 +1554,9 @@
     "metric": "W610x140",
     "flangeWidthIn": 9.06,
     "depthIn": 24.31,
+    "flangeThicknessIn": 0.875,
+    "webThicknessIn": 0.515,
+    "sectionModulusIn3": 222.0,
     "sourcePage": 13
   },
   {
@@ -1096,6 +1564,9 @@
     "metric": "W610x155",
     "flangeWidthIn": 12.75,
     "depthIn": 24.06,
+    "flangeThicknessIn": 0.75,
+    "webThicknessIn": 0.5,
+    "sectionModulusIn3": 258.0,
     "sourcePage": 13
   },
   {
@@ -1103,6 +1574,9 @@
     "metric": "W610x174",
     "flangeWidthIn": 12.8,
     "depthIn": 24.26,
+    "flangeThicknessIn": 0.85,
+    "webThicknessIn": 0.55,
+    "sectionModulusIn3": 291.0,
     "sourcePage": 13
   },
   {
@@ -1110,6 +1584,9 @@
     "metric": "W610x195",
     "flangeWidthIn": 12.86,
     "depthIn": 24.48,
+    "flangeThicknessIn": 0.96,
+    "webThicknessIn": 0.605,
+    "sectionModulusIn3": 329.0,
     "sourcePage": 13
   },
   {
@@ -1117,6 +1594,9 @@
     "metric": "W610x217",
     "flangeWidthIn": 12.9,
     "depthIn": 24.74,
+    "flangeThicknessIn": 1.09,
+    "webThicknessIn": 0.65,
+    "sectionModulusIn3": 371.0,
     "sourcePage": 13
   },
   {
@@ -1124,6 +1604,9 @@
     "metric": "W610x241",
     "flangeWidthIn": 12.96,
     "depthIn": 25.0,
+    "flangeThicknessIn": 1.22,
+    "webThicknessIn": 0.705,
+    "sectionModulusIn3": 414.0,
     "sourcePage": 13
   },
   {
@@ -1131,6 +1614,9 @@
     "metric": "W690x125",
     "flangeWidthIn": 9.96,
     "depthIn": 26.71,
+    "flangeThicknessIn": 0.64,
+    "webThicknessIn": 0.46,
+    "sectionModulusIn3": 213.0,
     "sourcePage": 14
   },
   {
@@ -1138,6 +1624,9 @@
     "metric": "W690x140",
     "flangeWidthIn": 9.99,
     "depthIn": 26.92,
+    "flangeThicknessIn": 0.745,
+    "webThicknessIn": 0.49,
+    "sectionModulusIn3": 243.0,
     "sourcePage": 14
   },
   {
@@ -1145,6 +1634,9 @@
     "metric": "W690x152",
     "flangeWidthIn": 10.02,
     "depthIn": 27.09,
+    "flangeThicknessIn": 0.83,
+    "webThicknessIn": 0.515,
+    "sectionModulusIn3": 267.0,
     "sourcePage": 14
   },
   {
@@ -1152,6 +1644,9 @@
     "metric": "W690x170",
     "flangeWidthIn": 10.07,
     "depthIn": 27.29,
+    "flangeThicknessIn": 0.93,
+    "webThicknessIn": 0.57,
+    "sectionModulusIn3": 299.0,
     "sourcePage": 14
   },
   {
@@ -1159,6 +1654,9 @@
     "metric": "W690x217",
     "flangeWidthIn": 13.96,
     "depthIn": 27.38,
+    "flangeThicknessIn": 0.975,
+    "webThicknessIn": 0.605,
+    "sectionModulusIn3": 411.0,
     "sourcePage": 14
   },
   {
@@ -1166,6 +1664,9 @@
     "metric": "W690x240",
     "flangeWidthIn": 14.02,
     "depthIn": 27.59,
+    "flangeThicknessIn": 1.08,
+    "webThicknessIn": 0.66,
+    "sectionModulusIn3": 455.0,
     "sourcePage": 14
   },
   {
@@ -1173,6 +1674,9 @@
     "metric": "W690x265",
     "flangeWidthIn": 14.08,
     "depthIn": 27.81,
+    "flangeThicknessIn": 1.19,
+    "webThicknessIn": 0.725,
+    "sectionModulusIn3": 502.0,
     "sourcePage": 14
   },
   {
@@ -1180,6 +1684,9 @@
     "metric": "W760x134",
     "flangeWidthIn": 10.4,
     "depthIn": 29.53,
+    "flangeThicknessIn": 0.61,
+    "webThicknessIn": 0.47,
+    "sectionModulusIn3": null,
     "sourcePage": 14
   },
   {
@@ -1187,6 +1694,9 @@
     "metric": "W760x147",
     "flangeWidthIn": 10.45,
     "depthIn": 29.65,
+    "flangeThicknessIn": 0.67,
+    "webThicknessIn": 0.52,
+    "sectionModulusIn3": 269.0,
     "sourcePage": 14
   },
   {
@@ -1194,6 +1704,9 @@
     "metric": "W760x161",
     "flangeWidthIn": 10.48,
     "depthIn": 29.83,
+    "flangeThicknessIn": 0.76,
+    "webThicknessIn": 0.545,
+    "sectionModulusIn3": 299.0,
     "sourcePage": 14
   },
   {
@@ -1201,6 +1714,9 @@
     "metric": "W760x173",
     "flangeWidthIn": 10.5,
     "depthIn": 30.01,
+    "flangeThicknessIn": 0.85,
+    "webThicknessIn": 0.565,
+    "sectionModulusIn3": 329.0,
     "sourcePage": 14
   },
   {
@@ -1208,6 +1724,9 @@
     "metric": "W760x185",
     "flangeWidthIn": 10.52,
     "depthIn": 30.17,
+    "flangeThicknessIn": 0.93,
+    "webThicknessIn": 0.585,
+    "sectionModulusIn3": 355.0,
     "sourcePage": 14
   },
   {
@@ -1215,6 +1734,9 @@
     "metric": "W760x196",
     "flangeWidthIn": 10.54,
     "depthIn": 30.31,
+    "flangeThicknessIn": 1.0,
+    "webThicknessIn": 0.615,
+    "sectionModulusIn3": 380.0,
     "sourcePage": 14
   },
   {
@@ -1222,6 +1744,9 @@
     "metric": "W760x257",
     "flangeWidthIn": 14.98,
     "depthIn": 30.44,
+    "flangeThicknessIn": 1.06,
+    "webThicknessIn": 0.655,
+    "sectionModulusIn3": 539.0,
     "sourcePage": 14
   },
   {
@@ -1229,6 +1754,9 @@
     "metric": "W760x284",
     "flangeWidthIn": 15.04,
     "depthIn": 30.68,
+    "flangeThicknessIn": 1.18,
+    "webThicknessIn": 0.71,
+    "sectionModulusIn3": 598.0,
     "sourcePage": 14
   },
   {
@@ -1236,6 +1764,9 @@
     "metric": "W760x314",
     "flangeWidthIn": 15.1,
     "depthIn": 30.94,
+    "flangeThicknessIn": 1.31,
+    "webThicknessIn": 0.775,
+    "sectionModulusIn3": 663.0,
     "sourcePage": 14
   },
   {
@@ -1243,6 +1774,9 @@
     "metric": "W840x176",
     "flangeWidthIn": 11.48,
     "depthIn": 32.86,
+    "flangeThicknessIn": 0.74,
+    "webThicknessIn": 0.55,
+    "sectionModulusIn3": 359.0,
     "sourcePage": 14
   },
   {
@@ -1250,6 +1784,9 @@
     "metric": "W840x193",
     "flangeWidthIn": 11.51,
     "depthIn": 33.09,
+    "flangeThicknessIn": 0.855,
+    "webThicknessIn": 0.58,
+    "sectionModulusIn3": 406.0,
     "sourcePage": 14
   },
   {
@@ -1257,6 +1794,9 @@
     "metric": "W840x210",
     "flangeWidthIn": 11.54,
     "depthIn": 33.3,
+    "flangeThicknessIn": 0.96,
+    "webThicknessIn": 0.605,
+    "sectionModulusIn3": 448.0,
     "sourcePage": 14
   },
   {
@@ -1264,6 +1804,9 @@
     "metric": "W840x226",
     "flangeWidthIn": 11.56,
     "depthIn": 33.49,
+    "flangeThicknessIn": 1.06,
+    "webThicknessIn": 0.635,
+    "sectionModulusIn3": 487.0,
     "sourcePage": 14
   },
   {
@@ -1271,6 +1814,9 @@
     "metric": "W840x299",
     "flangeWidthIn": 15.74,
     "depthIn": 33.68,
+    "flangeThicknessIn": 1.15,
+    "webThicknessIn": 0.715,
+    "sectionModulusIn3": 684.0,
     "sourcePage": 14
   },
   {
@@ -1278,6 +1824,9 @@
     "metric": "W840x329",
     "flangeWidthIn": 15.8,
     "depthIn": 33.93,
+    "flangeThicknessIn": 1.28,
+    "webThicknessIn": 0.775,
+    "sectionModulusIn3": 757.0,
     "sourcePage": 14
   },
   {
@@ -1285,6 +1834,9 @@
     "metric": "W840x359",
     "flangeWidthIn": 15.86,
     "depthIn": 34.18,
+    "flangeThicknessIn": 1.4,
+    "webThicknessIn": 0.83,
+    "sectionModulusIn3": 829.0,
     "sourcePage": 14
   },
   {
@@ -1292,6 +1844,9 @@
     "metric": "W920x201",
     "flangeWidthIn": 11.95,
     "depthIn": 35.55,
+    "flangeThicknessIn": 0.79,
+    "webThicknessIn": 0.6,
+    "sectionModulusIn3": 439.0,
     "sourcePage": 14
   },
   {
@@ -1299,6 +1854,9 @@
     "metric": "W920x223",
     "flangeWidthIn": 11.98,
     "depthIn": 35.85,
+    "flangeThicknessIn": 0.94,
+    "webThicknessIn": 0.625,
+    "sectionModulusIn3": 504.0,
     "sourcePage": 14
   },
   {
@@ -1306,6 +1864,9 @@
     "metric": "W920x238",
     "flangeWidthIn": 12.0,
     "depthIn": 36.01,
+    "flangeThicknessIn": 1.02,
+    "webThicknessIn": 0.65,
+    "sectionModulusIn3": 542.0,
     "sourcePage": 14
   },
   {
@@ -1313,6 +1874,9 @@
     "metric": "W920x253",
     "flangeWidthIn": 12.03,
     "depthIn": 36.17,
+    "flangeThicknessIn": 1.1,
+    "webThicknessIn": 0.68,
+    "sectionModulusIn3": 580.0,
     "sourcePage": 14
   },
   {
@@ -1320,6 +1884,9 @@
     "metric": "W920x271",
     "flangeWidthIn": 12.08,
     "depthIn": 36.33,
+    "flangeThicknessIn": 1.18,
+    "webThicknessIn": 0.725,
+    "sectionModulusIn3": 623.0,
     "sourcePage": 14
   },
   {
@@ -1327,6 +1894,9 @@
     "metric": "W920x289",
     "flangeWidthIn": 12.12,
     "depthIn": 36.49,
+    "flangeThicknessIn": 1.26,
+    "webThicknessIn": 0.765,
+    "sectionModulusIn3": 664.0,
     "sourcePage": 14
   },
   {
@@ -1334,6 +1904,9 @@
     "metric": "W920x313",
     "flangeWidthIn": 12.18,
     "depthIn": 36.69,
+    "flangeThicknessIn": 1.36,
+    "webThicknessIn": 0.83,
+    "sectionModulusIn3": 719.0,
     "sourcePage": 14
   },
   {
@@ -1341,6 +1914,9 @@
     "metric": "W920x345",
     "flangeWidthIn": 16.47,
     "depthIn": 36.49,
+    "flangeThicknessIn": 1.26,
+    "webThicknessIn": 0.76,
+    "sectionModulusIn3": 837.0,
     "sourcePage": 14
   },
   {
@@ -1348,6 +1924,9 @@
     "metric": "W920x368",
     "flangeWidthIn": 16.51,
     "depthIn": 36.67,
+    "flangeThicknessIn": 1.35,
+    "webThicknessIn": 0.8,
+    "sectionModulusIn3": 895.0,
     "sourcePage": 14
   },
   {
@@ -1355,6 +1934,9 @@
     "metric": "W920x390",
     "flangeWidthIn": 16.55,
     "depthIn": 36.85,
+    "flangeThicknessIn": 1.44,
+    "webThicknessIn": 0.84,
+    "sectionModulusIn3": 953.0,
     "sourcePage": 14
   },
   {
@@ -1362,6 +1944,9 @@
     "metric": "W920x420",
     "flangeWidthIn": 16.6,
     "depthIn": 37.11,
+    "flangeThicknessIn": 1.57,
+    "webThicknessIn": 0.885,
+    "sectionModulusIn3": 1030.0,
     "sourcePage": 14
   },
   {
@@ -1369,6 +1954,9 @@
     "metric": "W920x449",
     "flangeWidthIn": 16.66,
     "depthIn": 37.33,
+    "flangeThicknessIn": 1.68,
+    "webThicknessIn": 0.945,
+    "sectionModulusIn3": 1110.0,
     "sourcePage": 14
   }
 ]

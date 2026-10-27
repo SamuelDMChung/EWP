@@ -1,3 +1,11 @@
+# EWP Management Portal — V1.26 WEB
+
+**Steel Beam Lookup** replaces the displayed **Steel Beam Width** name under EWP Tools while retaining the prior `ewp-tools/steel-beam-width/` URL. The utility now includes the **entire 196-row rolled-W table** from the owner's Varsteel reference (imperial and metric designations, actual depth, flange width, flange/web thickness and section modulus), live prefix filtering from the first nominal-depth digit, sortable columns, clickable rows, and a dimensioned W/I cross-section diagram. The two primary dimensional outputs remain flange width and actual depth in decimal inches. See `ewp-tools/steel-beam-width/README.md` and `tests/V1_26_TEST_RESULTS.md`. All 10 HTML page credits now read `V1.26 WEB · Developed by Samuel Chung`.
+
+**Deployment:** Upload the complete ZIP into the root of the existing GitHub Pages repository (`ewp` or `EWP-Forecast`), replacing older files. Commit, push, and hard refresh. No SQL migration or Supabase/Resend/Edge Function/iOS changes. After deployment verify the live JSON module loads, sign-in, 196 rows and two-way designation updates. The source book is a limited reference list (not every historical/current W shape); BCBC snow table audit limitation remains.
+
+---
+
 # EWP Management Portal V1.25 WEB
 
 **New EWP Tools utility: Steel Beam Width.** Four linked imperial/metric designation fields map to the exact two dimensions (flange width and actual depth, decimal inches) for **196 rolled W sections** from the supplied Varsteel Reference Book (PDF pages 10–14). Visit **EWP Tools → Steel Beam Width**. Test W12×14 / W310×21 for **3.97 in flange** and **11.91 in depth**. Unlisted members are rejected; nothing is approximated. All other workspaces and the two previous tools are retained. See `PORTAL_HANDOFF.md`, `ewp-tools/steel-beam-width/README.md`, and `tests/V1_25_TEST_RESULTS.md`.

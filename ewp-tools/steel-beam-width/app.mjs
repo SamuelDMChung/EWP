@@ -1,4 +1,4 @@
-import {mountSteelBeamWidth} from './lookup.mjs?v=1.25';
+import {mountSteelBeamWidth} from './lookup.mjs?v=1.26';
 
 const status=document.getElementById('beamStatus');
 try {

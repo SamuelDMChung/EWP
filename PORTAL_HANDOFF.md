@@ -1,3 +1,30 @@
+# EWP Management Portal — V1.26 WEB: Steel Beam Lookup full reference table
+
+**Canonical input:** Full `EWP_Management_Portal_V1_25_WEB_FULL.zip`. **Release:** `EWP_Management_Portal_V1_26_WEB_FULL.zip` (October 27, 2026). **Next:** V1.27 WEB. **WEB only.** EWP Connect iOS unchanged.
+
+## Approved change
+
+- Renamed the third EWP Tools utility in the interface from **Steel Beam Width** to **Steel Beam Lookup**. Display name, HTML title, headings, hub card, descriptions, docs and V1.26 credits are updated. The existing relative route **`ewp-tools/steel-beam-width/` stays unchanged** so already distributed links/bookmarks remain valid.
+- Added a full, in-page **196-section Varsteel rolled-W reference table** below the existing four synchronized designation fields and two primary outputs. Seven columns: imperial designation, metric designation, actual depth `d` (in), flange width `bf` (in), flange thickness `tf` (in), web thickness `tw` (in), and section modulus `Sx` (in³). Columns are sortable by their numeric values; the table scrolls vertically with a sticky header and horizontally on narrow devices. Each row's imperial designation is a keyboard-accessible select action that fills both designation pairs and the dimension outputs.
+- **Filtering begins from the first digit typed** in either imperial or metric nominal-depth input. The current source system's weight/mass field further refines the visible rows. Clicking a row selects that exact published designation. Clearing restores the full table and resets both inputs/results. No approximations of nominal designation equivalences or physical flange/depth values.
+- Added a small inline-SVG **W/I cross-section schematic** next to the existing two main dimensions. Only the measured **flange width (`bf`) and actual depth (`d`)** are shown on the schematic; their labels update for the selected beam. The schematic is explicitly not to scale. The two primary numerical outputs remain flange width and actual depth, each in decimal inches.
+- Enriched the locally bundled `w-sections.json` with flange/web thickness and section modulus using the user's **Varsteel Reference Book**, PDF pages 10–14 (printed 4–8), retaining **all 196 original imperial/metric pairs, flange widths, depths and source-page references unchanged**. In that book, **W30×90's section modulus is blank**, so the table shows a dash instead of inventing a value. The book is not exhaustive of all historical/new North American W shapes; WWF, S and HP sections are excluded. Original PDF isn't shipped; `tests/extract_varsteel_w.py` can reproduce all fields from the user-provided PDF.
+- The reference table is loaded with a local JSON fetch and is used entirely in the browser. **No SQL, schema, authentication, RLS, Supabase records, Edge Functions, Resend or EWP Connect iOS changes.** All 10 HTML pages display `V1.26 WEB · Developed by Samuel Chung` and the appropriate `?v=1.26` entrypoint cache-busting suffix. Existing relative paths support either the renamed `/ewp/` or legacy `/EWP-Forecast/` repository name.
+
+## Tests and deployment
+
+- `tests/v1_26_smoke.mjs`: **47 assertions**, including 196 bi-directional W pairs, all seven table fields, source-matched W12×14, filtering after one depth, two-way synchronized values, sorting, row-selection markup, and 10-page versions.
+- `tests/browser_smoke_v1_26.py`: **4 offline Chromium in-memory scenarios** for desktop 1350px / mobile 390px, both light and dark; covers table 196 → filtered 30 → one row, two-way designation inputs, SVG updates, sorting, row click, Clear, no horizontal page overflow and no JS errors. Screenshots are bundled. This browser harness injects actual DOM/CSS/module code but **does not test HTTP JSON retrieval or live authentication**. A local HTTP / network-intercept browser test was blocked by the test environment's network policy; that was not counted as passed.
+- Regression: unchanged V1.21 31 checks and V1.22 23 PDF parsing checks pass (Sherman Road HUC610 = 50 pcs); V1.24 30 pressure-converter checks and V1.25 33 lookup checks pass with cache-version/credits expectations updated to V1.26. Source data carries all V1.25 measured dimensions identically. See `tests/V1_26_TEST_RESULTS.md` for limitations and deployed QA.
+- **Deploy**: replace repository root with the complete V1.26 ZIP; commit/push to GitHub Pages; hard-refresh. No migrations or Edge Function deployment. Verify EWP Tools → Steel Beam Lookup, W12×14 ↔ W310×21 and width **3.97 in**/depth **11.91 in**, first depth field filtering, table sorting and row clicks, dark/mobile and other workspaces. Test the live JSON fetch, sign-in and relevant production read flows after deployment; these were not tested in production.
+
+## Pre-existing limitations retained
+
+- Snow Load Calculator's BC listed-city Ss/Sr dataset has not been exhaustively audited against BCBC 2024.
+- No live production Supabase, Outlook email, GitHub Pages or NRCan test during V1.26 work.
+
+---
+
 # EWP Management Portal — V1.25 WEB: Steel Beam Width
 
 **Canonical input:** Full `EWP_Management_Portal_V1_24_WEB_FULL.zip`. **Release:** `EWP_Management_Portal_V1_25_WEB_FULL.zip` (October 27, 2026). **Next:** V1.26 WEB. **WEB ONLY**; EWP Connect iOS unchanged.

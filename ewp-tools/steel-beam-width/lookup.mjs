@@ -1,6 +1,4 @@
-/** V1.25: exact W-section lookup (not a numeric conversion formula).
- * Values derive from the Varsteel Reference Book, PDF pages 10-14.
- */
+/** V1.26: Steel Beam Lookup, Varsteel rolled W sections; published dimensions only. */
 export function splitBeamDesignation(designation) {
   const match = /^W\s*(\d+)\s*[x×]\s*(\d+)$/i.exec(String(designation ?? '').trim());
   return match ? {depth: match[1], weight: match[2]} : null;
@@ -18,22 +16,23 @@ export function buildBeamIndex(rows) {
   for (const row of rows) {
     const imp = splitBeamDesignation(row.imperial);
     const met = splitBeamDesignation(row.metric);
-    if (!imp || !met || !Number.isFinite(row.flangeWidthIn) || !Number.isFinite(row.depthIn) || row.flangeWidthIn <= 0 || row.depthIn <= 0) {
+    if (!imp || !met || !Number.isFinite(row.flangeWidthIn) || !Number.isFinite(row.depthIn) ||
+      row.flangeWidthIn <= 0 || row.depthIn <= 0 || !Number.isFinite(row.flangeThicknessIn) ||
+      !Number.isFinite(row.webThicknessIn) || row.flangeThicknessIn <= 0 || row.webThicknessIn <= 0 ||
+      (row.sectionModulusIn3 !== null && (!Number.isFinite(row.sectionModulusIn3) || row.sectionModulusIn3 <= 0))) {
       throw new Error('Invalid beam table record.');
     }
     const impKey = `${Number(imp.depth)}:${Number(imp.weight)}`;
     const metKey = `${Number(met.depth)}:${Number(met.weight)}`;
     if (imperial.has(impKey) || metric.has(metKey)) throw new Error('Duplicate beam designation in reference table.');
-    imperial.set(impKey, row);
-    metric.set(metKey, row);
-    imperialDepths.add(Number(imp.depth));
-    metricDepths.add(Number(met.depth));
+    imperial.set(impKey, row);metric.set(metKey, row);
+    imperialDepths.add(Number(imp.depth));metricDepths.add(Number(met.depth));
     if (!imperialWeights.has(+imp.depth)) imperialWeights.set(+imp.depth, new Set());
     if (!metricWeights.has(+met.depth)) metricWeights.set(+met.depth, new Set());
     imperialWeights.get(+imp.depth).add(+imp.weight);
     metricWeights.get(+met.depth).add(+met.weight);
   }
-  return {imperial,metric,imperialDepths,metricDepths,imperialWeights,metricWeights, size:rows.length};
+  return {imperial,metric,imperialDepths,metricDepths,imperialWeights,metricWeights,size:rows.length};
 }
 
 export function lookupBeam(index, system, depth, weight) {
@@ -49,70 +48,150 @@ export function optionsFor(index, system, depth='') {
   return {depths:allDepths,weights};
 }
 
+function startsNominal(value, typed) {
+  const t = String(typed ?? '').trim();
+  if (!t) return true;
+  if (!/^\d+$/.test(t)) return false;
+  const normalized = t.replace(/^0+(?=\d)/, '');
+  return String(value).startsWith(normalized);
+}
+
+/** Prefix filter: the very first nominal depth digit narrows the full table. */
+export function filterBeamRows(rows, system, nominalDepth='',weight='') {
+  if (!['imperial','metric'].includes(system)) throw new RangeError('Unknown beam designation system.');
+  return rows.filter(row=>{
+    const v = splitBeamDesignation(row[system]);
+    return v && startsNominal(v.depth,nominalDepth) && startsNominal(v.weight,weight);
+  });
+}
+
+/** Stable, numeric table sorting; absent published values appear last. */
+export function sortBeamRows(rows, column='imperial', direction='asc') {
+  const valid=['imperial','metric','depthIn','flangeWidthIn','flangeThicknessIn','webThicknessIn','sectionModulusIn3'];
+  if (!valid.includes(column) || !['asc','desc'].includes(direction)) throw new RangeError('Unknown sort column/direction.');
+  return rows.map((row,i)=>({row,i})).sort((a,b)=>{
+    const val=r=>column==='imperial'||column==='metric' ? splitBeamDesignation(r[column]) : r[column];
+    const x=val(a.row),y=val(b.row);
+    if (x==null || y==null) return x==null && y==null ? a.i-b.i : x==null ? 1 : -1;
+    const diff=typeof x==='object' ? (Number(x.depth)-Number(y.depth) || Number(x.weight)-Number(y.weight)) : x-y;
+    return (direction==='asc'?diff:-diff) || a.i-b.i;
+  }).map(x=>x.row);
+}
+
 function setDatalist(list, values) {
   list.replaceChildren(...values.map(value=>{const option=list.ownerDocument.createElement('option');option.value=String(value);return option;}));
 }
 
-/** Small, dependency-free UI controller. Mirrors designation pairs ONLY upon exact table match. */
+function displayNumber(n, digits=2){return n==null?'—':Number(n).toFixed(digits);}
+
+/** UI controller: no API/DB requests; only locally loaded catalogue rows. */
 export function mountSteelBeamWidth(doc, rows) {
-  const index = buildBeamIndex(rows);
-  const fields = {
-    imperial: {depth:doc.getElementById('beamImperialDepth'),weight:doc.getElementById('beamImperialWeight')},
-    metric: {depth:doc.getElementById('beamMetricDepth'),weight:doc.getElementById('beamMetricMass')}
+  const index=buildBeamIndex(rows);
+  const fields={
+    imperial:{depth:doc.getElementById('beamImperialDepth'),weight:doc.getElementById('beamImperialWeight')},
+    metric:{depth:doc.getElementById('beamMetricDepth'),weight:doc.getElementById('beamMetricMass')}
   };
   const lists={
     imperial:{depth:doc.getElementById('beamImperialDepthList'),weight:doc.getElementById('beamImperialWeightList')},
     metric:{depth:doc.getElementById('beamMetricDepthList'),weight:doc.getElementById('beamMetricMassList')}
   };
-  const status=doc.getElementById('beamStatus');
-  const width=doc.getElementById('beamFlangeWidth');
-  const depth=doc.getElementById('beamActualDepth');
-  const title=doc.getElementById('beamMatchedTitle');
-  const clear=doc.getElementById('beamClear');
-  const available=doc.getElementById('beamCount');
-  if ([...Object.values(fields).flatMap(pair=>Object.values(pair)),...Object.values(lists).flatMap(pair=>Object.values(pair)),status,width,depth,title,clear,available].some(node=>!node)) {
-    throw new Error('Steel Beam Width page is missing required controls.');
+  const el=id=>doc.getElementById(id);
+  const status=el('beamStatus'),width=el('beamFlangeWidth'),depth=el('beamActualDepth');
+  const title=el('beamMatchedTitle'),clear=el('beamClear'),available=el('beamCount');
+  const tableBody=el('beamTableBody'),tableCount=el('beamTableCount'),tableEmpty=el('beamTableEmpty');
+  const diagWidth=el('beamDiagramWidth'),diagDepth=el('beamDiagramDepth'),diagram=el('beamDiagram');
+  const headers=[...doc.querySelectorAll('[data-beam-sort]')];
+  if ([...Object.values(fields).flatMap(pair=>Object.values(pair)),...Object.values(lists).flatMap(pair=>Object.values(pair)),status,width,depth,title,clear,available,tableBody,tableCount,tableEmpty,diagWidth,diagDepth,diagram].some(node=>!node)) {
+    throw new Error('Steel Beam Lookup page is missing required controls.');
   }
   available.textContent=String(index.size);
-  for (const system of ['imperial','metric']) {
-    setDatalist(lists[system].depth,optionsFor(index,system).depths);
-  }
-  const resetResult=()=>{width.textContent='—';depth.textContent='—';title.textContent='No section selected';};
-  const update=(source)=>{
-    const other=source==='imperial'?'metric':'imperial';
-    const pair=fields[source];
-    setDatalist(lists[source].weight,optionsFor(index,source,pair.depth.value).weights);
-    const inputDepth=pair.depth.value.trim(), inputWeight=pair.weight.value.trim();
-    if (!inputDepth || !inputWeight) {
-      fields[other].depth.value='';fields[other].weight.value='';
-      resetResult();status.textContent='Enter both designation values to find a W beam.';status.dataset.state='neutral';return;
-    }
-    const found=lookupBeam(index,source,inputDepth,inputWeight);
-    if (!found) {
-      fields[other].depth.value='';fields[other].weight.value='';
-      resetResult();status.textContent=`No matching ${source} W section in the reference book. Check the depth and weight.`;status.dataset.state='warning';return;
-    }
-    const otherValues=splitBeamDesignation(found[other]);
-    fields[other].depth.value=otherValues.depth;
-    fields[other].weight.value=otherValues.weight;
-    setDatalist(lists[other].weight,optionsFor(index,other,otherValues.depth).weights);
-    width.textContent=`${found.flangeWidthIn.toFixed(2)}″`;
-    depth.textContent=`${found.depthIn.toFixed(2)}″`;
-    title.textContent=`${found.imperial.replace('x','×')}  /  ${found.metric.replace('x','×')}`;
-    status.textContent=`Matched Varsteel reference, PDF page ${found.sourcePage}.`;
-    status.dataset.state='success';
+  for(const sys of ['imperial','metric']) setDatalist(lists[sys].depth,optionsFor(index,sys).depths);
+  let activeSystem='imperial',selected=null,sortColumn='imperial',sortDirection='asc';
+  const statusSet=(message,state='neutral')=>{status.textContent=message;status.dataset.state=state;};
+  const resetResult=()=>{
+    width.textContent='—';depth.textContent='—';title.textContent='No section selected';
+    diagWidth.textContent='bf = —';diagDepth.textContent='d = —';
+    diagram.setAttribute('aria-label','Illustrative W-beam cross-section showing flange width and overall depth; select a W section to see dimensions.');
   };
-  for (const system of ['imperial','metric']) for (const field of ['depth','weight']) {
-    fields[system][field].addEventListener('input',()=>update(system));
-    fields[system][field].addEventListener('change',()=>update(system));
+  function applySelection(found) {
+    selected=found;
+    const i=splitBeamDesignation(found.imperial),m=splitBeamDesignation(found.metric);
+    fields.imperial.depth.value=i.depth;fields.imperial.weight.value=i.weight;
+    fields.metric.depth.value=m.depth;fields.metric.weight.value=m.weight;
+    for(const sys of ['imperial','metric']) setDatalist(lists[sys].weight,optionsFor(index,sys,fields[sys].depth.value).weights);
+    width.textContent=`${displayNumber(found.flangeWidthIn)}″`;
+    depth.textContent=`${displayNumber(found.depthIn)}″`;
+    title.textContent=`${found.imperial.replace('x','×')} / ${found.metric.replace('x','×')}`;
+    diagWidth.textContent=`bf = ${displayNumber(found.flangeWidthIn)}″`;
+    diagDepth.textContent=`d = ${displayNumber(found.depthIn)}″`;
+    diagram.setAttribute('aria-label',`W-beam cross-section: flange width ${displayNumber(found.flangeWidthIn)} inches; actual depth ${displayNumber(found.depthIn)} inches. Not to scale.`);
+    statusSet(`Matched Varsteel reference, PDF page ${found.sourcePage}.`,'success');
+  }
+  const recordNodes=new Map();
+  for(const beam of rows){
+    const tr=doc.createElement('tr');tr.className='beam-row';
+    const imperialCell=doc.createElement('td');
+    const pick=doc.createElement('button');pick.type='button';pick.className='beam-row-select';pick.textContent=beam.imperial.replace('x','×');
+    pick.setAttribute('aria-label',`Select ${beam.imperial.replace('x',' by ')}`);
+    pick.addEventListener('click',()=>{activeSystem='imperial';applySelection(beam);renderTable();});
+    imperialCell.append(pick);tr.append(imperialCell);
+    const cells=[beam.metric.replace('x','×'),displayNumber(beam.depthIn),displayNumber(beam.flangeWidthIn),displayNumber(beam.flangeThicknessIn,3),displayNumber(beam.webThicknessIn,3),displayNumber(beam.sectionModulusIn3,2)];
+    for(const [i,value] of cells.entries()){const td=doc.createElement('td');td.textContent=value;if(i>0)td.className='beam-number';tr.append(td);}
+    recordNodes.set(beam,tr);
+  }
+  function renderTable() {
+    const pair=fields[activeSystem];
+    const filtered=filterBeamRows(rows,activeSystem,pair.depth.value,pair.weight.value);
+    const sorted=sortBeamRows(filtered,sortColumn,sortDirection);
+    tableBody.replaceChildren(...sorted.map(row=>{
+      const node=recordNodes.get(row);
+      node.classList.toggle('beam-row--selected',row===selected);
+      return node;
+    }));
+    tableCount.textContent=`Showing ${filtered.length} of ${index.size} sections`;
+    tableEmpty.hidden=filtered.length!==0;
+    for(const header of headers){
+      const isCurrent=header.dataset.beamSort===sortColumn;
+      header.closest('th').setAttribute('aria-sort',isCurrent?(sortDirection==='asc'?'ascending':'descending'):'none');
+      header.querySelector('.beam-sort-indicator').textContent=isCurrent?(sortDirection==='asc'?' ▲':' ▼'):'';
+    }
+  }
+  for(const header of headers) header.addEventListener('click',()=>{
+    const next=header.dataset.beamSort;
+    sortDirection=sortColumn===next && sortDirection==='asc' ? 'desc' : 'asc';sortColumn=next;renderTable();
+  });
+  function update(source){
+    activeSystem=source;selected=null;
+    const other=source==='imperial'?'metric':'imperial',pair=fields[source];
+    setDatalist(lists[source].weight,optionsFor(index,source,pair.depth.value).weights);
+    const d=pair.depth.value.trim(),w=pair.weight.value.trim();
+    if(!d || !w){
+      fields[other].depth.value='';fields[other].weight.value='';
+      resetResult();statusSet('Enter both designation values, or select a row from the filtered table.');
+      renderTable();return;
+    }
+    const found=lookupBeam(index,source,d,w);
+    if(!found){
+      fields[other].depth.value='';fields[other].weight.value='';
+      resetResult();statusSet(`No matching ${source} W section in the Varsteel table. Check the values or choose a listed row.`,'warning');
+      renderTable();return;
+    }
+    applySelection(found);renderTable();
+  }
+  for(const sys of ['imperial','metric'])for(const part of ['depth','weight']){
+    fields[sys][part].addEventListener('input',()=>update(sys));
+    fields[sys][part].addEventListener('change',()=>update(sys));
   }
   clear.addEventListener('click',()=>{
-    for (const pair of Object.values(fields)) for (const node of Object.values(pair)) node.value='';
-    for (const system of ['imperial','metric']) setDatalist(lists[system].weight,[]);
-    resetResult();status.textContent='Enter a W-beam designation in either system.';status.dataset.state='neutral';
+    for(const pair of Object.values(fields))for(const node of Object.values(pair))node.value='';
+    for(const sys of ['imperial','metric'])setDatalist(lists[sys].weight,[]);
+    selected=null;activeSystem='imperial';sortColumn='imperial';sortDirection='asc';resetResult();
+    statusSet('Enter a W designation or select a row from the full table.');renderTable();
     fields.imperial.depth.focus();
   });
-  status.textContent='Enter a W-beam designation in either system.';
-  status.dataset.state='neutral';
+  resetResult();statusSet('Enter a W designation or select a row from the full table.');renderTable();
   return index;
 }
+
+// Alias for new consumers without changing the earlier public module entrypoint.
+export const mountSteelBeamLookup=mountSteelBeamWidth;

@@ -1,3 +1,9 @@
+# EWP Tools — V1.26 WEB
+
+Third utility displayed as **Steel Beam Lookup** (unchanged route `steel-beam-width/` for links). Its reference page now shows the complete 196-row Varsteel rolled-W table, filters as soon as imperial or metric nominal depth is typed, has weight/mass filtering, click-to-select rows, numeric column sorting and a small dynamically dimensioned I-beam graphic. Two numerical primary outputs stay flange width and actual depth in decimal inches. Seven-column table adds flange/web thickness and section modulus; see the utility README and `tests/V1_26_TEST_RESULTS.md`. Both previous tools are unchanged, no SQL or Supabase operations.
+
+---
+
 # EWP Tools — V1.25 WEB
 
 Third utility **Steel Beam Width** added under `steel-beam-width/`: 196 Varsteel rolled W shapes, exact cross-linked imperial W(depth in × lb/ft) and metric W(depth mm × kg/m), outputs actual flange width and depth to 2 decimal inches, no approximations. Existing material consolidation and snow-load utilities unchanged. View remains EWP. See `steel-beam-width/README.md` and `tests/V1_25_TEST_RESULTS.md`. No SQL or Supabase changes.

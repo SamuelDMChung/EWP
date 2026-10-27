@@ -1,3 +1,9 @@
+# V1.24 WEB — Quick Unit Converter
+
+The Snow Load Calculator page now has a separate kPa/psf converter card below its existing snow design panel. Either input can drive conversion immediately, and Clear resets both. No dependencies or database writes; the existing Ss/Sr/Cb calculation and all other tools are unchanged. See `snow-load/README.md` and the root `PORTAL_HANDOFF.md`.
+
+---
+
 # EWP Tools — V1.23 WEB
 
 Portal navigation now groups EWP Tools under **EWP** (olive). Both nested utilities return to the EWP-filtered Portal through the header/brand, while their breadcrumbs still return to the EWP Tools hub. Workspace icons in the Portal use the owner's new SVG art. The material consolidation, PDF export, snow calculator and NRCan lookup logic are unchanged. No database changes.

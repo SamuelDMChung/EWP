@@ -1,5 +1,5 @@
-import {downloadMaterialPdf} from './export-pdf.mjs?v=1.23';
-import {consolidatePages,extractPdfPages,toTsv,combinedTsv,toEmailHtml,combinedEmailHtml,formatFeet} from './parser.mjs?v=1.23';
+import {downloadMaterialPdf} from './export-pdf.mjs?v=1.24';
+import {consolidatePages,extractPdfPages,toTsv,combinedTsv,toEmailHtml,combinedEmailHtml,formatFeet} from './parser.mjs?v=1.24';
 const $=id=>document.getElementById(id);
 const current={result:null,pdf:null,library:null,busy:false};
 

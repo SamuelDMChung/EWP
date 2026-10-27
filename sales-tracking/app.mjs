@@ -1,4 +1,4 @@
-import {filterSalesRows} from './filters.mjs?v=1.23';
+import {filterSalesRows} from './filters.mjs?v=1.24';
 /** EWP V1.17 — read-only Sales Project Tracking. No POST/UPDATE/DELETE calls. */
 import { restoreSession, getAccessToken, EWP_AUTH_STORAGE_KEY } from '../forecast/auth.mjs?v=1.0-p3';
 import { SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY } from '../forecast/config.mjs';

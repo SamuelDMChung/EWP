@@ -1,3 +1,25 @@
+# EWP Management Portal — V1.24 WEB: Independent kPa ↔ psf Converter
+
+**Canonical input:** Complete `EWP_Management_Portal_V1_23_WEB_FULL.zip`. **Release:** `EWP_Management_Portal_V1_24_WEB_FULL.zip` (October 27, 2026). **Next:** V1.25 WEB. **Scope:** WEB ONLY; EWP Connect iOS untouched.
+
+## Approved V1.24 feature
+
+- The Snow Load Calculator at `ewp-tools/snow-load/` now has a **separate, clearly divided Quick Unit Converter** card **below** the existing roof snow-load calculator.
+- Two editable fields, **Pressure (kPa)** and **Pressure (psf)**, update the other side immediately as the user types. The edited/source input is never rewritten. **Clear** empties both fields and resets any validation notice. Blank or malformed input clears the opposite field rather than displaying a stale value; zero, negative values, decimals and scientific notation are accepted.
+- The converter uses the **same fixed physical conversion** used by the existing snow result, `1 kPa = 20.885434273 psf`. UI output is up to 4 decimals for psf and 6 decimals for kPa, with extra precision for values too small to round safely. It needs **no external API or database**.
+- The converter uses its own `pressure-converter.mjs` module and unique `pressure*` input IDs. It **does not read/write Ss, Sr, Cb, location selection, or snowResultKpa/snowResultPsf**; all snow math, Table C-2 records, NRCan, material PDF extraction, Sales filters, all other workspaces, settings, themes, auth/RLS and purchasing remain unchanged.
+- All nine HTML pages display `V1.24 WEB · Developed by Samuel Chung`; app entrypoints and local JS/CSS cache query suffixes upgraded to `?v=1.24`. `assets/workspace-icons/` remains unchanged.
+
+## QA and deployment
+
+- `tests/v1_24_smoke.mjs`: **30 assertions** cover exact conversion ratios, round trips, positive/negative/zero/blank/invalid inputs, editing each field, Clear, independence from snow inputs/results and correct layout/script placement.
+- `tests/browser_smoke_v1_24.py`: actual converter script with its one unchanged constant import replaced in an **offline Chromium in-memory harness**, tests two-way editing/invalid/Clear/S preservation and no horizontal overflow at **1350 px / 390 px** in **light and dark**; captures converter snapshots. This is a browser interaction/style test, **not** live GitHub Pages, NRCan, or Supabase integration. See `tests/V1_24_TEST_RESULTS.md`.
+- Prior V1.21 **31** smoke assertions and V1.22 **23** PDF/geometric regression assertions passed unchanged, including Sherman Road L5 `HUC610` quantity and the all-level **50 pcs** total. All module syntax, local import paths, nine page credits, and ZIP integrity verified. No new SQL or migrations.
+- **Deploy:** Extract full `EWP_Management_Portal_V1_24_WEB_FULL.zip` contents into GitHub Pages repo **root** (either older `EWP-Forecast` or renamed `ewp`), replacing existing WEB files, commit/push, wait for Pages and hard-refresh. Existing relative navigation works with both paths; do not add a hardcoded repository prefix. Open EWP Tools → Snow Load Calculator → scroll below the snow-load result to test both directions and Clear. Check light/dark/mobile, signed-in session, NRCan, Sales Tracking All Sales, Forecast ↔ Tracker, Purchasing, and the Sherman Road material PDF. **No Supabase / RLS / Edge Function / Resend changes or iOS changes required.**
+- **Pre-existing limitation retained:** The Snow Load Calculator's city Ss/Sr list was originally transcribed from a BCBC 2018 PDF and has NOT been fully audited row-by-row against BCBC 2024. Do not treat its preliminary listed-city values as independently verified 2024 engineering design data.
+
+---
+
 # EWP Management Portal — V1.23 WEB: Sales Overview, Grouped Navigation, SVG Workspace Icons
 
 **Canonical input:** Full `EWP_Management_Portal_V1_22_WEB_FULL.zip` source release, plus the owner's `EWP_Portal_18_SVG_Icons(1).zip` (the `01_Selected` artwork). **Release:** `EWP_Management_Portal_V1_23_WEB_FULL.zip` (October 23, 2026). **Next:** V1.24 WEB. **Scope:** WEB ONLY, no EWP Connect iOS changes.

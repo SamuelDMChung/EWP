@@ -4,8 +4,8 @@
  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light">
  <meta name="description" content="Simplified BCBC 2024 roof snow load calculation using custom Ss/Sr or British Columbia reference locations.">
  <title>Snow Load Calculator — EWP Tools</title>
- <link rel="stylesheet" href="../../portal-nav.css?v=1.23"><link rel="stylesheet" href="../../theme.css?v=1.23"><link rel="stylesheet" href="../tools.css?v=1.23"><link rel="stylesheet" href="./styles.css?v=1.23">
- <script src="../../theme.js?v=1.23"></script>
+ <link rel="stylesheet" href="../../portal-nav.css?v=1.24"><link rel="stylesheet" href="../../theme.css?v=1.24"><link rel="stylesheet" href="../tools.css?v=1.24"><link rel="stylesheet" href="./styles.css?v=1.24">
+ <script src="../../theme.js?v=1.24"></script>
 </head>
 <body>
  <nav class="ewp-portal-nav" aria-label="EWP Management navigation">
@@ -27,7 +27,7 @@
     </div>
     <span class="ewp-portal-nav__account" id="ewpNavAccount" aria-live="polite"></span>
   </nav>
- <header class="tools-header"><div><span class="eyebrow">EWP TOOLS</span><h1>Snow Load Calculator</h1><p>V1.23 WEB · Developed by Samuel Chung</p></div><button id="ewpToolsSettings" type="button" class="tool-button ewp-settings-trigger">⚙ Settings</button></header>
+ <header class="tools-header"><div><span class="eyebrow">EWP TOOLS</span><h1>Snow Load Calculator</h1><p>V1.24 WEB · Developed by Samuel Chung</p></div><button id="ewpToolsSettings" type="button" class="tool-button ewp-settings-trigger">⚙ Settings</button></header>
  <main class="tools-main snow-main">
   <div class="tools-breadcrumb"><a href="../">← All EWP Tools</a></div>
   <section class="tools-panel snow-panel">
@@ -71,9 +71,31 @@
    <p class="snow-note">Important: Table C-2 values apply to the code-listed reference point and its elevation. Do not use a nearest-location match as an approved value for an unlisted site without verification. Confirm requirements with the EOR/local authority and, where needed, Environment and Climate Change Canada. Part 9 minimum of 1.0 kPa applies when selected. The result is not a complete roof design.</p>
    <p class="small-hint">Sources: <a href="https://www2.gov.bc.ca/gov/content/industry/construction-industry/building-codes-standards/bc-codes/2024-bc-codes" target="_blank" rel="noopener noreferrer">BCBC 2024</a> · Division B, Appendix C, Table C-2; <a href="https://natural-resources.canada.ca/maps-tools-publications/satellite-elevation-air-photos/geolocation-service" target="_blank" rel="noopener noreferrer">NRCan Geolocator</a>.</p>
   </section>
+  <div class="snow-converter-separator" aria-hidden="true"><span>Independent utility</span></div>
+  <section class="tools-panel snow-converter-panel" aria-labelledby="snowConverterTitle">
+   <div class="snow-converter-heading">
+    <div>
+     <h2 id="snowConverterTitle">Quick Unit Converter</h2>
+     <p class="small-hint">kPa ↔ psf · Enter either value to convert instantly. This does not change the snow-load calculation above.</p>
+    </div>
+    <button id="pressureClear" class="tool-button snow-converter-clear" type="button">Clear</button>
+   </div>
+   <div class="snow-converter-fields">
+    <label class="snow-label" for="pressureKpa">Pressure (kPa)
+     <input id="pressureKpa" class="snow-field" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" value="1" aria-describedby="pressureRatio" />
+    </label>
+    <span class="snow-converter-arrows" aria-hidden="true">⇄</span>
+    <label class="snow-label" for="pressurePsf">Pressure (psf)
+     <input id="pressurePsf" class="snow-field" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" value="20.8854" aria-describedby="pressureRatio" />
+    </label>
+   </div>
+   <p id="pressureRatio" class="small-hint snow-converter-ratio">1 kPa = 20.8854 psf</p>
+   <p id="pressureMessage" class="snow-converter-message" role="status" aria-live="polite"></p>
+  </section>
  </main>
- <footer class="tools-footer"><span>EWP Management Portal</span><span>V1.23 WEB · Developed by Samuel Chung</span></footer>
- <script type="module" src="../../workspace-auth.mjs?v=1.23"></script>
- <script type="module" src="./app.mjs?v=1.23"></script>
- <script type="module" src="../../shared-settings.mjs?v=1.23"></script>
+ <footer class="tools-footer"><span>EWP Management Portal</span><span>V1.24 WEB · Developed by Samuel Chung</span></footer>
+ <script type="module" src="../../workspace-auth.mjs?v=1.24"></script>
+ <script type="module" src="./app.mjs?v=1.24"></script>
+ <script type="module" src="./pressure-converter.mjs?v=1.24"></script>
+ <script type="module" src="../../shared-settings.mjs?v=1.24"></script>
 </body></html>

@@ -1,3 +1,11 @@
+# V1.24 Quick Unit Converter addendum
+
+Located **below** the existing simplified roof snow-load calculator in a separate card. Type any finite number into either **Pressure (kPa)** or **Pressure (psf)**; the other field updates immediately using `1 kPa = 20.885434273 psf`. Clear resets both. Malformed numbers cause the opposite field to clear with a short validation message. Conversion runs locally with no third-party service, and it is independent of all roof-design fields/results. Implementation: `pressure-converter.mjs`; tests `tests/v1_24_smoke.mjs` and `tests/browser_smoke_v1_24.py`.
+
+**Existing BCBC 2024 dataset limitation and engineering warnings remain unchanged**. No city values, roof formulas or NRCan logic have been modified.
+
+---
+
 # Snow Load Calculator — V1.21 WEB
 
 This utility is a browser-only simplified **uniform** roof snow-load calculator inspired by the input pattern of Jabacus. It is NOT a substitute for the EOR's complete roof snow, drifting, roof geometry, slope, wind exposure, accumulation, importance, local-authority or load-combination analysis.

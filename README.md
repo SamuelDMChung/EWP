@@ -1,3 +1,9 @@
+# EWP Management Portal — V1.24 WEB (current)
+
+The complete **V1.24 WEB** release is built from V1.23 WEB with a dedicated **Quick Unit Converter (kPa ↔ psf)** under EWP Tools → Snow Load Calculator. It has two instantly synchronized editable numeric fields and a Clear control, visually separate from the snow-load design panel; it does **not change roof snow-load results or any other Portal module**. All nine page credits and cache versions have been updated. No SQL migration, Supabase data write, or EWP Connect iOS change. Read `PORTAL_HANDOFF.md` first for exact release changes and deployment, then `tests/V1_24_TEST_RESULTS.md` for tested versus untested environments. Next planned version V1.25 WEB.
+
+---
+
 # EWP Management Portal — V1.23 WEB: Sales Overview, Grouped Navigation, SVG Workspace Icons
 
 **Canonical input:** Full `EWP_Management_Portal_V1_22_WEB_FULL.zip` source release, plus the owner's `EWP_Portal_18_SVG_Icons(1).zip` (the `01_Selected` artwork). **Release:** `EWP_Management_Portal_V1_23_WEB_FULL.zip` (October 23, 2026). **Next:** V1.24 WEB. **Scope:** WEB ONLY, no EWP Connect iOS changes.

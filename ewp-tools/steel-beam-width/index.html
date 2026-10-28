@@ -4,8 +4,8 @@
  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light">
  <meta name="description" content="Exact W-beam flange width and depth lookup with linked imperial and metric designations.">
  <title>Steel Beam Lookup — EWP Tools</title>
- <link rel="stylesheet" href="../../portal-nav.css?v=1.26"><link rel="stylesheet" href="../../theme.css?v=1.26"><link rel="stylesheet" href="../tools.css?v=1.26"><link rel="stylesheet" href="./styles.css?v=1.26">
- <script src="../../theme.js?v=1.26"></script>
+ <link rel="stylesheet" href="../../portal-nav.css?v=1.28"><link rel="stylesheet" href="../../theme.css?v=1.28"><link rel="stylesheet" href="../tools.css?v=1.28"><link rel="stylesheet" href="./styles.css?v=1.28">
+ <script src="../../theme.js?v=1.28"></script>
 </head>
 <body>
  <nav class="ewp-portal-nav" aria-label="EWP Management navigation">
@@ -27,12 +27,12 @@
     </div>
     <span class="ewp-portal-nav__account" id="ewpNavAccount" aria-live="polite"></span>
   </nav>
- <header class="tools-header"><div><span class="eyebrow">EWP TOOLS</span><h1>Steel Beam Lookup</h1><p>V1.26 WEB · Developed by Samuel Chung</p></div><button id="ewpToolsSettings" type="button" class="tool-button ewp-settings-trigger">⚙ Settings</button></header>
+ <header class="tools-header"><div><span class="eyebrow">EWP TOOLS</span><h1>Steel Beam Lookup</h1><p>V1.28 WEB · Developed by Samuel Chung</p></div><button id="ewpToolsSettings" type="button" class="tool-button ewp-settings-trigger">⚙ Settings</button></header>
  <main class="tools-main steel-main">
   <div class="tools-breadcrumb"><a href="../">← All EWP Tools</a></div>
   <section class="tools-panel steel-panel">
    <h2>Wide-flange (W) beam lookup</h2>
-   <p class="small-hint">Enter nominal depth and weight in <strong>either</strong> designation system. The other system fills automatically when a published W section is matched.</p>
+   <p class="small-hint">Enter nominal depth and weight in <strong>either</strong> designation system. The other system fills automatically when a matching W section is found.</p>
    <div class="steel-grid" id="beamInputs">
     <section class="steel-group" aria-labelledby="beamImperialHeading">
      <h3 id="beamImperialHeading">Imperial (ASTM)<small>W nominal depth × weight per foot</small></h3>
@@ -62,59 +62,55 @@
     </section>
    </div>
    <div class="steel-actions">
-    <p class="steel-status" id="beamStatus" role="status" aria-live="polite">Loading W-beam reference…</p>
+    <p class="steel-status" id="beamStatus" role="status" aria-live="polite">Loading W-beam data…</p>
     <button id="beamClear" class="tool-button" type="button">Clear</button>
    </div>
-   <section class="steel-result" aria-label="Actual beam dimensions" aria-live="polite">
-    <h3>Actual beam dimensions</h3>
-    <p class="steel-result-title" id="beamMatchedTitle">No section selected</p>
-    <div class="steel-result-layout">
-      <div class="steel-results-grid">
-       <div><span class="steel-measure-label">Flange width (bf)</span><strong class="steel-measure-value" id="beamFlangeWidth">—</strong></div>
-       <div><span class="steel-measure-label">Actual depth (d)</span><strong class="steel-measure-value" id="beamActualDepth">—</strong></div>
-      </div>
-      <figure class="beam-diagram-figure">
-       <svg id="beamDiagram" class="beam-diagram" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 230" role="img" aria-label="Illustrative W-beam cross-section showing flange width and overall depth; select a W section to see dimensions.">
-         <defs><marker id="beam-arrow" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto-start-reverse"><path d="M0 0 L6 3 L0 6 Z" class="beam-arrow-tip"/></marker></defs>
-         <path class="beam-shape" d="M67 49 H182 V66 H137 V178 H182 V195 H67 V178 H112 V66 H67 Z"/>
-         <g class="beam-dimension-lines">
-           <path d="M67 45 V28 M182 45 V28 M67 33 H182" marker-start="url(#beam-arrow)" marker-end="url(#beam-arrow)" />
-           <path d="M190 49 H221 M190 195 H221 M216 49 V195" marker-start="url(#beam-arrow)" marker-end="url(#beam-arrow)" />
-         </g>
-         <text class="beam-dimension-text" id="beamDiagramWidth" x="124" y="21" text-anchor="middle">bf = —</text>
-         <text class="beam-dimension-text" id="beamDiagramDepth" x="232" y="128" text-anchor="middle">d = —</text>
-       </svg>
-       <figcaption>Cross-section schematic · not to scale</figcaption>
-      </figure>
-    </div>
-   </section>
-   <p class="steel-note">Reference: Varsteel Reference Book, Wide Flange Beams, printed pp. 4–8 (PDF pp. 10–14); <span id="beamCount">—</span> listed rolled W sections. Values are published dimensions in decimal inches, not nominal designation sizes. Metric/imperial names are table equivalents, not exact unit conversions. WWF welded beams, S beams and HP piles are not included. Confirm the current project specifications and supplier data where required.</p>
   </section>
   <section class="tools-panel steel-panel steel-table-panel" aria-labelledby="steelTableHeading">
    <div class="steel-table-heading">
-    <div><h2 id="steelTableHeading">Full W-beam reference table</h2><p class="small-hint">All published rolled W sections are listed below. Start entering a nominal depth above to filter immediately; enter the weight to narrow further. Click a designation to select it. Select column headers to sort.</p></div>
+    <h2 id="steelTableHeading">W-Beam Dimensions</h2>
     <span class="steel-table-count" id="beamTableCount" role="status" aria-live="polite">Loading sections…</span>
    </div>
-   <div class="steel-table-scroll" role="region" aria-label="Wide-flange beam reference" tabindex="0">
-    <table class="steel-data-table">
-     <thead><tr>
-      <th scope="col" aria-sort="ascending"><button type="button" class="beam-sort-button" data-beam-sort="imperial">Imperial <span class="beam-sort-indicator" aria-hidden="true">▲</span></button></th>
-      <th scope="col" aria-sort="none"><button type="button" class="beam-sort-button" data-beam-sort="metric">Metric <span class="beam-sort-indicator" aria-hidden="true"></span></button></th>
-      <th scope="col" aria-sort="none"><button type="button" class="beam-sort-button" data-beam-sort="depthIn">Actual depth <small>d (in)</small><span class="beam-sort-indicator" aria-hidden="true"></span></button></th>
-      <th scope="col" aria-sort="none"><button type="button" class="beam-sort-button" data-beam-sort="flangeWidthIn">Flange width <small>bf (in)</small><span class="beam-sort-indicator" aria-hidden="true"></span></button></th>
-      <th scope="col" aria-sort="none"><button type="button" class="beam-sort-button" data-beam-sort="flangeThicknessIn">Flange thick. <small>tf (in)</small><span class="beam-sort-indicator" aria-hidden="true"></span></button></th>
-      <th scope="col" aria-sort="none"><button type="button" class="beam-sort-button" data-beam-sort="webThicknessIn">Web thick. <small>tw (in)</small><span class="beam-sort-indicator" aria-hidden="true"></span></button></th>
-      <th scope="col" aria-sort="none"><button type="button" class="beam-sort-button" data-beam-sort="sectionModulusIn3">Section modulus <small>Sx (in³)</small><span class="beam-sort-indicator" aria-hidden="true"></span></button></th>
-     </tr></thead>
-     <tbody id="beamTableBody"></tbody>
-    </table>
+   <div class="steel-table-layout">
+    <div class="steel-table-content">
+     <div class="steel-table-scroll" role="region" aria-label="Wide-flange beam dimensions" tabindex="0">
+      <table class="steel-data-table">
+       <thead><tr>
+        <th scope="col" aria-sort="ascending"><button type="button" class="beam-sort-button" data-beam-sort="imperial">Imperial <span class="beam-sort-indicator" aria-hidden="true">▲</span></button></th>
+        <th scope="col" aria-sort="none"><button type="button" class="beam-sort-button" data-beam-sort="metric">Metric <span class="beam-sort-indicator" aria-hidden="true"></span></button></th>
+        <th scope="col" aria-sort="none"><button type="button" class="beam-sort-button" data-beam-sort="flangeWidthIn">Flange width <small>bf (in)</small><span class="beam-sort-indicator" aria-hidden="true"></span></button></th>
+        <th scope="col" aria-sort="none"><button type="button" class="beam-sort-button" data-beam-sort="depthIn">Actual depth <small>d (in)</small><span class="beam-sort-indicator" aria-hidden="true"></span></button></th>
+       </tr></thead>
+       <tbody id="beamTableBody"></tbody>
+      </table>
+     </div>
+     <p class="steel-table-empty" id="beamTableEmpty" hidden>No matching W sections. Adjust the depth or weight above, or use Clear.</p>
+    </div>
+    <aside class="beam-diagram-aside" aria-label="Beam dimensions illustration">
+     <figure class="beam-diagram-figure">
+      <svg id="beamDiagram" class="beam-diagram" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 220" role="img" aria-label="W-beam cross-section with flange width and actual depth dimension lines; not to scale.">
+       <path class="beam-shape" d="M78 69 H178 V84 H136 V169 H178 V184 H78 V169 H120 V84 H78 Z"/>
+       <g class="beam-dimension-lines">
+        <!-- Horizontal bf dimension: each extension starts outside the flange. -->
+        <path d="M78 65 V42 M178 65 V42 M78 44 H178"/>
+        <!-- Vertical d dimension: marks align precisely to top and bottom faces. -->
+        <path d="M184 69 H221 M184 184 H221 M216 69 V184"/>
+       </g>
+       <g class="beam-dimension-arrows">
+        <path d="M78 44 L88 40 L88 48 Z M178 44 L168 40 L168 48 Z"/>
+        <path d="M216 69 L212 79 L220 79 Z M216 184 L212 174 L220 174 Z"/>
+       </g>
+       <text class="beam-dimension-text" id="beamDiagramWidth" x="128" y="28" text-anchor="middle">bf</text>
+       <text class="beam-dimension-text" id="beamDiagramDepth" x="261" y="128" text-anchor="middle">d</text>
+      </svg>
+      <figcaption>Not to scale</figcaption>
+     </figure>
+    </aside>
    </div>
-   <p class="steel-table-empty" id="beamTableEmpty" hidden>No W sections match these designation values. Adjust the depth/weight above or use Clear.</p>
-   <p class="steel-note">Reference: Varsteel Reference Book, printed pp. 4–8 (PDF pp. 10–14). W30×90 has no section modulus printed in this reference, so its cell is shown as —. Sections not listed in this catalogue are not included. This table is dimensional reference information, not a structural capacity check.</p>
   </section>
  </main>
- <footer class="tools-footer"><span>EWP Management Portal</span><span>V1.26 WEB · Developed by Samuel Chung</span></footer>
- <script type="module" src="../../workspace-auth.mjs?v=1.26"></script>
- <script type="module" src="./app.mjs?v=1.26"></script>
- <script type="module" src="../../shared-settings.mjs?v=1.26"></script>
+ <footer class="tools-footer"><span>EWP Management Portal</span><span>V1.28 WEB · Developed by Samuel Chung</span></footer>
+ <script type="module" src="../../workspace-auth.mjs?v=1.28"></script>
+ <script type="module" src="./app.mjs?v=1.28"></script>
+ <script type="module" src="../../shared-settings.mjs?v=1.28"></script>
 </body></html>

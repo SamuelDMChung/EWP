@@ -1,3 +1,19 @@
+# EWP Management Portal — V1.28 WEB
+
+Snow Load Calculator now synchronizes **Ss and Sr values in both kPa and psf**: four fields in one compact block, automatically linked in either input direction. Custom values remain editable; selecting a BC code-table location fills both units as read-only reference values. The final S calculation uses the originally entered precision. Removed the redundant standalone Quick Unit Converter card. Formula, BC location search, Cb options, other tools and the complete Portal are preserved. All **ten pages** show `V1.28 WEB · Developed by Samuel Chung`.
+
+**Deploy** the entire `EWP_Management_Portal_V1_28_WEB_FULL.zip` to the GitHub Pages repository root; commit/push and hard refresh. There is no SQL migration, production Supabase operation, Edge Function redeployment or EWP Connect iOS change. Read `PORTAL_HANDOFF.md` first, then `ewp-tools/snow-load/README.md` and `tests/V1_28_TEST_RESULTS.md` for exact behavior, QA limits and deployment checks. The BC location dataset's incomplete 2024 audit remains outstanding.
+
+---
+
+# EWP Management Portal — V1.27 WEB
+
+**Steel Beam Lookup** is now more compact: its four synchronized imperial/metric inputs filter a **four-column W-Beam Dimensions table** (Imperial, Metric, Flange Width, Actual Depth); the oversized result card and source/page reference wording were removed. The corrected dimensioned I-beam diagram sits **beside the table** on desktop and stacks above it on narrow screens. All 196 locally bundled W sections, selection, sorting and filtering are preserved. All ten web pages show `V1.27 WEB · Developed by Samuel Chung`. Read `PORTAL_HANDOFF.md` first and `tests/V1_27_TEST_RESULTS.md` for verification boundaries.
+
+**Deploy:** replace the full GitHub Pages repository root with the V1.27 complete source ZIP. Commit/push and hard-refresh. There is no SQL, Supabase/Resend/Edge Function or EWP Connect iOS change.
+
+---
+
 # EWP Management Portal — V1.26 WEB
 
 **Steel Beam Lookup** replaces the displayed **Steel Beam Width** name under EWP Tools while retaining the prior `ewp-tools/steel-beam-width/` URL. The utility now includes the **entire 196-row rolled-W table** from the owner's Varsteel reference (imperial and metric designations, actual depth, flange width, flange/web thickness and section modulus), live prefix filtering from the first nominal-depth digit, sortable columns, clickable rows, and a dimensioned W/I cross-section diagram. The two primary dimensional outputs remain flange width and actual depth in decimal inches. See `ewp-tools/steel-beam-width/README.md` and `tests/V1_26_TEST_RESULTS.md`. All 10 HTML page credits now read `V1.26 WEB · Developed by Samuel Chung`.

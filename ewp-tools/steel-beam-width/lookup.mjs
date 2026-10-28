@@ -96,21 +96,18 @@ export function mountSteelBeamWidth(doc, rows) {
     metric:{depth:doc.getElementById('beamMetricDepthList'),weight:doc.getElementById('beamMetricMassList')}
   };
   const el=id=>doc.getElementById(id);
-  const status=el('beamStatus'),width=el('beamFlangeWidth'),depth=el('beamActualDepth');
-  const title=el('beamMatchedTitle'),clear=el('beamClear'),available=el('beamCount');
+  const status=el('beamStatus'),clear=el('beamClear');
   const tableBody=el('beamTableBody'),tableCount=el('beamTableCount'),tableEmpty=el('beamTableEmpty');
   const diagWidth=el('beamDiagramWidth'),diagDepth=el('beamDiagramDepth'),diagram=el('beamDiagram');
   const headers=[...doc.querySelectorAll('[data-beam-sort]')];
-  if ([...Object.values(fields).flatMap(pair=>Object.values(pair)),...Object.values(lists).flatMap(pair=>Object.values(pair)),status,width,depth,title,clear,available,tableBody,tableCount,tableEmpty,diagWidth,diagDepth,diagram].some(node=>!node)) {
+  if ([...Object.values(fields).flatMap(pair=>Object.values(pair)),...Object.values(lists).flatMap(pair=>Object.values(pair)),status,clear,tableBody,tableCount,tableEmpty,diagWidth,diagDepth,diagram].some(node=>!node)) {
     throw new Error('Steel Beam Lookup page is missing required controls.');
   }
-  available.textContent=String(index.size);
   for(const sys of ['imperial','metric']) setDatalist(lists[sys].depth,optionsFor(index,sys).depths);
   let activeSystem='imperial',selected=null,sortColumn='imperial',sortDirection='asc';
   const statusSet=(message,state='neutral')=>{status.textContent=message;status.dataset.state=state;};
   const resetResult=()=>{
-    width.textContent='—';depth.textContent='—';title.textContent='No section selected';
-    diagWidth.textContent='bf = —';diagDepth.textContent='d = —';
+    diagWidth.textContent='bf';diagDepth.textContent='d';
     diagram.setAttribute('aria-label','Illustrative W-beam cross-section showing flange width and overall depth; select a W section to see dimensions.');
   };
   function applySelection(found) {
@@ -119,13 +116,10 @@ export function mountSteelBeamWidth(doc, rows) {
     fields.imperial.depth.value=i.depth;fields.imperial.weight.value=i.weight;
     fields.metric.depth.value=m.depth;fields.metric.weight.value=m.weight;
     for(const sys of ['imperial','metric']) setDatalist(lists[sys].weight,optionsFor(index,sys,fields[sys].depth.value).weights);
-    width.textContent=`${displayNumber(found.flangeWidthIn)}″`;
-    depth.textContent=`${displayNumber(found.depthIn)}″`;
-    title.textContent=`${found.imperial.replace('x','×')} / ${found.metric.replace('x','×')}`;
     diagWidth.textContent=`bf = ${displayNumber(found.flangeWidthIn)}″`;
     diagDepth.textContent=`d = ${displayNumber(found.depthIn)}″`;
     diagram.setAttribute('aria-label',`W-beam cross-section: flange width ${displayNumber(found.flangeWidthIn)} inches; actual depth ${displayNumber(found.depthIn)} inches. Not to scale.`);
-    statusSet(`Matched Varsteel reference, PDF page ${found.sourcePage}.`,'success');
+    statusSet(`${found.imperial.replace('x','×')} selected.`,'success');
   }
   const recordNodes=new Map();
   for(const beam of rows){
@@ -135,7 +129,7 @@ export function mountSteelBeamWidth(doc, rows) {
     pick.setAttribute('aria-label',`Select ${beam.imperial.replace('x',' by ')}`);
     pick.addEventListener('click',()=>{activeSystem='imperial';applySelection(beam);renderTable();});
     imperialCell.append(pick);tr.append(imperialCell);
-    const cells=[beam.metric.replace('x','×'),displayNumber(beam.depthIn),displayNumber(beam.flangeWidthIn),displayNumber(beam.flangeThicknessIn,3),displayNumber(beam.webThicknessIn,3),displayNumber(beam.sectionModulusIn3,2)];
+    const cells=[beam.metric.replace('x','×'),displayNumber(beam.flangeWidthIn),displayNumber(beam.depthIn)];
     for(const [i,value] of cells.entries()){const td=doc.createElement('td');td.textContent=value;if(i>0)td.className='beam-number';tr.append(td);}
     recordNodes.set(beam,tr);
   }
@@ -173,7 +167,7 @@ export function mountSteelBeamWidth(doc, rows) {
     const found=lookupBeam(index,source,d,w);
     if(!found){
       fields[other].depth.value='';fields[other].weight.value='';
-      resetResult();statusSet(`No matching ${source} W section in the Varsteel table. Check the values or choose a listed row.`,'warning');
+      resetResult();statusSet(`No matching ${source} W section. Check the values or choose a listed row.`,'warning');
       renderTable();return;
     }
     applySelection(found);renderTable();

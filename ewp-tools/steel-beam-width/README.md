@@ -1,3 +1,13 @@
+# Steel Beam Lookup — V1.27 WEB
+
+- **Four inputs**: Imperial nominal depth (in) + weight (lb/ft), or Canadian metric nominal depth (mm) + mass (kg/m). Editing either complete designation pair fills the other, automatically filters the table, and updates dimension labels. Unlisted pairs show a warning, not guessed dimensions.
+- **Only four displayed table columns**: Imperial, Metric, **Flange Width bf (in)**, **Actual Depth d (in)**. Table header sorting, row click/keyboard selection, Clear and first-digit depth prefix filtering retained across all 196 W shapes from the user-supplied Varsteel Reference Book (PDF pp. 10–14). The source JSON still stores other engineering fields for provenance but the interface does not display them.
+- The single **I-section illustration is beside the table** on desktop and stacked above on mobile. Dimension lines use dedicated extension lines and triangles to avoid marker overlap. Labels show actual bf/d upon selection; drawing is **not to scale**. Large separate results panel, PDF/page attribution and extended disclaimer are no longer visible.
+- **Example:** W12×14 ↔ W310×21 → bf **3.97 in**, d **11.91 in**; W12×50 ↔ W310×74 → bf **8.08 in**, d **12.19 in**. Only rolled W sections in the supplied book are supported; not a structural design calculator.
+- **Compatibility:** Existing `ewp-tools/steel-beam-width/` path and all other tools, auth/data/settings stay unchanged. No SQL or deployment of functions needed. Read `tests/V1_27_TEST_RESULTS.md`; live production HTTP/JSON and authentication require post-deployment verification.
+
+---
+
 # Steel Beam Lookup — V1.26 WEB
 
 **Display name** was changed from Steel Beam Width. The URL remains `ewp-tools/steel-beam-width/` intentionally to preserve links and navigation. This is the third EWP Tools utility. It is a browser-only static reference lookup, not a structural-design calculator or unit-conversion formula.

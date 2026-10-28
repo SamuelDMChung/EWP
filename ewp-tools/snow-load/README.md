@@ -1,3 +1,12 @@
+# Snow Load Calculator — V1.28 WEB integrated kPa / psf inputs
+
+- **Custom mode:** Enter either unit for ground snow `Ss` and rain `Sr` independently. The four-field grid consists of `Ss kPa`, `Ss psf`, `Sr kPa`, `Sr psf`. Opposite units update instantly using `1 kPa = 20.885434273 psf`. The *last edited input* remains the source of truth; only the companion display is rounded. The snow calculation uses the unrounded underlying pressure. Negative or malformed custom entries produce a validation message and no result; blank is not treated as zero.
+- **BC Location mode:** Users still must explicitly select a listed reference location (or choose from nearby candidates found via NRCan); its code-table Ss/Sr fill all four fields, read-only. Toggle back to Custom to restore previous custom entries. Code table values, selection logic, warnings and simplified snow equation remain unchanged.
+- Removed the separate Quick Unit Converter section. The historical `pressure-converter.mjs` utility remains in source but is **not loaded** by the HTML. The new `load-units.mjs` is pure conversion/validation support for the Snow Load page. No database or remote API is needed for unit conversion.
+- `tests/v1_28_smoke.mjs` and `tests/browser_smoke_v1_28.py` check the new workflow. See root `tests/V1_28_TEST_RESULTS.md`. The 2018-derived starter city values are still **not comprehensively audited against BCBC 2024**; use the published on-page warning.
+
+---
+
 # V1.24 Quick Unit Converter addendum
 
 Located **below** the existing simplified roof snow-load calculator in a separate card. Type any finite number into either **Pressure (kPa)** or **Pressure (psf)**; the other field updates immediately using `1 kPa = 20.885434273 psf`. Clear resets both. Malformed numbers cause the opposite field to clear with a short validation message. Conversion runs locally with no third-party service, and it is independent of all roof-design fields/results. Implementation: `pressure-converter.mjs`; tests `tests/v1_24_smoke.mjs` and `tests/browser_smoke_v1_24.py`.

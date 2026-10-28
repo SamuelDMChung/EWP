@@ -1,3 +1,45 @@
+# EWP Management Portal — V1.28 WEB: Integrated kPa/psf snow-load inputs
+
+**Canonical input:** complete `EWP_Management_Portal_V1_27_WEB_FULL.zip`. **Release:** `EWP_Management_Portal_V1_28_WEB_FULL.zip` (October 28, 2026). **Next:** V1.29 WEB. **WEB only:** EWP Connect iOS unchanged.
+
+## Approved V1.28 change
+
+- EWP Tools → **Snow Load Calculator** now has **four numeric text inputs**: `Ss (kPa)`, `Ss (psf)`, `Sr (kPa)`, `Sr (psf)`. Editing either unit updates its paired unit immediately. The edited quantity is authoritative; rounding the paired display **does not change** the underlying kPa value used by the existing snow formula (`S = Cb × Ss + Sr`, Part 9 minimum unchanged).
+- **Custom** mode makes all four inputs editable; **BC Location** mode populates the two kPa fields and calculated psf counterparts from the selected code-listed location, displaying all four as read-only to prevent accidentally modifying published values. Switching back to Custom restores the user-entered load values. Clearing one field clears its counterpart and an incomplete/invalid entry does not produce a result.
+- Removed the **Quick Unit Converter** panel, divider, old DOM IDs and standalone module script tag from the Snow Load page. `pressure-converter.mjs` remains as a *dormant historical helper*, not loaded by the HTML, for prior test references. A new pure `load-units.mjs` provides strict load pressure validation and source-precision conversion, with `1 kPa = 20.885434273 psf` imported from the original `calc.mjs`.
+- Retained BC location list/search, NRCan API integration, three nearest-reference choices requiring user confirmation, Cb 0.80/0.55/custom, formula, warnings, authentication, settings, light/dark modes and all other workspaces. No database, RLS, Purchasing, Sales, PDF, Steel Beam Lookup or iOS code changed. All **ten HTML pages** display `V1.28 WEB · Developed by Samuel Chung` with `?v=1.28` cache-busting assets.
+
+## Test and deployment
+
+- See `tests/V1_28_TEST_RESULTS.md`: 40 V1.28 assertions, 6 offline Chromium viewport/theme scenarios, 31 V1.21 and 23 V1.22 regressions and 29 prior Steel Beam Lookup assertions; JS/import/asset checks and ZIP CRC. **No live GitHub Pages, NRCan, Supabase or Outlook validation was performed.**
+- Deploy the **full source ZIP** to the GitHub Pages repo root (either `/ewp/` or legacy `/EWP-Forecast/`), commit/push, hard refresh. On Snow Load Custom test Ss=2.6 kPa → 54.3 psf, Sr=0.3 kPa → 6.27 psf, result 2.38 kPa at Cb=.8; test psf-to-kPa input, switching modes and real BC location selection. Other workspaces should be smoke-tested after deployment. **No SQL migration or Edge Function redeployment.**
+- **Important pre-existing limitation:** The static 113-location Ss/Sr list originated from a BCBC 2018 table and has *not yet been fully checked row by row against BCBC 2024*. The existing on-screen warning remains. Do not treat the current list as a fully verified 2024 engineering dataset.
+
+---
+
+# EWP Management Portal — V1.27 WEB: Compact Steel Beam Lookup
+
+**Canonical baseline:** complete `EWP_Management_Portal_V1_26_WEB_FULL.zip`. **Release:** `EWP_Management_Portal_V1_27_WEB_FULL.zip` (October 27, 2026). **Next:** V1.28 WEB. Scope: WEB only; EWP Connect iOS unchanged.
+
+## Approved V1.27 changes
+
+- Simplified EWP Tools → **Steel Beam Lookup** (`ewp-tools/steel-beam-width/`, URL intentionally unchanged). Removed the large **Actual Beam Dimensions** output panel, its oversized numeric outputs and its designation heading; beam dimensions now appear in the four-column table immediately below the existing four imperial/metric inputs.
+- The table is titled **W-Beam Dimensions** and shows only **Imperial designation**, **Metric designation**, **Flange width bf (decimal in)** and **Actual depth d (decimal in)**, in that order. It retains **all 196 original rolled W rows**, complete source dataset, instant prefix filtering, exact bidirectional designation mapping, sortable header buttons, clickable/keyboard-accessible row selection, Clear and invalid/not-found notices. Source metadata, flange/web thickness and section modulus remain untouched in local `w-sections.json`, but are not displayed.
+- Relocated the **I-beam cross-section SVG beside the table**, in the same layout row for desktop/tablet wider than 800px; on narrow screens it stacks *above* the horizontally scrollable table to stay readable. Removed the SVG marker arrows and used separate, precisely placed arrow triangles and extension lines for flange width (`bf`) and actual depth (`d`). Text labels update on beam selection and return to just `bf`/`d` on Clear. The illustration is explicitly not to scale.
+- Removed visible page-number/source/references and long explanatory notes, including the previous “Matched Varsteel reference, PDF page...” status. Selection status simply identifies the chosen designation; internal source data attribution is retained here in documentation. The lookup is a reference utility, **not** a load/capacity design check.
+- All ten HTML pages now display **`V1.27 WEB · Developed by Samuel Chung`**; entrypoint cache-bust queries updated to `?v=1.27`. No change to other workspaces, shared authentication/data, RLS, purchase/inventory records, PDF parsing/export, snow loads, Sales pages, Resend/Edge Functions or iOS. No SQL migration required.
+
+## Testing and deployment
+
+- `tests/v1_27_smoke.mjs` confirms 196 original entries, two-way lookups, W12×14 (3.97/11.91), W12×50 (8.08/12.19), four fields, four column table, removed notes/panel, diagram composition, live filtering, sortable headers, all page credits and local assets.
+- `tests/browser_smoke_v1_27.py` uses in-memory HTML, actual CSS + JS + local 196-row JSON under headless Chromium at 1400, 900 and 390px, light/dark; verifies side-by-side/stacking, no text-arrow overlap, no page overflow, both designation directions, row click, sorting, Clear and empty state. Screenshots are bundled in `tests/steel_beam_lookup_v1_27_*.png`. This test **does not exercise live HTTP fetching, GitHub Pages deployment, Supabase authentication, or production data**.
+- Existing V1.21/V1.22 material-list smoke/regression runs remain unchanged; pressure converter run with version-only assertion adapted to 1.27. See `tests/V1_27_TEST_RESULTS.md`.
+- **Deploy:** replace files in the GitHub Pages repository root (`/ewp/` or legacy `/EWP-Forecast/`), including the full `ewp-tools/steel-beam-width/` directory; commit/push, hard refresh. Test live JSON fetch, W12×14 and W12×50, mobile scrolling, sign-in, Portal EWP toggle, Snow Load Calculator, Consolidate Material List, Sales Tracking and Purchasing. No SQL, Supabase or Edge Function deployment needed.
+
+**Pre-existing limitation:** The Snow Load Calculator's BC city Ss/Sr table still needs an exhaustive 2024 BCBC audit; it was initially sourced from a 2018 table.
+
+---
+
 # EWP Management Portal — V1.26 WEB: Steel Beam Lookup full reference table
 
 **Canonical input:** Full `EWP_Management_Portal_V1_25_WEB_FULL.zip`. **Release:** `EWP_Management_Portal_V1_26_WEB_FULL.zip` (October 27, 2026). **Next:** V1.27 WEB. **WEB only.** EWP Connect iOS unchanged.

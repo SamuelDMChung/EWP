@@ -1,8 +1,9 @@
-.steel-main{max-width:1020px}
-.steel-panel{padding:29px}
+/* V1.27 — compact Steel Beam Lookup */
+.steel-main{max-width:1240px}
+.steel-panel{padding:26px}
 .steel-panel h2{margin-bottom:7px}
-.steel-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:17px;margin:23px 0}
-.steel-group{border:1px solid var(--tools-line);background:var(--tools-paper);border-radius:11px;padding:21px;min-width:0}
+.steel-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:17px;margin:20px 0}
+.steel-group{border:1px solid var(--tools-line);background:var(--tools-paper);border-radius:11px;padding:18px;min-width:0}
 .steel-group h3{margin:0 0 15px;font-size:17px;color:var(--tools-ink)}
 .steel-group h3 small{font-size:12px;color:var(--tools-muted);font-weight:600;display:block;margin-top:2px}
 .steel-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}
@@ -10,41 +11,23 @@
 .steel-field{width:100%;min-width:0;margin-top:7px;padding:12px 13px;border:1px solid var(--tools-line);border-radius:8px;background:var(--tools-paper);color:var(--tools-ink);font:inherit;font-size:19px;font-weight:730;font-variant-numeric:tabular-nums}
 .steel-field:focus-visible{outline:2px solid var(--tools-accent);outline-offset:1px}
 .steel-example{font-size:13px;margin:12px 0 0!important;color:var(--tools-muted)}
-.steel-actions{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:22px}
+.steel-actions{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:0}
 .steel-status{margin:0!important;font-size:13px!important;color:var(--tools-muted)!important}
 .steel-status[data-state=warning]{color:#b42318!important;font-weight:750}
 .steel-status[data-state=success]{color:var(--tools-accent)!important;font-weight:750}
-.steel-result{background:var(--tools-soft);border:1px solid var(--tools-line);border-radius:12px;padding:22px 25px}
-.steel-result h3{font-size:16px;margin:0 0 5px;color:var(--tools-ink)}
-.steel-result-title{font-size:13px!important;color:var(--tools-muted)!important;margin:0 0 18px!important}
-.steel-results-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:25px}
-.steel-measure-label{font-size:13px;font-weight:780;color:var(--tools-muted)}
-.steel-measure-value{font-size:clamp(30px,4vw,42px);font-weight:850;letter-spacing:-.035em;line-height:1.2;display:block;margin-top:7px;font-variant-numeric:tabular-nums}
-.steel-note{margin-top:19px!important;font-size:12px!important;color:var(--tools-muted)!important}
 html[data-ewp-theme=dark] .steel-status[data-state=warning]{color:#ffb6a6!important}
-@media(max-width:720px){.steel-grid{grid-template-columns:1fr;gap:14px}.steel-panel{padding:18px}.steel-group{padding:17px}.steel-result{padding:18px}}
-@media(max-width:380px){.steel-fields{grid-template-columns:1fr}.steel-results-grid{gap:9px}.steel-measure-value{font-size:30px}}
-/* V1.26 — companion dimension schematic and complete W section table */
-.steel-main{max-width:1240px}
-.steel-result-layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(220px,310px);gap:18px;align-items:center}
-.steel-results-grid{min-width:0}
-.beam-diagram-figure{margin:0;display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:0}
-.beam-diagram{display:block;width:min(100%,300px);height:auto;color:var(--tools-ink)}
-.beam-shape{fill:var(--tools-accent);stroke:var(--tools-ink);stroke-opacity:.65;stroke-width:1.4;stroke-linejoin:round}
-.beam-dimension-lines{stroke:var(--tools-ink);stroke-width:1.3;fill:none}
-.beam-arrow-tip{fill:var(--tools-ink)}
-.beam-dimension-text{font:700 13px system-ui,sans-serif;fill:var(--tools-ink)}
-.beam-diagram-figure figcaption{color:var(--tools-muted);font-size:11px;margin-top:-5px}
-.steel-table-panel{margin-top:18px}
-.steel-table-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:15px;flex-wrap:wrap;margin-bottom:16px}
-.steel-table-heading h2{margin:0 0 5px}
-.steel-table-heading p{max-width:780px;margin:0!important}
+.steel-table-panel{margin-top:16px}
+.steel-table-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+.steel-table-heading h2{margin:0}
 .steel-table-count{display:inline-block;color:var(--tools-ink);background:var(--tools-soft);border:1px solid var(--tools-line);border-radius:100px;padding:7px 12px;font-size:12px;font-weight:760;white-space:nowrap}
-.steel-table-scroll{overflow:auto;max-height:640px;border:1px solid var(--tools-line);border-radius:9px;max-width:100%;overscroll-behavior:contain}
+/* Table and illustration share a row on desktop; narrow screens stack cleanly. */
+.steel-table-layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(230px,280px);gap:20px;align-items:start}
+.steel-table-content{min-width:0}
+.steel-table-scroll{overflow:auto;max-height:600px;border:1px solid var(--tools-line);border-radius:9px;max-width:100%;overscroll-behavior:contain}
 .steel-table-scroll:focus-visible{outline:2px solid var(--tools-accent);outline-offset:2px}
-.steel-data-table{border-collapse:separate;border-spacing:0;width:100%;min-width:860px;font-variant-numeric:tabular-nums;font-size:13px;color:var(--tools-ink)}
+.steel-data-table{border-collapse:separate;border-spacing:0;width:100%;min-width:540px;font-variant-numeric:tabular-nums;font-size:13px;color:var(--tools-ink)}
 .steel-data-table th{position:sticky;top:0;z-index:2;background:var(--tools-soft);border-bottom:2px solid var(--tools-line);text-align:left;padding:0;white-space:nowrap}
-.steel-data-table th:not(:first-child){text-align:right}
+.steel-data-table th:nth-child(n+3){text-align:right}
 .steel-data-table th+th,.steel-data-table td+td{border-left:1px solid var(--tools-line)}
 .beam-sort-button{display:block;width:100%;padding:12px 10px;text-align:inherit;border:0;background:none;color:inherit;font:inherit;font-weight:750;cursor:pointer;white-space:nowrap}
 .beam-sort-button:hover,.beam-sort-button:focus-visible{background:var(--tools-paper);outline-offset:-2px}
@@ -58,5 +41,14 @@ html[data-ewp-theme=dark] .steel-status[data-state=warning]{color:#ffb6a6!import
 .beam-row-select{border:0;background:none;color:var(--tools-accent);font:inherit;font-weight:760;padding:3px 5px;margin:-3px -5px;cursor:pointer;border-radius:4px;text-decoration:underline;text-decoration-color:transparent;text-underline-offset:2px}
 .beam-row-select:hover,.beam-row-select:focus-visible{text-decoration-color:currentColor;outline-offset:2px}
 .steel-table-empty{margin:13px 0 0!important;color:var(--tools-muted);font-weight:600}
-@media(max-width:740px){.steel-result-layout{grid-template-columns:1fr}.beam-diagram{max-width:250px}.steel-data-table{font-size:12px;min-width:780px}.steel-table-scroll{max-height:530px}}
-@media(max-width:450px){.steel-table-heading{gap:9px}.steel-measure-value{font-size:32px}.steel-results-grid{gap:8px}.steel-table-count{font-size:11px}}
+.beam-diagram-aside{min-width:0;border:1px solid var(--tools-line);border-radius:11px;background:var(--tools-soft);padding:13px 8px}
+.beam-diagram-figure{margin:0;display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:0}
+.beam-diagram{display:block;width:min(100%,300px);height:auto;max-height:235px;color:var(--tools-ink)}
+.beam-shape{fill:var(--tools-accent);stroke:var(--tools-ink);stroke-opacity:.65;stroke-width:1.2;stroke-linejoin:round}
+.beam-dimension-lines{stroke:var(--tools-ink);stroke-width:1.15;fill:none;stroke-linecap:square}
+.beam-dimension-arrows{fill:var(--tools-ink)}
+.beam-dimension-text{font:700 12px system-ui,sans-serif;fill:var(--tools-ink)}
+.beam-diagram-figure figcaption{color:var(--tools-muted);font-size:11px;margin-top:-4px}
+@media(max-width:800px){.steel-table-layout{grid-template-columns:1fr}.beam-diagram-aside{grid-row:1;justify-self:center;width:min(100%,300px)}.steel-table-scroll{max-height:520px}}
+@media(max-width:720px){.steel-grid{grid-template-columns:1fr;gap:14px}.steel-panel{padding:17px}.steel-group{padding:15px}}
+@media(max-width:380px){.steel-fields{grid-template-columns:1fr}.steel-data-table{font-size:12px}}

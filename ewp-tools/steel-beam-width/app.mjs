@@ -1,4 +1,4 @@
-import {mountSteelBeamWidth} from './lookup.mjs?v=1.26';
+import {mountSteelBeamWidth} from './lookup.mjs?v=1.28';
 
 const status=document.getElementById('beamStatus');
 try {
@@ -7,7 +7,7 @@ try {
   if (!response.ok) throw new Error(`Could not load section data (HTTP ${response.status}).`);
   mountSteelBeamWidth(document,await response.json());
 } catch (error) {
-  status.textContent=`Beam reference unavailable: ${error.message}`;
+  status.textContent=`Beam data unavailable: ${error.message}`;
   status.dataset.state='warning';
   document.getElementById('beamInputs').setAttribute('aria-disabled','true');
 }

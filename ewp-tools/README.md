@@ -1,3 +1,15 @@
+# EWP Tools — V1.28 WEB
+
+Snow Load Calculator: Each Ss and Sr pressure can now be entered as either kPa or psf, immediately populating the opposite unit without altering the underlying calculation precision. BC Location entries fill both units read-only; returning to Custom preserves manually entered loads. The standalone Quick Unit Converter card was removed, retaining its unit conversions inside the calculator itself. All other utilities, including Consolidate Material List and Steel Beam Lookup, are unchanged. See `snow-load/README.md` and `tests/V1_28_TEST_RESULTS.md`. No SQL or Supabase changes.
+
+---
+
+# EWP Tools — V1.27 WEB
+
+**Steel Beam Lookup**: Four editable designation inputs, followed by the four-column W-Beam Dimensions table (Imperial, Metric, flange width `bf` and actual depth `d`). All 196 Varsteel rolled-W sections remain selectable/sortable/filterable. The I-beam schematic now sits **beside the table** on desktop, stacks on mobile, and uses independent dimension-line and arrowhead geometry. Large output panel and visible source-page footnotes are removed. Route `steel-beam-width/` stays unchanged. See `steel-beam-width/README.md` and `tests/V1_27_TEST_RESULTS.md`. Other tools and database untouched.
+
+---
+
 # EWP Tools — V1.26 WEB
 
 Third utility displayed as **Steel Beam Lookup** (unchanged route `steel-beam-width/` for links). Its reference page now shows the complete 196-row Varsteel rolled-W table, filters as soon as imperial or metric nominal depth is typed, has weight/mass filtering, click-to-select rows, numeric column sorting and a small dynamically dimensioned I-beam graphic. Two numerical primary outputs stay flange width and actual depth in decimal inches. Seven-column table adds flange/web thickness and section modulus; see the utility README and `tests/V1_26_TEST_RESULTS.md`. Both previous tools are unchanged, no SQL or Supabase operations.

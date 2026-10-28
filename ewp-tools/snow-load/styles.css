@@ -2,19 +2,14 @@
 
 .snow-data-audit{background:var(--tools-soft);border-left:3px solid var(--tools-accent);padding:9px 11px;margin:12px 0!important}
 
-/* V1.24: self-contained two-way pressure conversion; independent of snow-load inputs. */
-.snow-converter-separator{display:flex;align-items:center;gap:16px;margin:5px 0 22px;color:var(--tools-muted);font-size:11px;font-weight:850;letter-spacing:.095em;text-transform:uppercase}
-.snow-converter-separator:before,.snow-converter-separator:after{content:"";height:1px;background:var(--tools-line);flex:1}
-.snow-converter-panel{border-top:3px solid var(--tools-accent);box-shadow:0 7px 22px #00000006}
-.snow-converter-heading{display:flex;justify-content:space-between;align-items:start;gap:18px}
-.snow-converter-heading h2{margin:0 0 7px}
-.snow-converter-heading p{margin:0 0 17px}
-.snow-converter-clear{flex-shrink:0}
-.snow-converter-fields{display:grid;grid-template-columns:minmax(0,1fr) 32px minmax(0,1fr);gap:16px;align-items:end}
-.snow-converter-fields .snow-label{margin:0}
-.snow-converter-fields .snow-field{max-width:none;font-size:19px;font-weight:700;font-variant-numeric:tabular-nums}
-.snow-converter-arrows{display:grid;place-items:center;height:45px;color:var(--tools-accent);font-size:23px;font-weight:800}
-.snow-converter-ratio{margin:13px 0 0!important}
-.snow-converter-message{font-size:12px!important;color:#b42318!important;margin:5px 0 0!important;font-weight:750}
-.snow-converter-message:empty{display:none}
-@media(max-width:650px){.snow-converter-panel{padding:17px}.snow-converter-fields{grid-template-columns:1fr;gap:6px}.snow-converter-arrows{height:28px;transform:rotate(90deg)}.snow-converter-heading{align-items:center}}
+/* V1.28: inline, synchronized Ss / Sr kPa-and-psf fields. */
+.snow-load-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+.snow-load-pair{min-width:0;min-inline-size:0;margin:0;padding:0;border:0}
+.snow-load-pair legend{font-size:14px;font-weight:800;margin:0 0 10px;padding:0;color:var(--tools-ink)}
+.snow-unit-inputs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.snow-unit-inputs .snow-label{margin-bottom:0}
+.snow-unit-inputs .snow-field{max-width:none;font-variant-numeric:tabular-nums}
+.snow-unit-inputs .snow-field[readonly]{background:var(--tools-soft);cursor:default}
+.snow-load-unit-help{margin:10px 0 0!important}
+@media(max-width:760px){.snow-load-grid{grid-template-columns:1fr;gap:16px}}
+@media(max-width:380px){.snow-unit-inputs{grid-template-columns:1fr}}

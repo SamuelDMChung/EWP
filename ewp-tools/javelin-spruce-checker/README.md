@@ -1,4 +1,18 @@
-# Javelin vs. Spruce PDF Checker — V1.32 WEB (current)
+# Javelin vs. Spruce PDF Checker — V1.33 WEB (current)
+
+**Material source:** Original Javelin rows, adjusted only by safely interpretable structured markup: explicit `All joists 230, TYP. this level` FreeText notes (level-wide TJI grade) and uniquely geometry-associated full-row StrikeOuts (exclusion). Partial strikes/unknown notes cannot silently remove material. **Highlights are ignored completely**, including heavily highlighted pages; no `MARKED PDF AREA` labels/review items.
+
+**Strikeout safety:** Compare PDF.js text-row bounding rectangles against annotation rectangles using substantial horizontal and vertical overlap. Respect PDF.js text-item height/baseline coordinates (versus top-anchored test fixtures). Require exactly one confident target; otherwise retain all rows and warn only on the ambiguous meaningful annotation. A PSL P5 strike immediately above LSL TS3 never removes TS3.
+
+**Cut discrepancies:** Nonstock cuts are compared by each length and quantity; missing pieces shown in red, extras in amber, with quantity and LF summaries retained on page and downloadable HTML. Stock pieces replacing shorter cuts remain a manual feasibility review; confirmed minimum LF shortages remain mismatches. Web stiffeners and backer blocks always excluded. Session-only correction panel can restore/exclude rows, edit TJI grade or quantities, never alters PDF/database.
+
+**Original L3 East PDFs:** Unit 200 crossed-out PSL `P5` 2×7′ is excluded → Javelin 21 LF and Spruce 21 LF, MATCH. Unit 201 LSL `TS3` 1×11′ remains included and matches Spruce, independent of adjacent P5 strikeout/highlights. Remaining genuine rim shortage 809 vs 576 LF flags MISMATCH. Existing Level 4 test applies TJI 230 note and excludes six P6 rows.
+
+**Testing/limits:** `tests/v1_33_smoke.mjs` (46 assertions), `tests/browser_smoke_v1_33.py` (4 offline Chromium scenarios), independent geometry inspection of the source PDFs via PyMuPDF, not actual live PDF.js. Annotations flattened into page artwork, scans or handwritten revisions are not automatically supported. Test real source PDF.js browser extraction after GitHub Pages deployment. No database or AI services. Full details: `tests/V1_33_TEST_RESULTS.md`.
+
+---
+
+# Javelin vs. Spruce PDF Checker — V1.32 WEB (historical, superseded)
 
 **Materials:** Interpret *only the original PDF page text*. All PDF annotations/markups are treated as review-location metadata only, not instructions. **Do not automatically exclude crossed-out PSL P6, alter TJI grade from FreeText notes, change quantity or material based on highlights or comments.** Any such changes must be made by the user in the existing session-only correction panel after opening the PDF.
 

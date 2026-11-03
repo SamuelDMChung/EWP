@@ -1,6 +1,6 @@
-/* V1.32: browser-only comparison of the original/base PDF material content.
- * PDF annotations NEVER modify materials. Their geometry is used only to flag manual review.
- * PDF.js text items are grouped geometrically; source page/row provenance is retained.
+/* V1.33: meaningful Javelin PDF annotations are interpreted conservatively.
+ * FreeText grade notes and uniquely row-aligned StrikeOuts can modify Javelin expectations.
+ * Highlights are ignored outright; no annotation-only material review badges.
  */
 const VULGAR_FRACTIONS={'¼':'1/4','½':'1/2','¾':'3/4','⅛':'1/8','⅜':'3/8','⅝':'5/8','⅞':'7/8','⅓':'1/3','⅔':'2/3'};
 export const clean=s=>String(s??'').replace(/([0-9])(?=[¼½¾⅛⅜⅝⅞⅓⅔])/g,'$1 ').replace(/[¼½¾⅛⅜⅝⅞⅓⅔]/g,c=>VULGAR_FRACTIONS[c]).replace(/[“”″]/g,'\"').replace(/[’′]/g,"'").replace(/\s+/g,' ').trim();
@@ -61,7 +61,7 @@ export function cutsFromDescription(desc){
  return out;
 }
 export function pdfLinesFromItems(items,pageHeight){
- const tokens=items.filter(x=>typeof x.str==='string'&&x.str.trim()).map(x=>({text:clean(x.str), x:Number(x.transform?.[4]??x.x??0),y:Math.round((pageHeight-Number(x.transform?.[5]??(pageHeight-x.y??0)))*10)/10, width:Number(x.width)||0}));
+ const tokens=items.filter(x=>typeof x.str==='string'&&x.str.trim()).map(x=>({text:clean(x.str), x:Number(x.transform?.[4]??x.x??0),y:Math.round((pageHeight-Number(x.transform?.[5]??(pageHeight-x.y??0)))*10)/10, width:Number(x.width)||0,height:Number(x.height)||10,hasHeight:Number(x.height)>0}));
  tokens.sort((a,b)=>a.y-b.y||a.x-b.x);
  const lines=[];
  for(const t of tokens){
@@ -72,74 +72,114 @@ export function pdfLinesFromItems(items,pageHeight){
  for(const line of lines){line.tokens.sort((a,b)=>a.x-b.x);line.text=line.tokens.map(t=>t.text).join(' ');}
  return lines;
 }
-// PDF.js annotationType may be a number rather than a subtype string.
-// Normalizing both forms is important: otherwise markup can be silently overlooked.
-const ANNOTATION_TYPES={1:'Text',2:'Link',3:'FreeText',4:'Line',5:'Square',6:'Circle',7:'Polygon',8:'PolyLine',9:'Highlight',10:'Underline',11:'Squiggly',12:'StrikeOut',13:'Stamp',14:'Caret',15:'Ink',16:'Popup',17:'FileAttachment',18:'Sound',19:'Movie',20:'Widget',21:'Screen',22:'PrinterMark',23:'TrapNet',24:'Watermark',25:'3D',26:'Redact'};
-const NON_MARKUPS=new Set(['link','popup','widget','screen','printermark','trapnet','3d']);
+// PDF.js annotationType may be numeric; only meaningful annotations are read.
+const ANNOTATION_TYPES={3:'FreeText',9:'Highlight',10:'Underline',11:'Squiggly',12:'StrikeOut'};
 export function pdfAnnotations(annots,pageNumber,viewport){
  return (annots||[]).map(a=>{
-  const raw=a.rect||[0,0,0,0];let rect;
-  if(viewport?.convertToViewportRectangle){const r=viewport.convertToViewportRectangle(raw);rect=[Math.min(r[0],r[2]),Math.min(r[1],r[3]),Math.max(r[0],r[2]),Math.max(r[1],r[3])];}
-  else rect=[Math.min(raw[0],raw[2]),Math.min(raw[1],raw[3]),Math.max(raw[0],raw[2]),Math.max(raw[1],raw[3])];
-  const type=clean(typeof a.subtype==='string'?a.subtype:typeof a.type==='string'?a.type:ANNOTATION_TYPES[a.annotationType]||String(a.annotationType||'Unknown'));
-  // Deliberately do not read a.contents, richText, FreeText, or annotation appearance.
-  return {type,rect,page:pageNumber};
- }).filter(a=>!NON_MARKUPS.has(a.type.toLowerCase()));
+  const raw=a.rect||[0,0,0,0];
+  const converted=viewport?.convertToViewportRectangle?viewport.convertToViewportRectangle(raw):raw;
+  const rect=[Math.min(converted[0],converted[2]),Math.min(converted[1],converted[3]),Math.max(converted[0],converted[2]),Math.max(converted[1],converted[3])];
+  const type=clean(typeof a.subtype==='string'?a.subtype:typeof a.type==='string'?a.type:ANNOTATION_TYPES[a.annotationType]||'');
+  return {type,contents:/^FreeText$/i.test(type)?clean(a.contentsObj?.str||a.contents||''):'',rect,page:pageNumber};
+ }).filter(a=>/^(?:FreeText|StrikeOut)$/i.test(a.type)); // Ignore ALL highlights, underlines, drawings, etc.
 }
-// Match a markup rectangle to source material rows by a tight baseline overlap.
-// Unlike V1.31's nearest-row test this does not transfer a strikeout to an adjacent row.
-// Wide/multirow highlights intentionally flag every affected material line.
-export function flagMaterialMarkups(records,annotations,source){
- const warnings=[];const pageMarkups=[];
- for(const ann of annotations){
-  const [x0,y0,x1,y1]=ann.rect||[0,0,0,0];
-  const rows=records.filter(r=>r.page===ann.page&&r.y>=y0-1.5&&r.y<=y1+1.5&&x0<570&&x1>30);
-  if(rows.length){
-   for(const r of rows){
-    if(!r.markups)r.markups=[];
-    if(!r.markups.some(m=>m.page===ann.page&&m.type===ann.type))r.markups.push({source,page:ann.page,type:ann.type,plot:r.plot||r.code||'',section:r.unit||r.section});
-   }
-  }else{
-   const marker={source,page:ann.page,type:ann.type};pageMarkups.push(marker);
-  }
+// Row geometry is derived from the actual source text, not nearest Y-baseline.
+// A strikeout must cover a large portion of ONE row. Ambiguity never deletes anything.
+export function attachRowGeometry(line){
+ const tokens=(line.tokens||[]).filter(t=>t.x>=30&&t.x<570);
+ const anchor=Number(line.y)||0;
+ const heights=tokens.map(t=>Number(t.height)||10).sort((a,b)=>a-b);
+ const height=Math.max(8,Math.min(13,heights[Math.floor(heights.length/2)]||10));
+ // PDF.js supplies item.height with a bottom-baseline transform. Older positioned
+ // fixtures omit height and use a top-anchored Y. These MUST NOT be conflated:
+ // treating a bottom baseline as a top would delete the following adjacent row.
+ const bottomAnchored=tokens.filter(t=>t.hasHeight).length>tokens.length/2;
+ const top=bottomAnchored?anchor-height:anchor;
+ const left=tokens.length?Math.min(...tokens.map(t=>t.x)):32;
+ const right=tokens.length?Math.max(...tokens.map(t=>t.x+(Number(t.width)||0))):568;
+ return [left,top-0.8,right,top+height+0.8];
+}
+function overlapX(a,b){return Math.max(0,Math.min(a[2],b[2])-Math.max(a[0],b[0]));}
+function overlapY(a,b){return Math.max(0,Math.min(a[3],b[3])-Math.max(a[1],b[1]));}
+export function associateStrikeouts(records,strikeouts,activeGrade=null){
+ const warnings=[];
+ for(const a of strikeouts){
+  const box=a.rect||[0,0,0,0];const bw=box[2]-box[0],bh=box[3]-box[1];
+  if(bw<=0||bh<=0){warnings.push(`Javelin p.${a.page}: invalid strikeout coordinates; no material was excluded.`);continue;}
+  const hit=records.filter(r=>{
+   if(r.page!==a.page||!r.rowRect)return false;
+   const row=r.rowRect,rowHeight=Math.max(1,row[3]-row[1]);
+   return overlapY(box,row)/rowHeight>=0.65&&overlapX(box,row)>=Math.min(30,Math.max(8,(row[2]-row[0])*0.08));
+  });
+  if(hit.length!==1){warnings.push(`Javelin p.${a.page}: strikeout could not be uniquely linked to a material row (${hit.length} candidates); no automatic exclusion.`);continue;}
+  const r=hit[0];
+  if(bw>330){r.excluded=true;r.notes.push(`Full-row strikeout precisely associated to ${r.plot} on Javelin p.${a.page}.`);}
+  else if(bw<100&&r.spec?.type==='TJI'&&activeGrade){r.notes.push(`Grade-only strikeout: retained row and applied explicit TJI ${activeGrade} level note.`);}
+  else {warnings.push(`Javelin p.${a.page} ${r.unit} ${r.plot}: ambiguous partial strikeout; no automatic exclusion.`);}
  }
- // One warning per page/type for marks that are not safely attributable to a row.
- for(const marker of pageMarkups){
-  const message=`${marker.source} p.${marker.page}: ${marker.type} markup outside a recognized material row. Inspect the marked area in the original PDF; no markup was used as material data.`;
-  if(!warnings.includes(message))warnings.push(message);
- }
- return {warnings,pageMarkups};
+ return warnings;
 }
 function cols(line,breaks){return breaks.map(([min,max])=>clean(line.tokens.filter(t=>t.x>=min&&t.x<max).map(t=>t.text).join(' ')));}
 export function parseJavelin(pages){
- const records=[],annotations=[],warnings=[];let currentLevel='Unspecified level',unit='Unspecified section';
+ const records=[],annotations=[],warnings=[],pageLevels=new Map(),ambiguousLevelPages=new Set();
+ let currentLevel='Unspecified level',unit='Unspecified section';
  for(const page of pages){
   const pageNo=page.page,lines=page.lines||[];
-  annotations.push(...(page.annotations||[]).map(a=>({...a,page:a.page||pageNo})));
-  if(!lines.length)warnings.push(`Javelin p.${pageNo}: no selectable base text; page may be scanned or flattened.`);
-  if(page.annotationReadError)warnings.push(`Javelin p.${pageNo}: markup metadata could not be inspected (${page.annotationReadError}); verify manually.`);
+  const anns=(page.annotations||[]).map(a=>({...a,type:a.type||a.subtype,page:a.page||pageNo})).filter(a=>/^(?:FreeText|StrikeOut)$/i.test(a.type));
+  annotations.push(...anns);
+  if(!lines.length)warnings.push(`Javelin p.${pageNo}: no selectable text; page may be scanned or flattened.`);
+  if(page.annotationReadError)warnings.push(`Javelin p.${pageNo}: annotation information could not be inspected (${page.annotationReadError}).`);
   for(const line of lines){
    const t=clean(line.text),y=line.y;
-   if(/\bLevel\s*:\s*(.+)/i.test(t)){currentLevel=t.match(/\bLevel\s*:\s*(.+)/i)[1].trim();unit='Unspecified section';continue;}
-   if(/^(?:(?:\d+(?:st|nd|rd|th)\s+)?rim and blockings|\d{3}(?:\s*\+\s*stair(?:s)?)?)$/i.test(t)&&line.tokens.some(x=>x.x>230&&x.x<400)){unit=/rim and blockings/i.test(t)?'Rim and blockings':t.replace(/\s+/g,' ').replace(/stair$/i,'stairs').trim();continue;}
+   if(/\bLevel\s*:\s*(.+)/i.test(t)){
+    currentLevel=t.match(/\bLevel\s*:\s*(.+)/i)[1].trim();
+    if(pageLevels.has(pageNo)&&pageLevels.get(pageNo)!==currentLevel)ambiguousLevelPages.add(pageNo);
+    pageLevels.set(pageNo,currentLevel);unit='Unspecified section';continue;
+   }
+   if(/^(?:(?:\d+(?:st|nd|rd|th)\s+)?rim and blockings|\d{3}(?:\s*\+\s*stair(?:s)?)?)$/i.test(t)&&line.tokens.some(x=>x.x>230&&x.x<400)){
+    unit=/rim and blockings/i.test(t)?'Rim and blockings':t.replace(/\s+/g,' ').replace(/stair$/i,'stairs').trim();continue;
+   }
    if(!line.tokens.some(x=>x.x>=535)||y<60||y>745)continue;
    const [plot,length,description,pliesText,qtyText]=cols(line,[[32,95],[95,153],[153,500],[500,532],[532,568]]);
    if(!/^\d+(?:\.\d+)?\s*'/.test(length)||!/^\d+$/.test(qtyText))continue;
    const qty=Number(qtyText),plies=Number(pliesText);
-   if(!(qty>0&&qty<100000)||!(plies>0&&plies<100)){warnings.push(`Javelin page ${pageNo}: invalid quantity or ply count near ${plot}`);continue;}
-   const actualLength=feet(length);if(actualLength===null){warnings.push(`Javelin page ${pageNo}: unrecognized length ${length}`);continue;}
-   const spec=productSpec(description);
-   if(spec===null)continue; // Exclude all web stiffeners and backer blocks.
-   const record={source:'Javelin',page:pageNo,y,plot,unit,level:currentLevel,description,length:actualLength,qty,plies,spec,originalSpec:spec,notes:[],markups:[],excluded:false};
-   if(plies!==1)record.notes.push(`Multi-ply Javelin row (${plies} plies; Net Qty ${qty}); verify that order quantity represents net pieces.`);
-   if(!spec.key)record.notes.push('Base product specifications could not be normalized unambiguously.');
+   if(!(qty>0&&qty<100000)||!(plies>0&&plies<100)){warnings.push(`Javelin p.${pageNo}: invalid quantity/plies near ${plot}.`);continue;}
+   const actualLength=feet(length);if(actualLength===null){warnings.push(`Javelin p.${pageNo}: unrecognized length near ${plot}.`);continue;}
+   const spec=productSpec(description);if(spec===null)continue;
+   const record={source:'Javelin',page:pageNo,y,rowRect:attachRowGeometry(line),plot,unit,level:currentLevel,description,length:actualLength,qty,plies,spec,originalSpec:spec,notes:[],excluded:false};
+   if(plies!==1)record.notes.push(`Multi-ply Javelin row (${plies} plies; Net Qty ${qty}); verify order quantity.`);
+   if(!spec.key)record.notes.push('Product specifications could not be normalized unambiguously.');
    records.push(record);
   }
  }
- const flagged=flagMaterialMarkups(records,annotations,'Javelin');warnings.push(...flagged.warnings);
- // No strikeout exclusion, FreeText grade adjustment, or other annotation-driven edits.
- // The owner may manually adjust the session comparison after checking the source PDF.
- return {records,excluded:[],annotations,warnings,gradeOverride:null,markups:flagged.pageMarkups,stats:{pages:pages.length,rows:records.length,excluded:0,markedRows:records.filter(r=>r.markups.length).length}};
+ // A grade note on a continuation page inherits the same level as the prior page.
+ let inherited='Unspecified level';for(const p of pages){if(pageLevels.has(p.page))inherited=pageLevels.get(p.page);else pageLevels.set(p.page,inherited);}
+ const overrideAnns=annotations.filter(a=>/freetext/i.test(a.type)&&/all\s+joists\s+(\d+)\s*,?\s*typ\.?\s*this\s+level/i.test(a.contents||''));
+ const gradeByLevel=new Map();
+ for(const ann of overrideAnns){
+  if(ambiguousLevelPages.has(ann.page)){warnings.push(`Javelin p.${ann.page}: multiple levels on page; grade-note scope unresolved.`);continue;}
+  const level=pageLevels.get(ann.page)||'Unspecified level';
+  if(!gradeByLevel.has(level))gradeByLevel.set(level,new Set());
+  gradeByLevel.get(level).add(ann.contents.match(/all\s+joists\s+(\d+)/i)[1]);
+ }
+ const appliedLevels=new Map();
+ for(const [level,grades] of gradeByLevel){
+  if(grades.size!==1){warnings.push(`Conflicting TJI grade notes for ${level}: ${[...grades].join(', ')}.`);continue;}
+  const grade=[...grades][0];appliedLevels.set(level,grade);
+  for(const r of records){if(r.level!==level||r.spec?.type!=='TJI')continue;
+   const width=grade==='560'?3.5:2+5/16;
+   r.spec={...r.spec,grade,width,key:r.spec.depth==null?null:`TJI|${grade}|${normNum(width)}|${normNum(r.spec.depth)}`,label:`TJI ${grade} · ${width}" × ${r.spec.depth}"`,ambiguous:r.spec.depth==null};
+   r.notes.push(`Original ${r.originalSpec.label}; applied explicit level-wide TJI ${grade} note.`);
+  }
+ }
+ const singleGrade=appliedLevels.size===1?[...appliedLevels.values()][0]:null;
+ // Only unique, substantial 2-D row overlap can delete a material. Never near-Y guessing.
+ for(const a of annotations.filter(x=>/strikeout/i.test(x.type))){
+  warnings.push(...associateStrikeouts(records,[a],appliedLevels.get(pageLevels.get(a.page))||null));
+ }
+ for(const a of annotations.filter(x=>/freetext/i.test(x.type)&&!overrideAnns.includes(x)))warnings.push(`Javelin p.${a.page}: unrecognized FreeText note (${a.contents||'no text'}); review the source.`);
+ const excluded=records.filter(r=>r.excluded);
+ return {records:records.filter(r=>!r.excluded),excluded,annotations,warnings,gradeOverride:singleGrade,stats:{pages:pages.length,rows:records.length,excluded:excluded.length}};
 }
 function sectionName(text){
  let t=clean(text).replace(/^COMMENT\s*/i,'').replace(/^L\d+(?:D\d+)?\s*(?:EAST|WEST)?\s*[-–]?\s*/i,'');
@@ -150,7 +190,7 @@ function sectionName(text){
 }
 function descOf(line){return clean(line.tokens.filter(t=>t.x>=126&&t.x<322).map(t=>t.text).join(' '));}
 export function parseSpruce(pages){
- const records=[],warnings=[],annotations=[];let section='Unspecified section',active=null,level='';
+ const records=[],warnings=[];let section='Unspecified section',active=null,level='';
  const flush=()=>{
   if(!active)return;
   active.description=clean(active.description);
@@ -177,9 +217,7 @@ export function parseSpruce(pages){
   active=null;
  };
  for(const page of pages){let firstMaterial=true;
-  annotations.push(...(page.annotations||[]).map(a=>({...a,page:a.page||page.page})));
   const lines=page.lines||[];if(!lines.length)warnings.push(`Spruce p.${page.page}: no selectable text; page may be scanned.`);
-  if(page.annotationReadError)warnings.push(`Spruce p.${page.page}: markup metadata could not be inspected (${page.annotationReadError}); verify manually.`);
   for(const line of lines){
    const y=line.y;if(y<295||y>630)continue;
    const c=clean(line.tokens.filter(t=>t.x>=18&&t.x<117).map(t=>t.text).join(' '));
@@ -196,7 +234,7 @@ export function parseSpruce(pages){
     const ordered=Number(qtyText.replace(/,/g,''));
     const um=clean(line.tokens.filter(t=>t.x>=418&&t.x<445).map(t=>t.text).join(' ')).split(' ')[0].toUpperCase();
     if(!Number.isFinite(ordered)||ordered<=0||!['LF','PC'].includes(um)){warnings.push(`Spruce p.${page.page}: cannot safely read Ordered/UM for ${c}.`);continue;}
-    active={source:'Spruce',page:page.page,y,code:c,section,level,description:d,ordered,um,notes:[],markups:[],isFirstOnPage:firstMaterial};firstMaterial=false;
+    active={source:'Spruce',page:page.page,y,code:c,section,level,description:d,ordered,um,notes:[],isFirstOnPage:firstMaterial};firstMaterial=false;
    }else if(c&&/^[A-Z][A-Z0-9/.-]{2,20}$/i.test(c)&&!['ITEM','DESCRIPTION','REMAIN','SOLD','ORDERED','ELIGIBLE','SUBTOTAL','PAYMENT'].includes(c.toUpperCase())){
     flush();warnings.push(`Spruce p.${page.page}: unrecognized order item code ${c}. Review this row.`);
    }else if(active&&d&&!(line.text||'').match(/(?:subtotal|sales tax|price|amount|eligible|signature|charge|payment)/i)){
@@ -207,15 +245,14 @@ export function parseSpruce(pages){
   // Preserve active record across pages when its cut list continues onto next page.
  }
  flush();
- const flagged=flagMaterialMarkups(records,annotations,'Spruce');warnings.push(...flagged.warnings);
- return {records,annotations,warnings,markups:flagged.pageMarkups,stats:{pages:pages.length,rows:records.length,markedRows:records.filter(r=>r.markups.length).length}};
+ return {records,warnings,stats:{pages:pages.length,rows:records.length}};
 }
 const aggregate=records=>{
  const groups=new Map();
  for(const r of records){if(r.spec===null)continue;
   const key=`${r.unit||r.section}|${r.spec?.key||r.spec?.label}`;
-  if(!groups.has(key))groups.set(key,{key,section:r.unit||r.section,spec:r.spec,cut:new Map(),stock:[],total:0,items:[],notes:[],markups:[]});
-  const g=groups.get(key);g.items.push(r);g.notes.push(...r.notes);g.markups.push(...(r.markups||[]));
+  if(!groups.has(key))groups.set(key,{key,section:r.unit||r.section,spec:r.spec,cut:new Map(),stock:[],total:0,items:[],notes:[]});
+  const g=groups.get(key);g.items.push(r);g.notes.push(...r.notes);
   if(r.source==='Javelin'){
    g.cut.set(r.length,(g.cut.get(r.length)||0)+r.qty);g.total+=r.length*r.qty;
   }else if(r.um==='PC'){
@@ -265,7 +302,8 @@ function differenceSummary(rows){
 export function compareMaterials(javelin,spruce,manualChanges=[]){
  // User-approved manual changes are session-only, never persisted or written to Supabase.
  const changes=new Map(manualChanges.map(x=>[x.recordId,x]));
- const eRows=javelin.records.map(r=>{
+ const candidates=[...javelin.records,...javelin.excluded.filter(r=>changes.get(`${r.page}|${r.y}|${r.plot}`)?.action==='include')];
+ const eRows=candidates.map(r=>{
   const id=`${r.page}|${r.y}|${r.plot}`;const c=changes.get(id);
   if(!c)return r;
   if(c.action==='exclude')return null;
@@ -281,26 +319,22 @@ export function compareMaterials(javelin,spruce,manualChanges=[]){
  for(const key of allKeys){
   const e=expected.get(key),a=actual.get(key);
   const baseStatus=overlapStatus(e,a);
-  const markups=[...(e?.markups||[]),...(a?.markups||[])].filter((m,i,all)=>all.findIndex(x=>x.source===m.source&&x.page===m.page&&x.plot===m.plot&&x.type===m.type)===i);
-  const marked=markups.length>0;
-  // A nominal match underneath markup is NOT an approved match.
-  const status=baseStatus==='MATCH'&&marked?'REVIEW':baseStatus;
+  const status=baseStatus; // Only real differences and unsupported stock configurations require attention.
   const cuts=a?.stock?.length?[]:compareCutLengths(e,a);
   const diffSummary=differenceSummary(cuts);
   let reason='Exact product and cut lengths agree.';
-  if(!e)reason='Extra material in Spruce (not found in base Javelin).';
-  else if(!a)reason='Material missing from Spruce (present in base Javelin).';
+  if(!e)reason='Extra material in Spruce (not found in adjusted Javelin).';
+  else if(!a)reason='Material missing from Spruce (present in adjusted Javelin).';
   else if(a.stock.length){const stockLF=a.stock.reduce((s,x)=>s+(x.length||0)*x.qty,0);reason=stockLF<e.total?`Definite minimum-stock shortage: requires at least ${e.total} LF, ordered ${stockLF} LF (before kerf).`:`Stock substitution: ${stockLF} LF ordered vs ${e.total} LF required. Cutting feasibility and waste need confirmation.`;}
   else if(isStockSection(e,a)&&baseStatus==='REVIEW'&&!cutListsEqual(e,a))reason=`Rim/blocking stock allowance differs: ${a.total} LF ordered vs ${e.total} LF of finished cuts. Confirm the extra stock/cutting plan.`;
   else if(isStockSection(e,a)&&baseStatus==='MISMATCH'&&a.total<e.total)reason=`Definite shortage: ${e.total} LF of finished cuts required, ${a.total} LF ordered (before kerf).`;
   else if(baseStatus==='MISMATCH')reason=diffSummary||'Different length/quantity breakdown or total LF.';
   else if(baseStatus==='REVIEW')reason='Uncertain specifications, quantity interpretation, or PDF extraction.';
-  if(marked)reason+=` Base PDF values were used; ${markups.length} marked material row(s) require inspection in the source PDF.`;
-  details.push({key,section:e?.section||a?.section,product:e?.spec?.label||a?.spec?.label,status,baseStatus,marked,markups,reason,cutDeltas:cuts,diffSummary,stockComparison:Boolean(a?.stock?.length),expected:e?lengthList(e):'—',actual:a?(a.stock.length?a.stock.map(s=>`${s.qty} × ${s.length||'?'}' stock`).join(', '):lengthList(a)):'—',expectedLF:e?.total??0,actualLF:a?.total??0,javelinPages:e?.items.map(x=>x.page)||[],sprucePages:a?.items.map(x=>x.page)||[],notes:[...(e?.notes||[]),...(a?.notes||[])]});
+  details.push({key,section:e?.section||a?.section,product:e?.spec?.label||a?.spec?.label,status,baseStatus,reason,cutDeltas:cuts,diffSummary,stockComparison:Boolean(a?.stock?.length),expected:e?lengthList(e):'—',actual:a?(a.stock.length?a.stock.map(s=>`${s.qty} × ${s.length||'?'}' stock`).join(', '):lengthList(a)):'—',expectedLF:e?.total??0,actualLF:a?.total??0,javelinPages:e?.items.map(x=>x.page)||[],sprucePages:a?.items.map(x=>x.page)||[],notes:[...(e?.notes||[]),...(a?.notes||[])]});
  }
  const globalWarnings=[...javelin.warnings,...spruce.warnings];
  // Don't report a complete match if any parse/annotation warning is outstanding.
- const stats={match:details.filter(x=>x.status==='MATCH').length,mismatch:details.filter(x=>x.status==='MISMATCH').length,review:details.filter(x=>x.status==='REVIEW').length+globalWarnings.length,marked:details.filter(x=>x.marked).length};
+ const stats={match:details.filter(x=>x.status==='MATCH').length,mismatch:details.filter(x=>x.status==='MISMATCH').length,review:details.filter(x=>x.status==='REVIEW').length+globalWarnings.length};
  const overall=stats.mismatch?'MISMATCH':stats.review?'MANUAL REVIEW REQUIRED':'MATCH';
- return {details:details.sort((a,b)=>a.section.localeCompare(b.section,{numeric:true})||a.product.localeCompare(b.product)),warnings:globalWarnings,stats,overall,excluded:[],gradeOverride:null};
+ return {details:details.sort((a,b)=>a.section.localeCompare(b.section,{numeric:true})||a.product.localeCompare(b.product)),warnings:globalWarnings,stats,overall,excluded:javelin.excluded,gradeOverride:javelin.gradeOverride};
 }

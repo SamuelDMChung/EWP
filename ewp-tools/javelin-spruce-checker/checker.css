@@ -14,15 +14,12 @@
 .checker-pending select{font:inherit;border:1px solid var(--tools-line);color:var(--tools-ink);background:var(--tools-paper);border-radius:7px;padding:7px;max-width:160px}
 @media print{.checker-file-slots,.checker-pending,.checker-drop{display:none!important}}
 
-/* V1.32: per-cut difference highlighting and independent markup review flags. */
+/* V1.33: highlight real per-cut differences only. */
 .checker-summary-tags{display:flex;align-items:center;flex-wrap:wrap;justify-content:flex-end;gap:5px}
-.checker-marked-tag{color:#8a5600;background:#fff0cd;border:1px solid #e6bb66;font-size:10px;font-weight:800;white-space:nowrap;border-radius:6px;padding:4px 6px}
 .checker-cut-list{display:grid;gap:3px}
 .checker-cut{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:3px 6px;border-radius:5px}
 .checker-cut small{font-size:11px;font-weight:750}
 .checker-cut[data-diff="short"]{color:#b42d27;background:color-mix(in srgb,#b42d27 10%,var(--tools-paper));font-weight:750}
 .checker-cut[data-diff="extra"]{color:#8a5600;background:color-mix(in srgb,#e4a323 17%,var(--tools-paper));font-weight:750}
-.checker-diff-summary{font-size:13px!important;font-weight:800;color:#b42d27;margin:7px 0!important}
-.checker-markup-alert{border-left:4px solid #bb8500;border-radius:4px;background:color-mix(in srgb,#e4a323 12%,var(--tools-paper));padding:10px 12px;font-size:12px;margin:10px 0}
-.checker-markup-alert p{margin:4px 0!important}.checker-markup-alert ul{margin:5px 0 0;padding-left:17px}.checker-markup-alert a{color:var(--tools-accent);text-decoration:underline}
-@media print{.checker-marked-tag,.checker-markup-alert,.checker-cut{print-color-adjust:exact;-webkit-print-color-adjust:exact}}
+.checker-diff-summary{display:flex;flex-wrap:wrap;gap:6px;margin:7px 0!important}.checker-diff-chip{display:inline-block;padding:4px 7px;border-radius:5px;font-size:12px;font-weight:800}.checker-diff-chip[data-kind="short"]{color:#b42d27;background:color-mix(in srgb,#b42d27 10%,var(--tools-paper))}.checker-diff-chip[data-kind="extra"]{color:#8a5600;background:color-mix(in srgb,#e4a323 17%,var(--tools-paper))}
+@media print{.checker-cut{print-color-adjust:exact;-webkit-print-color-adjust:exact}}

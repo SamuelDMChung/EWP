@@ -1,3 +1,32 @@
+# EWP Management Portal — V1.33 WEB: Geometry-Safe Strikeouts, Grade Notes Restored, Highlights Ignored
+
+**Canonical input:** `EWP_Management_Portal_V1_32_WEB_FULL.zip` (188 files). **Release:** V1.33 WEB, November 3, 2026. **Next:** V1.34 WEB. **Scope:** PDF Checker only, with all 11 pages updated for V1.33 version/cache credits. No production Supabase access, no DB/SQL/RLS/Auth/Edge Function/Resend changes, and no EWP Connect iOS changes.
+
+## Approved V1.33 behavior — supersedes V1.32 ONLY for annotation handling
+
+- **Restore meaningful Javelin annotations:** A structured, explicit FreeText instruction matching `All joists 230, TYP. this level` changes TJI grade for that Javelin level (only); conflicting/unknown notes require manual review. A clearly aligned full-row `StrikeOut` removes the target material row from the expected count; the user can restore/exclude/adjust rows in the existing session-only correction panel. Partial strikeouts cannot remove whole material rows; grade-only strikes are retained when supported by an explicit level note.
+- **Safe strikeout association:** Use actual two-dimensional geometry of Javelin material text rows and annotation rectangles, with distinct coordinates for PDF.js text-height/baseline versus older top-anchored fixtures. Require substantial vertical/horizontal overlap of exactly ONE material row. If no row is confidently identified or multiple rows overlap, **exclude none** and flag the uncertain *strikeout*, never an adjacent material. This protects Unit 201 LSL `TS3` when PSL `P5` directly above it is crossed out.
+- **Ignore ordinary highlights completely:** They are not interpreted as instructions, do not mark material rows, do not change grades/quantities, and do **not** create `MARKED PDF AREA` tags, manual reviews or warnings. The previous V1.32 marked-area UI and annotation-only review workflow have been removed. Review items remain for real stock/cut feasibility uncertainties, unreadable rows and ambiguous meaningful notes/strikeouts—not ordinary highlights.
+- **Keep exact cut discrepancy highlighting:** Each missing cut appears in red, extra in amber, with quantity × length/LF summary. Matching cuts stay neutral. HTML report and browser print support the same real mismatch evidence.
+- **Keep all other V1.32 capabilities:** unified two-PDF auto-classification and deduplication, page continuations, decimal/fraction dimension recognition, rim/stock conservative LF rules, web stiffener/backer block exclusion, local corrections, source PDF links, exports, filters, auth/navigation/light/dark themes.
+
+## Expected results for the uploaded original L3 East Javelin + Spruce pair
+
+- **Unit 200 PSL 2.2E 3½ × 9½:** Javelin `P5` **2 × 7′ (14 LF)** is **crossed out** and excluded. Adjusted Javelin = `1 × 10′ + 1 × 6′ + 1 × 5′` (**21 LF**), Spruce = **21 LF**, **MATCH**. If user restores that row, the resulting shortfall is correctly shown as `Missing 2 × 7′ (14 LF)`.
+- **Unit 201 LSL 1.55E 1¾ × 9½:** Valid Javelin `TS3` **1 × 11′** is **not** struck out by its neighboring `P5`. Spruce = **1 × 11′**, **MATCH**. Its ordinary highlight is ignored.
+- **Real discrepancies remain:** Rim/Blockings 1¼ × 9½ LSL **809 LF expected vs 576 LF stock** = definite **233 LF** shortfall (MISMATCH); Rim 1¾ × 9½ LSL 66 LF of Javelin finished cuts vs 306 LF ordered remains manual stock/cut feasibility review, not an automatic approved match. Offline geometrical fixture output: **30 MATCH, 1 MISMATCH, 1 REVIEW**, with 6 PSL P5 rows confidently excluded.
+- **Older L4 East annotated fixture:** Explicit TJI 230 note applied; six confidently crossed-out PSL P6 rows excluded; **24 MATCH, 0 MISMATCH, 1 REVIEW**.
+
+## Validation limits and QA
+
+`node tests/v1_33_smoke.mjs` **46 assertions passed**; `python tests/browser_smoke_v1_33.py` **four controlled Chromium scenarios passed**; Steel **29**, Snow **40**, multi-PDF Consolidator **32**, prior connector parser **23**. Also verify ZIP integrity, all 11 page credits, source imports/paths, and protected SQL/backend hashes. Independent inspection of the original 3-page Javelin and 5-page Spruce PDFs used PyMuPDF text spans/height + annotation rectangles and reproduced both unit matches and the six precise PSL exclusions. **This is NOT an actual browser PDF.js extraction test.** Offline Chromium uses simulated PDF.js fixture data. Production PDF.js CDN loading, actual PDF.js token/annotation geometry, live GitHub Pages/Supabase, print dialog and customer workflows must be checked after deployment. See `tests/V1_33_TEST_RESULTS.md`.
+
+## Deployment
+
+Back up GitHub Pages repository. Extract the **entire V1.33 WEB ZIP** into the repository root (preserve `.nojekyll`, existing SQL history and `supabase/`), commit/push, hard-refresh versioned `?v=1.33` assets and sign in. In a **real browser with real PDF.js**, upload both original L3 documents and verify Unit 200 and Unit 201 MATCH after intentional strikeout processing; inspect 6 excluded P5 rows, rim shortage, stock review, search/filters, manual restore, HTML export and print output. Separately try an unstruck shortage and the annotated L4 pair to confirm TJI 230 and 6 P6 exclusions, with all highlights ignored. Spot-check other pages/themes/auth in read-only mode. **No migration/Edge Function redeploy required.** Do not upload original customer PDFs to the public repository.
+
+---
+
 # EWP Management Portal — V1.32 WEB: Base PDF Only + Markup Review + Cut Differences
 
 **Canonical input:** `EWP_Management_Portal_V1_31_WEB_FULL(1).zip` (178 files). **Release:** V1.32 WEB, November 3, 2026. **Next:** V1.33 WEB. **WEB ONLY.** No production Supabase access or data changes. EWP Connect iOS untouched.

@@ -1,3 +1,15 @@
+# EWP Management Portal V1.33 WEB — Complete Source
+
+**Canonical baseline:** V1.32 WEB. **Release:** V1.33 WEB (2026-11-03). **Next:** V1.34 WEB. This WEB-only release adjusts PDF Checker annotation handling; other workspaces and protected backend assets are unchanged.
+
+**Javelin annotations restored, safely:** Explicit level-wide FreeText TJI grade notes are applied; only full-row strikeouts uniquely matched to material-row geometry exclude materials. A strikeout with missing/ambiguous target does **not** remove a nearby row. Ordinary highlights are ignored entirely and do not create review flags. Detailed red shortages and amber extras from V1.32 remain; only real mismatches or genuine extraction/stock uncertainties are flagged. The existing local Javelin correction panel remains available.
+
+**Sample:** Unit 200 PSL P5 2×7′ is genuinely crossed out, so adjusted Javelin and Spruce each total 21 LF, **MATCH**. Unit 201 LSL TS3 1×11′ is preserved despite adjacent P5 strikeout and matches Spruce; highlights ignored. Other actual stock shortages still flag normally.
+
+**QA / deploy:** See `PORTAL_HANDOFF.md` and `tests/V1_33_TEST_RESULTS.md`. Offline fixture-based Chromium and independent PyMuPDF checks passed; **not live PDF.js verification**. Deploy the complete ZIP at the existing GitHub Pages repository root and test real PDFs using actual browser PDF.js. No SQL/Edge Function/iOS migration. Do not commit customer PDFs.
+
+---
+
 # EWP Management Portal V1.32 WEB — Complete Source
 
 **Canonical baseline:** V1.31 WEB (178 files). **Release:** V1.32 WEB (2026-11-03). **Next:** V1.33 WEB. All original workspaces, Supabase Auth/RLS, Forecast, Tracker, Purchasing, Sales, Resend and navigation remain present and unchanged except standard V1.32 HTML version credits/cache parameters.

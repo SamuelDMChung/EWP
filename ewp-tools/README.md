@@ -1,3 +1,9 @@
+# V1.33 EWP Tools — precise annotation handling, actual differences only
+
+PDF Checker once again honors explicit Javelin level-wide TJI grade FreeText notes and confident whole-row strikeouts; strikeout targets now require unambiguous text-row-geometry overlap so adjacent LSL/PSL rows remain safe. **Ordinary highlights are fully ignored** and never trigger review badges or warnings. V1.32 exact cut-shortage (red) / excess (amber) rendering is retained; uncertainties in actual stock/cutting and ambiguous meaningful annotations can still require review. All other EWP Tools are unchanged aside from all-page version credits. See `javelin-spruce-checker/README.md` and `../tests/V1_33_TEST_RESULTS.md`.
+
+---
+
 # V1.32 EWP Tools — Original PDF comparisons, review-only markups
 
 Javelin vs. Spruce PDF Checker now uses only original/base PDF text as material input, never annotation instructions. Highlight/strikeout/FreeText regions are flagged for manual inspection with original-PDF page links; a base match in a marked area stays **MANUAL REVIEW** until a person checks it. Missing cut quantities are red; extras amber, with exact piece/length/LF differences. Other EWP Tools retain their original implementations and behavior (only global version stamps changed). See `javelin-spruce-checker/README.md` and `../tests/V1_32_TEST_RESULTS.md`.

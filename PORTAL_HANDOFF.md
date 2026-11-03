@@ -1,3 +1,34 @@
+# EWP Management Portal — V1.32 WEB: Base PDF Only + Markup Review + Cut Differences
+
+**Canonical input:** `EWP_Management_Portal_V1_31_WEB_FULL(1).zip` (178 files). **Release:** V1.32 WEB, November 3, 2026. **Next:** V1.33 WEB. **WEB ONLY.** No production Supabase access or data changes. EWP Connect iOS untouched.
+
+## Approved V1.32 changes — PDF Checker only
+
+- **Original/base PDF is the only material authority.** PDF.js `getTextContent` supplies material text. Annotation text/FreeText, strikeouts, highlighters, overlays, notes, ink and other PDF markups are **not** material commands: they never replace TJI grades, change dimensions, alter quantities, or automatically include/exclude rows. V1.30/V1.31 behavior that applied level-wide TJI FreeText instructions or deleted full-row strikeouts is expressly retired. Original marked rows are kept. User may use existing **session-only** correction panel after visually checking the source PDF.
+- **Markups become review-only location metadata.** The reader requests annotations only to extract type + bounding rectangle + page. No annotation contents/FreeText message is read or used as material data. Overlapping base rows display an amber **MARKED PDF AREA** tag, their mark type, page and plot ID, and a link to open that page. Base-content matches that overlap markups are **MANUAL REVIEW**, not a silently approved MATCH; mismatches retain MISMATCH with a separate markup warning. Unassignable marks cause page-level review warnings. Annotation metadata read failures do not prevent base-text extraction but explicitly warn the user. Both Javelin and Spruce are supported. PDF.js numeric annotation types are normalized as well as named types.
+- **Exact difference highlighting across all non-stock cut lists.** For each product/section, per-length expected and ordered quantities are shown, with missing cuts in red and extra cuts in amber; a concise `Missing 2 × 7′ (14 LF)` summary appears above the comparison. Stock substitutions still use conservative LF logic and are not falsely checked as exact pieces. HTML export includes difference summaries and markup review notes; browser Print/Save PDF retains the highlighted on-screen output.
+- **Supplied pair checked locally:** For Unit 200 3½ × 9½ PSL 2.2E, Javelin 35 LF vs Spruce 21 LF, specifically **2 × 7′ (14 LF) missing**. For Unit 201 1¾ × 9½ LSL 1.55E, original Javelin plot TS3 **1 × 11′** is retained and compares with Spruce **1 × 11′**; the Javelin-highlighted row is **MANUAL REVIEW**, not false extra order/mismatch. A neighboring P5 strikeout does not remove TS3.
+- **Existing functionality retained:** two-PDF unified upload, classifier, queues, Remove/replacement, deduplication, all material types, exact cut comparisons, rim/stock logic, excluding all web stiffeners and backer blocks, session-only overrides, filters, exports, PDF links, light/dark, nav/auth/Supabase and all other EWP Tools.
+
+## Important semantic change
+
+Historical V1.31 comparison totals **will differ on marked PDFs**, because crossed-out base rows are now included and original TJI grades remain unchanged. The owner specifically chose this behavior rather than trusting annotations to revise material lists. Marked areas must be visually checked and any necessary adjustment made using the existing local corrections. Large highlight annotations can mark many rows for manual review; these are intentionally not certified matches.
+
+## Validation and limitations
+
+- See `tests/V1_32_TEST_RESULTS.md` and `tests/v1_32_smoke.mjs`, `tests/browser_smoke_v1_32.py` for controlled fixture-based regression and UI evidence.
+- Original supplied 3-page Javelin + 5-page Spruce PDFs were additionally evaluated locally using **PyMuPDF geometric extraction** to check Unit 200/201 source rows and annotation positions. That is **not** a real PDF.js verification; the browser harness still uses a fake PDF.js reader. Post-deployment live PDF.js testing with original files remains required. **Do not claim live PDF.js verified.**
+- PDF annotations flattened into native page content or drawn in scanned/image-based PDFs cannot reliably be distinguished from the base PDF. No OCR/AI. User must inspect visibly marked/ambiguous areas and paper/PDF revisions. Gross LF sufficiency is not cutting feasibility. BCBC Snow Load Calculator 2024 table row audit remains incomplete.
+- V1.31 fixture suites that specifically assert **automatic strikeout exclusion and automatic grade overrides** are historical tests and intentionally superseded by V1.32's new base-only regression. Other utilities have matching V1.32 adaptation of their regression expectations (version stamps only).
+
+## Deploy
+
+Back up deployed GitHub Pages site; extract the **complete V1.32 ZIP** at repository root (preserve `.nojekyll`, `supabase/`, SQL history and all assets), commit/push, hard-refresh all pages. Open EWP Tools → Javelin vs. Spruce PDF Checker. Upload **both real PDFs in a real browser**; confirm Unit 200 discrepancy highlighting, Unit 201 11′ LSL on both sides flagged for marked-area review, and note that P5 remains a base row even if struck out. Check exports, mobile/light/dark, filtering and other workspaces and existing Supabase read-only session.
+
+**No SQL migration, Supabase change, Resend/Edge Function redeployment, or iOS update is required.** No production resources were accessed or modified during this release.
+
+---
+
 # EWP Management Portal — V1.31 WEB: Unified PDF Checker Upload + Dimension/Stock Fixes
 
 **Canonical input:** `EWP_Management_Portal_V1_30_WEB_FULL.zip` (167 files). **Release candidate:** V1.31 WEB, November 3, 2026. **Next:** V1.32 WEB. **WEB only.** No production Supabase, SQL/RLS, Auth, Resend, Edge Function, Purchasing/Inventory, Sales, Tracking, Forecast, or EWP Connect iOS modifications.

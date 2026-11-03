@@ -1,3 +1,17 @@
+# Javelin vs. Spruce PDF Checker — V1.32 WEB (current)
+
+**Materials:** Interpret *only the original PDF page text*. All PDF annotations/markups are treated as review-location metadata only, not instructions. **Do not automatically exclude crossed-out PSL P6, alter TJI grade from FreeText notes, change quantity or material based on highlights or comments.** Any such changes must be made by the user in the existing session-only correction panel after opening the PDF.
+
+**Review flags:** The source PDF annotation **type, rectangle and page number** are used to flag overlapping original material rows. The markup **contents are never read as material data**. Review badge with page/plot and original-PDF page link appears even when base cuts match. Unattached markings or failed annotation metadata create page review warnings. Markups on both source types are monitored. This may produce many reviews if the PDF was heavily highlighted, by design.
+
+**Cut differences:** For non-stock rows, differences are computed separately for each nominal cut length and quantity. Example: Unit 200 PSL 2.2 3½×9½ shows `Missing 2 × 7′ (14 LF)` while other matching lengths stay neutral. Missing cuts red, surplus cuts amber. Print/Save PDF and exported HTML retain discrepancy and markup notes. Standard stock-versus-cut review and conservative LF shortage logic are unchanged.
+
+**Unit 201 regression:** Base Javelin `TS3` LSL 1.55E 1¾×9½ is 1×11′ and Spruce `LSL1912` is 1×11′. The Javelin highlighted TS3 row is **MANUAL REVIEW** (not automatically matched), and the adjacent marked P5 row must not make it disappear. A crossed-out P5 remains part of the *base* expected material until session correction.
+
+**Limits:** Selectable-text Javelin/Spruce layouts only. Native annotations may be missed if flattened into page contents or scanned/handwritten; no OCR. The offline Chromium test uses a controlled fake PDF.js reader, while the separate real-PDF local verification used PyMuPDF token geometry, not live browser PDF.js. Verify live PDF.js, page links, annotation placement and PDF exports on deployment. Do not upload original customer PDFs to public Pages repository. Other workspaces and Supabase unaffected.
+
+---
+
 # Javelin vs. Spruce PDF Checker — V1.31 WEB
 
 **Upload:** Drop the two documents into the **same box**, select both from Browse PDFs, or add one and then the other later. The app detects Javelin versus Spruce by the PDF's actual headings and column structure, not the filenames. Each accepted file appears under Javelin or Spruce with Remove. A new PDF of an already-occupied type asks before replacing the previous file; unchanged duplicates are skipped by actual byte comparison. An ambiguous type is shown for manual Javelin/Spruce assignment rather than silently guessed. PDFs are read locally, with a serial queue and per-page cancellation checks.

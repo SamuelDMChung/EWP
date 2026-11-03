@@ -1,4 +1,4 @@
-import {pdfLinesFromItems,pdfAnnotations,parseJavelin,parseSpruce,compareMaterials,classifyPdfPages} from './logic.mjs?v=1.31';
+import {pdfLinesFromItems,pdfAnnotations,parseJavelin,parseSpruce,compareMaterials,classifyPdfPages} from './logic.mjs?v=1.32';
 const $=id=>document.getElementById(id);
 const state={pdfjs:null,jFile:null,sFile:null,j:null,s:null,result:null,overrides:[],jUrl:null,sUrl:null,jEntry:null,sEntry:null,generation:0,queue:Promise.resolve(),entries:[],nextId:1};
 const MAX_BYTES=200*1024*1024;
@@ -26,8 +26,11 @@ async function readPdfPages(entry,generation){
    if(generation!==state.generation||entry.cancelled)return null;
    setStatus(`Reading ${file.name}, page ${n} of ${pdf.numPages}...`);
    const page=await pdf.getPage(n),viewport=page.getViewport({scale:1});
-   const [text,anns]=await Promise.all([page.getTextContent(),page.getAnnotations({intent:'display'})]);
-   pages.push({page:n,lines:pdfLinesFromItems(text.items,viewport.height),annotations:pdfAnnotations(anns,n,viewport)});
+   // Base page text supplies ALL material values. Annotation geometry is review metadata only.
+   const text=await page.getTextContent();
+   let anns=[],annotationReadError='';
+   try{anns=await page.getAnnotations({intent:'display'});}catch(error){annotationReadError=error?.message||'annotation extraction failed';}
+   pages.push({page:n,lines:pdfLinesFromItems(text.items,viewport.height),annotations:pdfAnnotations(anns,n,viewport),annotationReadError});
    page.cleanup?.();
   }
   return pages;
@@ -144,11 +147,33 @@ function queueFiles(fileList){
 }
 function badge(status){return `<span class="checker-tag" data-state="${esc(status)}">${esc(status==='REVIEW'?'MANUAL REVIEW':status)}</span>`;}
 function pages(prefix,ns){return `${prefix} page${ns.length===1?'':'s'} ${[...new Set(ns)].join(', ')||'—'}`;}
+function cutEvidence(d,side){
+ if(d.stockComparison||!d.cutDeltas?.length)return `<div>${esc(side==='j'?d.expected:d.actual)}</div>`;
+ const rows=d.cutDeltas.filter(x=>side==='j'?x.expectedQty>0:x.expectedQty>0||x.actualQty>0);
+ const labels=rows.map(x=>{
+  const qty=side==='j'?x.expectedQty:x.actualQty;
+  const short=x.difference<0,extra=x.difference>0;
+  const explanation=side==='s'&&short?` <small>Missing ${Math.abs(x.difference)} pc${Math.abs(x.difference)===1?'':'s'}</small>`:side==='s'&&extra?` <small>Extra ${x.difference} pc${x.difference===1?'':'s'}</small>`:'';
+  const state=short?'short':extra?'extra':'match';
+  return `<div class="checker-cut" data-diff="${state}"><span>${qty} × ${x.length}′</span>${explanation}</div>`;
+ });
+ return `<div class="checker-cut-list">${labels.join('')||'—'}</div>`;
+}
+function markupEvidence(d){
+ if(!d.marked)return '';
+ const rows=d.markups.map(m=>{
+  const url=m.source==='Spruce'?state.sUrl:state.jUrl;
+  const href=url?`<a href="${esc(url+'#page='+m.page)}" target="_blank" rel="noopener noreferrer">${esc(m.source)} p.${m.page}</a>`:`${esc(m.source)} p.${m.page}`;
+  return `<li>${href} · ${esc(m.type)} · ${esc(m.plot||'material area')}</li>`;
+ });
+ return `<div class="checker-markup-alert"><strong>Markup detected — manually review the highlighted/marked area.</strong><p>The checker did not apply any instructions from the markup; only base PDF material rows were compared.</p><ul>${rows.join('')}</ul></div>`;
+}
 function detailsHtml(d){return `<details class="checker-item" ${d.status==='MATCH'?'':'open'}>
- <summary><span>${esc(d.product)} · ${esc(d.section)}</span>${badge(d.status)}</summary>
+ <summary><span>${esc(d.product)} · ${esc(d.section)}</span><span class="checker-summary-tags">${badge(d.status)}${d.marked?'<span class="checker-marked-tag">MARKED PDF AREA</span>':''}</span></summary>
  <p class="checker-reason">${esc(d.reason)}</p>
- <div class="checker-compare-grid"><div><h4>Expected — Javelin</h4><div>${esc(d.expected)}</div><p class="checker-evidence">${esc(pages('Javelin',d.javelinPages))} · ${d.expectedLF.toFixed(2)} LF</p></div><div><h4>Ordered — Spruce</h4><div>${esc(d.actual)}</div><p class="checker-evidence">${esc(pages('Spruce',d.sprucePages))} · ${d.actualLF.toFixed(2)} LF</p></div></div>
- ${d.notes.length?`<div class="checker-evidence">${d.notes.map(esc).join('<br>')}</div>`:''}</details>`;}
+ ${d.diffSummary?`<p class="checker-diff-summary">${esc(d.diffSummary)}</p>`:''}
+ <div class="checker-compare-grid"><div><h4>Expected — Javelin</h4>${cutEvidence(d,'j')}<p class="checker-evidence">${esc(pages('Javelin',d.javelinPages))} · ${d.expectedLF.toFixed(2)} LF</p></div><div><h4>Ordered — Spruce</h4>${cutEvidence(d,'s')}<p class="checker-evidence">${esc(pages('Spruce',d.sprucePages))} · ${d.actualLF.toFixed(2)} LF</p></div></div>
+ ${markupEvidence(d)}${d.notes.length?`<div class="checker-evidence">${d.notes.map(esc).join('<br>')}</div>`:''}</details>`;}
 function renderDetails(){
  const filter=$('checkerFilter').value,query=$('checkerSearch').value.trim().toLowerCase();
  const items=state.result?.details.filter(d=>(filter==='all'||(filter==='issues'&&d.status!=='MATCH')||d.status===filter)&&(!query||`${d.section} ${d.product} ${d.reason}`.toLowerCase().includes(query)))||[];
@@ -165,7 +190,7 @@ function renderCorrectionRows(){
  for(const r of [...state.j.records,...state.j.excluded]){
   const id=overrideRowId(r),isExcluded=state.j.excluded.includes(r),saved=state.overrides.find(c=>c.recordId===id);
   const row=document.createElement('div');row.className='checker-row';
-  const info=document.createElement('span');info.innerHTML=`<strong>${esc(r.unit)} · ${esc(r.plot||'row')} · ${esc(r.spec?.label||r.description)}</strong><br><small>${esc(r.length)}′ · p.${r.page} · ${isExcluded?'Excluded by strikeout':'Included'} ${r.notes.length?' · '+esc(r.notes[0]):''}</small>`;row.append(info);
+  const info=document.createElement('span');info.innerHTML=`<strong>${esc(r.unit)} · ${esc(r.plot||'row')} · ${esc(r.spec?.label||r.description)}</strong><br><small>${esc(r.length)}′ · p.${r.page} · ${isExcluded?'Manually excluded':'Base PDF row included'} ${r.notes.length?' · '+esc(r.notes[0]):''}</small>`;row.append(info);
   const qty=document.createElement('input');qty.type='number';qty.min='0';qty.max='100000';qty.step='1';qty.value=saved?.quantity??r.qty;qty.setAttribute('aria-label',`Quantity of ${r.plot} on page ${r.page}`);row.append(qty);
   const grade=document.createElement('input');grade.placeholder='Grade';grade.value=saved?.grade??(r.spec?.type==='TJI'?r.spec.grade:'');grade.setAttribute('aria-label',`TJI grade of ${r.plot} on page ${r.page}`);grade.disabled=r.spec?.type!=='TJI';row.append(grade);
   const toggle=document.createElement('button');toggle.className='tool-button';toggle.type='button';let excluded=saved?.action==='exclude'||(isExcluded&&saved?.action!=='include');toggle.textContent=excluded?'Restore/include':'Exclude';toggle.onclick=()=>{excluded=!excluded;toggle.textContent=excluded?'Restore/include':'Exclude';toggle.dataset.exclude=excluded?'yes':'no';};toggle.dataset.exclude=excluded?'yes':'no';row.append(toggle);
@@ -186,16 +211,16 @@ function refresh(rebuildRows=true){
  $('checkerJView').href=state.jUrl+'#page=1';$('checkerSView').href=state.sUrl+'#page=1';
  $('checkerSourceNames').textContent=`Javelin: ${basename(state.jFile)} · Spruce: ${basename(state.sFile)}`;
  $('checkerMatches').textContent=r.stats.match;$('checkerMismatches').textContent=r.stats.mismatch;$('checkerReviews').textContent=r.stats.review;
- $('checkerOverall').textContent=`Overall: ${r.overall}${r.gradeOverride?` · level-wide TJI ${r.gradeOverride} instruction applied`:''}`;
+ $('checkerOverall').textContent=`Overall: ${r.overall} · ${r.stats.marked} product groups with PDF markups to inspect`;
  $('checkerOverall').dataset.state=r.overall;
- $('checkerStats').textContent=`${state.j.stats.rows} Javelin lines (${state.j.stats.excluded} crossed out) · ${state.s.stats.rows} Spruce lines · ${state.overrides.length} manual corrections · all web stiffeners and backer blocks excluded.`;
+ $('checkerStats').textContent=`${state.j.stats.rows} base Javelin lines (${state.j.stats.markedRows} marked) · ${state.s.stats.rows} base Spruce lines (${state.s.stats.markedRows} marked) · ${state.overrides.length} session corrections · no PDF markup instructions applied · web stiffeners/backer blocks excluded.`;
  const warnings=$('checkerWarnings');warnings.hidden=!r.warnings.length;warnings.replaceChildren();
  for(const w of r.warnings){const p=document.createElement('p');p.textContent='Review: '+w;warnings.append(p);}
  renderDetails();if(rebuildRows)renderCorrectionRows();
 }
 function reportHtml(){
- const r=state.result;const summary=`<h1>Javelin vs. Spruce Comparison</h1><p>${esc(basename(state.jFile))} vs. ${esc(basename(state.sFile))}</p><h2>${esc(r.overall)}</h2><p>Matches: ${r.stats.match} · Mismatches: ${r.stats.mismatch} · Unresolved reviews: ${r.stats.review}. User corrections: ${state.overrides.length}.</p>`;
- return `<!doctype html><html><head><meta charset="utf-8"><title>EWP Comparison Report</title><style>body{font:14px Arial;margin:30px;line-height:1.5;color:#242424}section{page-break-inside:avoid;border:1px solid #ccc;padding:12px;margin:10px 0}h3{margin:0}small{color:#555}</style></head><body>${summary}<p>Excluded: all web stiffeners and backer blocks. This is a review aid. Ambiguous or flattened annotations require human inspection.</p>${r.warnings.map(w=>`<p>REVIEW: ${esc(w)}</p>`).join('')}${r.details.map(d=>`<section><h3>${esc(d.status)} · ${esc(d.section)} · ${esc(d.product)}</h3><p>${esc(d.reason)}</p><p>Expected: ${esc(d.expected)} (${d.expectedLF} LF); Javelin p. ${d.javelinPages.join(', ')}</p><p>Ordered: ${esc(d.actual)} (${d.actualLF} LF); Spruce p. ${d.sprucePages.join(', ')}</p></section>`).join('')}</body></html>`;
+ const r=state.result;const summary=`<h1>Javelin vs. Spruce Comparison</h1><p>${esc(basename(state.jFile))} vs. ${esc(basename(state.sFile))}</p><h2>${esc(r.overall)}</h2><p>Matches: ${r.stats.match} · Mismatches: ${r.stats.mismatch} · Unresolved reviews: ${r.stats.review} · Marked product groups: ${r.stats.marked}. Session-only manual corrections: ${state.overrides.length}.</p>`;
+ return `<!doctype html><html><head><meta charset="utf-8"><title>EWP Comparison Report</title><style>body{font:14px Arial;margin:30px;line-height:1.5;color:#242424}section{page-break-inside:avoid;border:1px solid #ccc;padding:12px;margin:10px 0}h3{margin:0}small{color:#555}.missing{color:#a62921;font-weight:bold}.extra{color:#8a5600;font-weight:bold}.marked{color:#8a5600;border-left:4px solid #bb8500;padding-left:10px}</style></head><body>${summary}<p>Comparison uses BASE PDF text only. Annotation text, strikeouts and FreeText have no effect on grades, quantities or included rows. Marked areas are flagged for inspection. All web stiffeners and backer blocks excluded. Scanned or flattened marks are not reliably detectable.</p>${r.warnings.map(w=>`<p class="marked">REVIEW: ${esc(w)}</p>`).join('')}${r.details.map(d=>`<section><h3>${esc(d.status)} · ${esc(d.section)} · ${esc(d.product)}${d.marked?' · MARKED AREA':''}</h3><p>${esc(d.reason)}</p>${d.diffSummary?`<p class="${d.cutDeltas.some(x=>x.difference<0)?'missing':'extra'}">${esc(d.diffSummary)}</p>`:''}<p>Expected: ${esc(d.expected)} (${d.expectedLF} LF); Javelin p. ${d.javelinPages.join(', ')}</p><p>Ordered: ${esc(d.actual)} (${d.actualLF} LF); Spruce p. ${d.sprucePages.join(', ')}</p>${d.markups.map(m=>`<p class="marked">REVIEW MARKUP: ${esc(m.source)} p.${m.page}, ${esc(m.plot||'area')}, ${esc(m.type)}</p>`).join('')}</section>`).join('')}</body></html>`;
 }
 $('checkerFilter').addEventListener('change',renderDetails);$('checkerSearch').addEventListener('input',renderDetails);
 $('checkerReset').addEventListener('click',()=>{

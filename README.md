@@ -1,3 +1,13 @@
+# EWP Management Portal V1.32 WEB — Complete Source
+
+**Canonical baseline:** V1.31 WEB (178 files). **Release:** V1.32 WEB (2026-11-03). **Next:** V1.33 WEB. All original workspaces, Supabase Auth/RLS, Forecast, Tracker, Purchasing, Sales, Resend and navigation remain present and unchanged except standard V1.32 HTML version credits/cache parameters.
+
+**PDF Checker:** Material values now come **only from base PDF text**. FreeText grade notes, strikeouts and other PDF annotations no longer change TJI grades, quantities or line inclusion. Any marked material rows are **flagged for user inspection**, with links to the original PDF page; automatic base matches in marked areas require manual review. Per-length cut differences are colored red for missing and amber for extra, with exact LF descriptions. Browser/HTML reporting includes the review evidence. See `PORTAL_HANDOFF.md` and `tests/V1_32_TEST_RESULTS.md` for scope, source-level tests and verification limitations.
+
+**Deploy:** Replace repository-root files from the entire ZIP, including `.nojekyll`; commit/push and hard-refresh. Test real PDFs with the live PDF.js reader after deployment. No SQL or Edge Function migration is required. Customer PDFs are not bundled. BCBC 2024 snow-city table still lacks a complete row-by-row source audit.
+
+---
+
 # EWP Management Portal V1.31 WEB — Complete Source
 
 **Canonical baseline:** V1.30 WEB. **Release:** V1.31 WEB (2026-11-03). **Next:** V1.32 WEB. Includes all Portal pages and existing Supabase/Auth/Forecast/Tracking/Purchasing/Resend integrations unchanged.

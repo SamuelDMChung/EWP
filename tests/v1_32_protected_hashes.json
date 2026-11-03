@@ -1,0 +1,19 @@
+{
+  "sql/archive/phase2_migration.sql": "c45148bb4299b0ca1766535fb996a8b43e874cc59eb71a2cc4ef18d03927b374",
+  "sql/archive/phase3_realtime_optional.sql": "9d3587fda66fbaaba2b7a1b84e184b7019f6984ab60c06d9c8aa23d1c2c633d5",
+  "sql/archive/supabase_v0_26.sql": "424aea5a0c74c60d7f747c20a6e1904248dec7a02080f43a9b59f8df06f27008",
+  "sql/archive/v1_2_project_status_migration.sql": "2735b2779333dd5e04eac9bceddcfd200fcc280b8e4cb5285b7f3752812df4d5",
+  "sql/archive/v1_4_legacy_task_status_reconciliation.sql": "5ac4315cebf43454b141749be4d94b32e1908cca914f61fcf9bdd8fe297e722f",
+  "sql/archive/v1_5_atomic_task_coordination.sql": "851f50b737f2754de7a75644c2f5e0dc45c8ee03fc961f7f858592e1f0aa1f73",
+  "supabase/config.toml": "54d881a69d15f2dbbead986ebfcf9657164565a5e7864b11897bcc348b210ac0",
+  "supabase/functions/ewp-order-email/index.ts": "68572e1dfb48379795bb52d6c4c26e2abf2bbb3cb0bc964f6420fd4e71877b26",
+  "supabase/functions/sales-request-email/index.ts": "0d6bb4a1e39f422802a0fc52a5e7e1a31e729b21d51d49e0f3f3fc516609bbe9",
+  "v1_10_sales_requests.sql": "b089d3e8e10c5dc68ca9ceeefb3ee5e4a992ac565005214cee10bdd35d09897b",
+  "v1_11_sales_spruce_ats.sql": "6f49f6003b99a5522bf811ace899a7cee48e8ecab8fd448cba76ae538e77e7d0",
+  "v1_12_ewp_orders.sql": "7914553890ee8022db8be153f9ef90a4abd9d8f6a20980f24ef7ead897dc8cb6",
+  "v1_13_purchasing_receipts.sql": "f28d846361d8edd23068567ad705ab675762f1fc97bc4e29d9df860dab95bc38",
+  "v1_14_purchase_order_reimport.sql": "0666d6ede248809e2f482c573a5d806cf7853b2255c2fc795fe7bb2d3f0da0d4",
+  "v1_15_tracker_linked_colors.sql": "2f41061677d7fc4faa975ec38f5aa8c9cab350b0a69a17c6c46580da8f922ef0",
+  "v1_16_tracker_import_audit.sql": "4bccb3ca9b11b91c087389a15372db18677f6f1290f65d73dbf82acb9dcfc0bd",
+  "v1_6_forecast_coordination_intake.sql": "03037f4bf7e0e6b4016ff0ad299c944cb9ce67d713e6be691a541548c863ab2c"
+}

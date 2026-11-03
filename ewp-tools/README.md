@@ -1,3 +1,9 @@
+# V1.32 EWP Tools — Original PDF comparisons, review-only markups
+
+Javelin vs. Spruce PDF Checker now uses only original/base PDF text as material input, never annotation instructions. Highlight/strikeout/FreeText regions are flagged for manual inspection with original-PDF page links; a base match in a marked area stays **MANUAL REVIEW** until a person checks it. Missing cut quantities are red; extras amber, with exact piece/length/LF differences. Other EWP Tools retain their original implementations and behavior (only global version stamps changed). See `javelin-spruce-checker/README.md` and `../tests/V1_32_TEST_RESULTS.md`.
+
+---
+
 # V1.31 EWP Tools update
 
 The fourth EWP Tools utility, **Javelin vs. Spruce PDF Checker**, now accepts both PDFs in a single drop zone, auto-detects document type, allows Remove/replace, and handles mixed fraction/decimal dimension text and conservative Rim/Blockings stock matching. Read `javelin-spruce-checker/README.md`, `../PORTAL_HANDOFF.md` and `../tests/V1_31_TEST_RESULTS.md`. No changes to the other three tools beyond version credits.

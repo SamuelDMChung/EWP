@@ -1,3 +1,44 @@
+# EWP Management Portal — V1.35 WEB: Manual Strikeout Exclusions Only
+
+**Release:** November 3, 2026. **Canonical input:** complete V1.34 WEB ZIP. **Next:** V1.36 WEB. **Approved scope:** Javelin/Spruce PDF Checker logic, related UI text and documentation, and V1.35 version/cache credits on all 11 HTML pages. Other workspaces, Supabase authentication/database/RLS, Edge Functions, Resend integration, themes, purchasing, forecast, tracker and EWP Connect iOS are unchanged. No production project accessed; no SQL migration or backend redeployment.
+
+## Why this change
+
+The user deployed V1.34 and still saw a false Unit 201 LSL 1¾ × 9½ mismatch: Javelin TS3 1×11′ was missing from the adjusted results, even though present in the original PDF. Earlier attempts to infer automatic PSL strikeout exclusions using annotation rectangle coordinates did not reliably work with the actual hosted reader. **V1.35 removes the entire automatic strikeout-exclusion path**; annotation rectangles can no longer delete Javelin rows. The comparison starts with every recognized original material row. This is a deliberate change from the V1.33–V1.34 behavior, not a failure to interpret intended strikeouts.
+
+## Current behavior — supersedes historical versions
+
+- Preserve **all recognized original Javelin material rows**, including rows visually struck through. Native PDF StrikeOuts, highlights, underlines and similar decorations are ignored outright: they do **not** alter grades, quantities, row inclusion, warnings or mismatch counts. `pdfAnnotations` keeps only `FreeText` metadata.
+- Retain **explicit level-wide FreeText TJI grade instructions**, e.g. `All joists 230, TYP. this level`; those still override the TJI grade for the relevant level only. Unrecognized/conflicting FreeText notes do not silently alter materials.
+- Retain **session-only manual Exclude/Restore**, quantity and TJI-grade correction for any Javelin material row in the existing detail panel. Users must consult the original PDF before excluding a crossed-out item; no DB/file edits occur. Manually excluded rows are removed from the next comparison and can be restored.
+- Retain precise discrepancy chips: missing cuts red, excess cuts amber, with piece counts and LF. Real stock-replacement/cutting feasibility remains `MANUAL REVIEW` when necessary; ordinary highlights are not reviews. Diagnostic extraction statistics and yellow parser warning panel removed in V1.34 stay hidden from UI and HTML reports.
+- Keep PDF upload/order type detection, file replacement, page continuation, dimensional fraction/decimal normalization, no web stiffeners/backer blocks, light/dark themes, navigation and export unchanged.
+
+## Verified supplied L3 East original PDFs (offline cross-engine + controlled browser)
+
+- Unit **201 LSL 1.55E, 1¾ × 9½**: Javelin TS3 `1 × 11′` retained; Spruce `1 × 11′`, **MATCH**. This row is now immune to any neighboring PSL P5 strikeout coordinate confusion.
+- Unit **201 PSL 2.2E, 3½ × 9½**: Javelin P5 `2 × 7′`, Spruce none → **MISMATCH**, missing 14 LF, until manually excluded by the user. Excluding this row resolves the PSL mismatch while Unit 201 LSL stays MATCH.
+- Unit **200 PSL 2.2E, 3½ × 9½**: Javelin 35 LF (including crossed-out P5 `2 × 7′`), Spruce 21 LF → **MISMATCH** missing 14 LF until manual exclusion.
+- Genuine Rim/Blockings LSL 1¼ × 9½: 809 LF expected vs 576 LF ordered, **233 LF short**, MISMATCH. Rim stock-substitution manual feasibility review persists.
+- The six originally crossed-out PSL P5 rows are **all included** until the user excludes them individually. The controlled fixture L3 comparison changes from prior automatic-strikeout count `30 MATCH, 1 MISMATCH, 1 REVIEW` to **27 MATCH, 7 MISMATCH, 1 REVIEW**. The annotated L4 fixture keeps FreeText TJI 230 but exposes six PSL P6 differences: **21 MATCH, 6 MISMATCH, 1 REVIEW**.
+
+## Verification and limitations
+
+- `node tests/v1_35_smoke.mjs`: **54 assertions PASSED** across original row inclusion, no automatic annotation exclusions, grade notes, exact LSL/PSL results, session corrections, and unchanged stock logic.
+- `python tests/browser_smoke_v1_35.py`: **four responsive Chromium scenarios PASSED** (1320 light/dark, 768 light, 390 dark), using application/logic JS and **mock PDF.js**. Includes Unit 201 matched LSL and manual exclusion of adjacent PSL without affecting LSL.
+- Independent verification using original uploaded PDF pair's selectable-text geometry through **PyMuPDF** (not PDF.js): 81 Javelin rows, Unit 201 TS3 1×11′ present, 0 excluded, same expected mismatch count. Also replayed original text geometry through the real app UI in four Chromium viewports using a controlled reader; all passed. Neither real customer PDF nor the private replay source is included in the release archive.
+- Steel Beam 29 assertions, Snow Load 40, Multi-PDF Consolidation 32, historical connector parser 23, source preflight, ZIP CRC, 11 page credits, 14 retained SQL and protected backend hash preservation. Full report `tests/V1_35_TEST_RESULTS.md`.
+- **Not validated:** actual live `pdfjs-dist@6.3.289` CDN processing in hosted GitHub Pages, production Supabase authentication/RLS/Resend/Edge Functions, or native printing. The runtime here cannot load the external PDF.js CDN. Offline Python extraction and fake-PDF.js browser tests are not substitutes. No OCR; scans and flattened notes may not be recognized. Verify the original PDFs on the deployed site before using the output for purchasing.
+
+## Deployment
+
+1. Back up the current repository; replace the web repository root with the **complete** `EWP_Management_Portal_V1_35_WEB_FULL.zip` (include hidden `.nojekyll`, keep the existing GitHub Pages configuration). Commit and push.
+2. Hard-refresh the deployed site to use new `?v=1.35` HTML, CSS and JS asset stamps; verify `V1.35 WEB · Developed by Samuel Chung` on all pages.
+3. Authenticate, open EWP Tools → Javelin vs. Spruce PDF Checker, upload original Javelin and Spruce PDFs **in the browser** (never commit customer PDFs). Confirm Unit 201 LSL `1×11′` MATCH, 201/200 PSL P5 missing-cut mismatches, rim shortage, highlights ignored, no technical yellow panel, manual Exclude/Restore, HTML report and print.
+4. Spot-check other workspaces, filters, themes and navigation. No SQL migration, new Supabase permission, Edge Function or Resend deployment is necessary. EWP Connect iOS stays separate.
+
+---
+
 # EWP Management Portal — V1.34 WEB: Correct Annotation Coordinates; Hide Parser Diagnostics
 
 **Release:** November 3, 2026. **Canonical input:** complete V1.33 WEB ZIP. **Next:** V1.35 WEB. **Scope:** Javelin/Spruce PDF Checker only, plus V1.34 version and cache credits on all 11 pages. All other workspaces, Supabase auth/database/RLS, Edge Functions, Resend integration, settings, navigation, themes and EWP Connect iOS untouched. Production Supabase not accessed; no database writes, SQL migration or Edge Function redeployment.

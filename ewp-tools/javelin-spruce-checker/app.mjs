@@ -1,4 +1,4 @@
-import {pdfLinesFromItems,pdfAnnotations,parseJavelin,parseSpruce,compareMaterials,classifyPdfPages} from './logic.mjs?v=1.34';
+import {pdfLinesFromItems,pdfAnnotations,parseJavelin,parseSpruce,compareMaterials,classifyPdfPages} from './logic.mjs?v=1.35';
 const $=id=>document.getElementById(id);
 const state={pdfjs:null,jFile:null,sFile:null,j:null,s:null,result:null,overrides:[],jUrl:null,sUrl:null,jEntry:null,sEntry:null,generation:0,queue:Promise.resolve(),entries:[],nextId:1};
 const MAX_BYTES=200*1024*1024;
@@ -26,11 +26,12 @@ async function readPdfPages(entry,generation){
    if(generation!==state.generation||entry.cancelled)return null;
    setStatus(`Reading ${file.name}, page ${n} of ${pdf.numPages}...`);
    const page=await pdf.getPage(n),viewport=page.getViewport({scale:1});
-   // Base material rows plus only explicit FreeText and row-aligned StrikeOut instructions; ordinary highlights ignored.
+   // Base material rows plus explicit FreeText grade instructions only.
+   // All StrikeOut/highlight annotations are ignored without row exclusions.
    const text=await page.getTextContent();
    let anns=[],annotationReadError='';
    try{anns=await page.getAnnotations({intent:'display'});}catch(error){annotationReadError=error?.message||'annotation extraction failed';}
-   pages.push({page:n,lines:pdfLinesFromItems(text.items,viewport.height),annotations:pdfAnnotations(anns,n,viewport),annotationReadError});
+   pages.push({page:n,lines:pdfLinesFromItems(text.items,viewport.height),annotations:pdfAnnotations(anns,n),annotationReadError});
    page.cleanup?.();
   }
   return pages;
@@ -187,11 +188,12 @@ function renderCorrectionRows(){
  const out=$('checkerRows');out.replaceChildren();
  for(const r of [...state.j.records,...state.j.excluded]){
   const id=overrideRowId(r),isExcluded=state.j.excluded.includes(r),saved=state.overrides.find(c=>c.recordId===id);
+  const effectiveExcluded=saved?.action==='exclude'||(isExcluded&&saved?.action!=='include');
   const row=document.createElement('div');row.className='checker-row';
-  const info=document.createElement('span');info.innerHTML=`<strong>${esc(r.unit)} · ${esc(r.plot||'row')} · ${esc(r.spec?.label||r.description)}</strong><br><small>${esc(r.length)}′ · p.${r.page} · ${isExcluded?'Excluded by row-specific strikeout':'Included'} ${r.notes.length?' · '+esc(r.notes[0]):''}</small>`;row.append(info);
+  const info=document.createElement('span');info.innerHTML=`<strong>${esc(r.unit)} · ${esc(r.plot||'row')} · ${esc(r.spec?.label||r.description)}</strong><br><small>${esc(r.length)}′ · p.${r.page} · ${effectiveExcluded?'Excluded for this comparison':'Included'} ${r.notes.length?' · '+esc(r.notes[0]):''}</small>`;row.append(info);
   const qty=document.createElement('input');qty.type='number';qty.min='0';qty.max='100000';qty.step='1';qty.value=saved?.quantity??r.qty;qty.setAttribute('aria-label',`Quantity of ${r.plot} on page ${r.page}`);row.append(qty);
   const grade=document.createElement('input');grade.placeholder='Grade';grade.value=saved?.grade??(r.spec?.type==='TJI'?r.spec.grade:'');grade.setAttribute('aria-label',`TJI grade of ${r.plot} on page ${r.page}`);grade.disabled=r.spec?.type!=='TJI';row.append(grade);
-  const toggle=document.createElement('button');toggle.className='tool-button';toggle.type='button';let excluded=saved?.action==='exclude'||(isExcluded&&saved?.action!=='include');toggle.textContent=excluded?'Restore/include':'Exclude';toggle.onclick=()=>{excluded=!excluded;toggle.textContent=excluded?'Restore/include':'Exclude';toggle.dataset.exclude=excluded?'yes':'no';};toggle.dataset.exclude=excluded?'yes':'no';row.append(toggle);
+  const toggle=document.createElement('button');toggle.className='tool-button';toggle.type='button';let excluded=effectiveExcluded;toggle.textContent=excluded?'Restore/include':'Exclude';toggle.onclick=()=>{excluded=!excluded;toggle.textContent=excluded?'Restore/include':'Exclude';toggle.dataset.exclude=excluded?'yes':'no';};toggle.dataset.exclude=excluded?'yes':'no';row.append(toggle);
   const apply=document.createElement('button');apply.type='button';apply.className='tool-primary';apply.textContent='Apply';apply.onclick=()=>{
    const value=Number(qty.value);if(!Number.isSafeInteger(value)||value<0||value>100000){setStatus('Enter a non-negative whole quantity.',true);return;}
    const g=grade.value.trim();if(!grade.disabled&&g&&!/^\d{2,4}$/.test(g)){setStatus('Enter a numeric TJI grade.',true);return;}
@@ -216,7 +218,7 @@ function refresh(rebuildRows=true){
 }
 function reportHtml(){
  const r=state.result;const summary=`<h1>Javelin vs. Spruce Comparison</h1><p>${esc(basename(state.jFile))} vs. ${esc(basename(state.sFile))}</p><h2>${esc(r.overall)}</h2><p>Matches: ${r.stats.match} · Mismatches: ${r.stats.mismatch} · Unresolved reviews: ${r.stats.review}. Session-only manual corrections: ${state.overrides.length}.</p>`;
- return `<!doctype html><html><head><meta charset="utf-8"><title>EWP Comparison Report</title><style>body{font:14px Arial;margin:30px;line-height:1.5;color:#242424}section{page-break-inside:avoid;border:1px solid #ccc;padding:12px;margin:10px 0}h3{margin:0}small{color:#555}.missing{color:#a62921;font-weight:bold}.extra{color:#8a5600;font-weight:bold}.marked{color:#8a5600;border-left:4px solid #bb8500;padding-left:10px}</style></head><body>${summary}<p>Comparison applies explicit Javelin level-wide TJI FreeText notes and uniquely aligned whole-row strikeouts. Ordinary highlights are ignored and never cause review. Exact cut discrepancies are highlighted. Web stiffeners and backer blocks excluded. Scanned/flattened annotations may not be detectable.</p>${r.details.map(d=>`<section><h3>${esc(d.status)} · ${esc(d.section)} · ${esc(d.product)}</h3><p>${esc(d.reason)}</p>${d.diffSummary?`<p class="${d.cutDeltas.some(x=>x.difference<0)?'missing':'extra'}">${esc(d.diffSummary)}</p>`:''}<p>Expected: ${esc(d.expected)} (${d.expectedLF} LF); Javelin p. ${d.javelinPages.join(', ')}</p><p>Ordered: ${esc(d.actual)} (${d.actualLF} LF); Spruce p. ${d.sprucePages.join(', ')}</p></section>`).join('')}</body></html>`;
+ return `<!doctype html><html><head><meta charset="utf-8"><title>EWP Comparison Report</title><style>body{font:14px Arial;margin:30px;line-height:1.5;color:#242424}section{page-break-inside:avoid;border:1px solid #ccc;padding:12px;margin:10px 0}h3{margin:0}small{color:#555}.missing{color:#a62921;font-weight:bold}.extra{color:#8a5600;font-weight:bold}.marked{color:#8a5600;border-left:4px solid #bb8500;padding-left:10px}</style></head><body>${summary}<p>Comparison applies explicit Javelin level-wide TJI FreeText notes. Strikeouts and highlights are ignored; crossed-out materials remain included unless manually excluded in this browser session. Exact cut discrepancies are highlighted. Web stiffeners and backer blocks excluded. Scanned/flattened annotations may not be detectable.</p>${r.details.map(d=>`<section><h3>${esc(d.status)} · ${esc(d.section)} · ${esc(d.product)}</h3><p>${esc(d.reason)}</p>${d.diffSummary?`<p class="${d.cutDeltas.some(x=>x.difference<0)?'missing':'extra'}">${esc(d.diffSummary)}</p>`:''}<p>Expected: ${esc(d.expected)} (${d.expectedLF} LF); Javelin p. ${d.javelinPages.join(', ')}</p><p>Ordered: ${esc(d.actual)} (${d.actualLF} LF); Spruce p. ${d.sprucePages.join(', ')}</p></section>`).join('')}</body></html>`;
 }
 $('checkerFilter').addEventListener('change',renderDetails);$('checkerSearch').addEventListener('input',renderDetails);
 $('checkerReset').addEventListener('click',()=>{

@@ -1,3 +1,9 @@
+# V1.35 EWP Tools — Ignore strikeouts and visual markups, manual exclusions
+
+The Javelin/Spruce checker now **never automatically excludes a Javelin material row** because of a PDF strikeout. Native `StrikeOut`, highlight, underline and other visual marks are ignored; only explicit FreeText level-wide TJI grade notes retain their V1.31 behavior. Original material rows are compared against Spruce, with red missing and amber excess cut differences. A user can review the actual Javelin PDF and manually exclude a struck row using the existing session-only correction panel. Technical parser statistics/yellow warning block remain removed. Unit 201 LSL TS3 1×11′ remains included and matches Spruce in the controlled/independent extraction tests; neighboring PSL P5 appears as a 14 LF mismatch until manually excluded. No other EWP Tools changes beyond all-page V1.35 credits/cache. See `javelin-spruce-checker/README.md` and `../tests/V1_35_TEST_RESULTS.md`.
+
+---
+
 ## V1.34 Javelin vs. Spruce PDF Checker
 
 Fixed false Unit 201 11′ LSL mismatch caused by ambiguous raw-versus-viewport PDF annotation coordinates; whole-row strikeouts now choose the document-wide correct coordinate frame or exclude nothing when unresolved. Removed developer diagnostics/statistics and yellow warning panel from comparison. Genuine cut-length mismatch highlighting, FreeText grade notes, conservative strikeouts and ignoring ordinary highlights continue. No other EWP Tools modules changed. See PDF Checker README and V1.34 QA results.

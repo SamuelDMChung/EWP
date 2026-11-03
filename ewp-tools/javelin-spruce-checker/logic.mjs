@@ -1,6 +1,6 @@
-/* V1.34: meaningful Javelin PDF annotations are interpreted conservatively.
- * FreeText grade notes and uniquely row-aligned StrikeOuts can modify Javelin expectations.
- * Highlights are ignored outright; no annotation-only material review badges.
+/* V1.35: Every original Javelin material row is retained regardless of StrikeOut
+ * or highlight annotations. Only an explicit level-wide FreeText TJI grade note
+ * can alter its product specification; row exclusions require a user correction.
  */
 const VULGAR_FRACTIONS={'¼':'1/4','½':'1/2','¾':'3/4','⅛':'1/8','⅜':'3/8','⅝':'5/8','⅞':'7/8','⅓':'1/3','⅔':'2/3'};
 export const clean=s=>String(s??'').replace(/([0-9])(?=[¼½¾⅛⅜⅝⅞⅓⅔])/g,'$1 ').replace(/[¼½¾⅛⅜⅝⅞⅓⅔]/g,c=>VULGAR_FRACTIONS[c]).replace(/[“”″]/g,'\"').replace(/[’′]/g,"'").replace(/\s+/g,' ').trim();
@@ -72,95 +72,13 @@ export function pdfLinesFromItems(items,pageHeight){
  for(const line of lines){line.tokens.sort((a,b)=>a.x-b.x);line.text=line.tokens.map(t=>t.text).join(' ');}
  return lines;
 }
-// PDF.js annotationType may be numeric; only meaningful annotations are read.
-const ANNOTATION_TYPES={3:'FreeText',9:'Highlight',10:'Underline',11:'Squiggly',12:'StrikeOut'};
-export function pdfAnnotations(annots,pageNumber,viewport){
- return (annots||[]).map(a=>{
-  const raw=a.rect||[0,0,0,0];
-  const converted=viewport?.convertToViewportRectangle?viewport.convertToViewportRectangle(raw):raw;
-  const rect=[Math.min(converted[0],converted[2]),Math.min(converted[1],converted[3]),Math.max(converted[0],converted[2]),Math.max(converted[1],converted[3])];
-  const rawRect=[Math.min(raw[0],raw[2]),Math.min(raw[1],raw[3]),Math.max(raw[0],raw[2]),Math.max(raw[1],raw[3])];
-  const type=clean(typeof a.subtype==='string'?a.subtype:typeof a.type==='string'?a.type:ANNOTATION_TYPES[a.annotationType]||'');
-  // PDF.js annotation rectangles and extracted text may be delivered in different
-  // vertical coordinate frames. Preserve BOTH candidate frames for document-wide
-  // calibration before any material is excluded. Never guess per annotation.
-  return {type,contents:/^FreeText$/i.test(type)?clean(a.contentsObj?.str||a.contents||''):'',rect,...(viewport?.convertToViewportRectangle?{alternateRect:rawRect}:{}),page:pageNumber};
- }).filter(a=>/^(?:FreeText|StrikeOut)$/i.test(a.type)); // Ignore ALL highlights, underlines, drawings, etc.
-}
-// Row geometry is derived from the actual source text, not nearest Y-baseline.
-// A strikeout must cover a large portion of ONE row. Ambiguity never deletes anything.
-export function attachRowGeometry(line){
- const tokens=(line.tokens||[]).filter(t=>t.x>=30&&t.x<570);
- const anchor=Number(line.y)||0;
- const heights=tokens.map(t=>Number(t.height)||10).sort((a,b)=>a-b);
- const height=Math.max(8,Math.min(13,heights[Math.floor(heights.length/2)]||10));
- // PDF.js supplies item.height with a bottom-baseline transform. Older positioned
- // fixtures omit height and use a top-anchored Y. These MUST NOT be conflated:
- // treating a bottom baseline as a top would delete the following adjacent row.
- const bottomAnchored=tokens.filter(t=>t.hasHeight).length>tokens.length/2;
- const top=bottomAnchored?anchor-height:anchor;
- const left=tokens.length?Math.min(...tokens.map(t=>t.x)):32;
- const right=tokens.length?Math.max(...tokens.map(t=>t.x+(Number(t.width)||0))):568;
- return [left,top-0.8,right,top+height+0.8];
-}
-function overlapX(a,b){return Math.max(0,Math.min(a[2],b[2])-Math.max(a[0],b[0]));}
-function overlapY(a,b){return Math.max(0,Math.min(a[3],b[3])-Math.max(a[1],b[1]));}
-// A full-width strikeout cannot be matched by Y alone: Javelin row pitches
-// are ~13.5pt, and an inverted coordinate frame can line up with a different
-// row (including the next LSL). Use actual glyph bounds and unique 2-D overlap.
-export function strikeoutCandidates(records,annotation,box=annotation.rect){
- if(!Array.isArray(box)||box.length!==4)return [];
- const [x0,y0,x1,y1]=box;
- if(![x0,y0,x1,y1].every(Number.isFinite)||x1<=x0||y1<=y0)return [];
- return records.filter(r=>{
-  if(r.page!==annotation.page||!r.rowRect)return false;
-  const row=r.rowRect,rowHeight=Math.max(1,row[3]-row[1]);
-  return overlapY(box,row)/rowHeight>=0.65&&overlapX(box,row)>=Math.min(30,Math.max(8,(row[2]-row[0])*0.08));
- });
-}
-function uniqueFullRowHits(records,annotations,key){
- return annotations.reduce((count,a)=>{
-  const box=a[key];
-  return Array.isArray(box)&&box[2]-box[0]>330&&strikeoutCandidates(records,a,box).length===1?count+1:count;
- },0);
-}
-export function orientStrikeouts(records,strikeouts){
- // When no second coordinate frame exists, fixture coordinates are already
- // positioned in top-left page space. Respect that older fixture contract.
- const alternative=strikeouts.filter(a=>Array.isArray(a.alternateRect));
- if(!alternative.length)return {annotations:strikeouts,orientation:'supplied',scores:{primary:0,alternate:0},warnings:[]};
- // Determine orientation across the WHOLE document, not per page/annotation.
- // On the real Aria L3 PDF, the correct frame hits all six P5 rows; the wrong
- // frame misses pages 1/3 and can accidentally select Unit 201's TS3 LSL.
- const primary=uniqueFullRowHits(records,alternative,'rect');
- const alternate=uniqueFullRowHits(records,alternative,'alternateRect');
- const orientation=primary>alternate?'primary':alternate>primary?'alternate':'ambiguous';
- const warnings=[];
- const selected=strikeouts.map(a=>{
-  if(!Array.isArray(a.alternateRect))return {...a};
-  if(orientation!=='ambiguous')return {...a,rect:orientation==='alternate'?a.alternateRect:a.rect};
-  // In a true tie, only a row matched by BOTH transforms can be excluded.
-  const p=strikeoutCandidates(records,a,a.rect),q=strikeoutCandidates(records,a,a.alternateRect);
-  if(p.length===1&&q.length===1&&p[0]===q[0])return {...a};
-  warnings.push(`Javelin p.${a.page}: annotation coordinates ambiguous; no automatic exclusion.`);
-  return {...a,rect:[0,0,0,0],skippedAmbiguousOrientation:true};
- });
- return {annotations:selected,orientation,scores:{primary,alternate},warnings};
-}
-export function associateStrikeouts(records,strikeouts,activeGrade=null){
- const warnings=[];
- for(const a of strikeouts){
-  if(a.skippedAmbiguousOrientation)continue;
-  const box=a.rect||[0,0,0,0],bw=box[2]-box[0],bh=box[3]-box[1];
-  if(bw<=0||bh<=0){warnings.push(`Javelin p.${a.page}: invalid strikeout coordinates; no material was excluded.`);continue;}
-  const hit=strikeoutCandidates(records,a,box);
-  if(hit.length!==1){warnings.push(`Javelin p.${a.page}: strikeout could not be uniquely linked to a material row (${hit.length} candidates); no automatic exclusion.`);continue;}
-  const r=hit[0];
-  if(bw>330){r.excluded=true;r.notes.push(`Full-row strikeout precisely associated to ${r.plot} on Javelin p.${a.page}.`);}
-  else if(bw<100&&r.spec?.type==='TJI'&&activeGrade){r.notes.push(`Grade-only strikeout: retained row and applied explicit TJI ${activeGrade} level note.`);}
-  else {warnings.push(`Javelin p.${a.page} ${r.unit} ${r.plot}: ambiguous partial strikeout; no automatic exclusion.`);}
- }
- return warnings;
+// Only explicit FreeText instructions are relevant to comparison. All visual
+// annotations (especially StrikeOut and Highlight) are ignored entirely: PDF
+// annotation rectangles never choose or delete a material row.
+export function pdfAnnotations(annots,pageNumber){
+ return (annots||[]).filter(a=>
+  (typeof a.subtype==='string'?a.subtype:typeof a.type==='string'?a.type:a.annotationType===3?'FreeText':'').toLowerCase()==='freetext'
+ ).map(a=>({type:'FreeText',contents:clean(a.contentsObj?.str||a.contents||''),page:pageNumber}));
 }
 function cols(line,breaks){return breaks.map(([min,max])=>clean(line.tokens.filter(t=>t.x>=min&&t.x<max).map(t=>t.text).join(' ')));}
 export function parseJavelin(pages){
@@ -168,7 +86,7 @@ export function parseJavelin(pages){
  let currentLevel='Unspecified level',unit='Unspecified section';
  for(const page of pages){
   const pageNo=page.page,lines=page.lines||[];
-  const anns=(page.annotations||[]).map(a=>({...a,type:a.type||a.subtype,page:a.page||pageNo})).filter(a=>/^(?:FreeText|StrikeOut)$/i.test(a.type));
+  const anns=(page.annotations||[]).map(a=>({...a,type:a.type||a.subtype,page:a.page||pageNo})).filter(a=>/^FreeText$/i.test(a.type));
   annotations.push(...anns);
   if(!lines.length)warnings.push(`Javelin p.${pageNo}: no selectable text; page may be scanned or flattened.`);
   if(page.annotationReadError)warnings.push(`Javelin p.${pageNo}: annotation information could not be inspected (${page.annotationReadError}).`);
@@ -189,7 +107,7 @@ export function parseJavelin(pages){
    if(!(qty>0&&qty<100000)||!(plies>0&&plies<100)){warnings.push(`Javelin p.${pageNo}: invalid quantity/plies near ${plot}.`);continue;}
    const actualLength=feet(length);if(actualLength===null){warnings.push(`Javelin p.${pageNo}: unrecognized length near ${plot}.`);continue;}
    const spec=productSpec(description);if(spec===null)continue;
-   const record={source:'Javelin',page:pageNo,y,rowRect:attachRowGeometry(line),plot,unit,level:currentLevel,description,length:actualLength,qty,plies,spec,originalSpec:spec,notes:[],excluded:false};
+   const record={source:'Javelin',page:pageNo,y,plot,unit,level:currentLevel,description,length:actualLength,qty,plies,spec,originalSpec:spec,notes:[],excluded:false};
    if(plies!==1)record.notes.push(`Multi-ply Javelin row (${plies} plies; Net Qty ${qty}); verify order quantity.`);
    if(!spec.key)record.notes.push('Product specifications could not be normalized unambiguously.');
    records.push(record);
@@ -216,16 +134,11 @@ export function parseJavelin(pages){
   }
  }
  const singleGrade=appliedLevels.size===1?[...appliedLevels.values()][0]:null;
- // First resolve the document-wide annotation coordinate frame. A raw PDF
- // /Rect Y may otherwise identify a different row after viewport conversion.
- const orientation=orientStrikeouts(records,annotations.filter(x=>/strikeout/i.test(x.type)));
- warnings.push(...orientation.warnings);
- for(const a of orientation.annotations){
-  warnings.push(...associateStrikeouts(records,[a],appliedLevels.get(pageLevels.get(a.page))||null));
- }
+ // Crucial: do not interpret strikeouts. They may have inconsistent geometry
+ // in PDF.js and previously caused Unit 201's valid adjacent LSL to disappear.
+ // Every parsed base row stays included unless a user manually excludes it.
  for(const a of annotations.filter(x=>/freetext/i.test(x.type)&&!overrideAnns.includes(x)))warnings.push(`Javelin p.${a.page}: unrecognized FreeText note (${a.contents||'no text'}); review the source.`);
- const excluded=records.filter(r=>r.excluded);
- return {records:records.filter(r=>!r.excluded),excluded,annotations,warnings,annotationOrientation:orientation.orientation,annotationScores:orientation.scores,gradeOverride:singleGrade,stats:{pages:pages.length,rows:records.length,excluded:excluded.length}};
+ return {records,excluded:[],annotations,warnings,gradeOverride:singleGrade,stats:{pages:pages.length,rows:records.length,excluded:0}};
 }
 function sectionName(text){
  let t=clean(text).replace(/^COMMENT\s*/i,'').replace(/^L\d+(?:D\d+)?\s*(?:EAST|WEST)?\s*[-–]?\s*/i,'');

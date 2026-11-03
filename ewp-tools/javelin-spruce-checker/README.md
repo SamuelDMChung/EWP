@@ -1,3 +1,15 @@
+# V1.35 — Base Javelin rows retained; manual strikeout exclusion only
+
+**Current behavior (supersedes V1.34 and V1.33):** The PDF Checker compares **every recognized original Javelin material row**. It ignores StrikeOuts, highlights, underlines, drawing decorations and other visual markup. Strikeout annotations can never remove an LSL (or PSL) row. Only explicit structured FreeText grade instructions (`All joists 230, TYP. this level`) may alter TJI grade for that level. No markup creates its own discrepancy or manual-review badge.
+
+**User corrections:** Crossed-out material must be manually excluded through **Inspect or correct Javelin material lines (session only) → Exclude → Apply**, after verifying the original PDF. All corrections stay in the current browser session; the original uploaded PDFs, Supabase and source file data are not modified. Manual quantity and TJI grade changes are still supported. Only *actual* mismatches receive red missing/amber extra length/quantity indicators; stock replacement can remain MANUAL REVIEW when cut feasibility cannot be proved.
+
+**Supplied L3 pair:** Javelin Unit 201 valid TS3 LSL 1¾×9½ 1.55E `1 × 11′` = Spruce `1 × 11′` → MATCH. Crossed-out Unit 201 PSL P5 `2 × 7′` appears as a missing 14 LF MISMATCH until manually excluded. Same applies to Unit 200 2×7′ P5. Rim 1¼×9½ stock shortage of 233 LF is a genuine MISMATCH. Fixture total 27 matches / 7 mismatches / 1 stock review, due to six struck P5 rows deliberately included.
+
+**Testing limits:** `tests/v1_35_smoke.mjs` (54 assertions), 4 offline fake-PDF.js Chromium viewport scenarios, independent original-PDF text geometry via PyMuPDF. **Real browser PDF.js 6.3.289 and deployed hosting were not tested.** Verify actual original PDFs in production/browser after deployment before relying on quantities. Original PDFs are not shipped with source ZIP. No SQL or backend changes.
+
+---
+
 # V1.34 — PDF.js annotation coordinate calibration and quieter discrepancies
 
 V1.33's hosted-browser screenshot demonstrated that a full-row strikeout may be associated with the wrong source row if a PDF.js annotation `/Rect` is interpreted in the incorrect vertical coordinate orientation: Unit 201 TS3 (valid 1×11′ LSL) can be inadvertently removed while PSL P5 (2×7′) remains. V1.34 retains both raw and viewport-transformed annotation rectangles and chooses the orientation that yields more unique 2D row matches **across the full Javelin PDF**, rather than per row. If the two orientations tie and identify different source rows, **do not automatically exclude either**. Material rows are still matched by normalized product, unit, cut length and quantity. FreeText grade notes and uniquely aligned full-row StrikeOut deletion remain; ordinary highlights stay ignored.

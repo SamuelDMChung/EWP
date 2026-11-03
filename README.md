@@ -1,3 +1,13 @@
+# EWP Management Portal V1.35 WEB — Complete Source
+
+**Canonical input:** V1.34 WEB complete ZIP. **Release:** V1.35 WEB (November 3, 2026). **Next:** V1.36 WEB. Fixes the recurring Javelin Unit 201 11′ LSL false mismatch by eliminating **all automatic strikeout deletions**. Recognized original Javelin rows always remain in the comparison; highlights and other visual markups are ignored. Explicit `All joists 230, TYP. this level` FreeText instructions still apply to TJI grade. To exclude genuinely crossed-out materials, use the existing session-only Javelin correction panel. Missing/excess cut highlighting and stock review rules continue. The technical statistics/yellow diagnostics panel remains absent.
+
+**Expected original L3 East:** Unit 201 LSL 1 × 11′ Javelin vs 1 × 11′ Spruce = MATCH. Unit 201 PSL 2 × 7′ (14 LF) and Unit 200 PSL 2 × 7′ (14 LF) are initially MISMATCH because strikeouts are ignored; manually excluding P5 resolves each. Genuine rim shortage stays MISMATCH. Offline fixtures: 27 matches / 7 mismatches / 1 stock review.
+
+**QA:** `tests/V1_35_TEST_RESULTS.md`, `PORTAL_HANDOFF.md`, `ewp-tools/javelin-spruce-checker/README.md`, and the new-chat handoff. Real source PDFs were independently examined through PyMuPDF, and Chromium UI scenarios used a controlled fake PDF.js: **live CDN/browser PDF.js remains unverified**. No original customer PDFs bundled. Full source, all 11 credits, existing SQL/Supabase/Edge/Resend files retained unchanged; no production access and no SQL migration. Deploy entire ZIP to the GitHub Pages repo root, commit/push, hard-refresh `?v=1.35`, and verify original PDFs in the hosted browser before ordering.
+
+---
+
 # EWP Management Portal V1.34 WEB — Complete Source
 
 **Canonical baseline:** V1.33 WEB. **Release:** V1.34 WEB (2026-11-03). **Next:** V1.35 WEB. WEB-only PDF Checker repair: detect annotation rectangle coordinate orientation across Javelin document before applying whole-row strikeouts, preventing exclusion of adjacent LSL TS3; hide extraction statistics and yellow diagnostic-review panel, retain only material mismatches/cut-feasibility reviews. Highlights ignored; meaningful FreeText grade notes and safe strikeouts retained. All 11 pages updated V1.34 credits/cache.

@@ -1,3 +1,70 @@
+# EWP Management Portal — V1.30 WEB: Javelin vs. Spruce PDF Checker
+
+**Canonical input:** `EWP_Management_Portal_V1_29_WEB_FULL.zip` (152 files); **release:** V1.30 WEB, November 2, 2026; next development version V1.31 WEB. **WEB only.** No modifications to production Supabase, RLS, auth, DB records, Edge Functions, Resend, Purchasing, or EWP Connect iOS.
+
+## New V1.30 EWP Tools utility
+
+- Fourth EWP Tools card, `ewp-tools/javelin-spruce-checker/`; browser-only, no new external AI dependencies. Upload Javelin PDF and corresponding Spruce sales-order PDF, then compare automatically.
+- Deterministic comparison by level/unit, product grade, dimensions, cut lengths, quantity and LF, distinguishing stock-piece substitutions from exact cutting breakdowns. Reject confirmed stock shortages; sufficient LF with different stock lengths remains **manual review**, not an automatic match. Spruce `Ordered` column is used, commercial charges ignored.
+- Structured PDF FreeText, StrikeOut, Highlight: clear level-wide joist grade note overrides Javelin TJI grades only at its level; full-row PSL P6 strikeouts remove rows, partial grade strikes do not delete joists. Highlight alone never alters materials. Ambiguous marks create review warnings. Original material records and page references retained.
+- **Backer blocks and web stiffeners are both excluded entirely.** Do not compare or flag their omission.
+- Read-only evidence dashboard: three classifications MATCH / MISMATCH / MANUAL REVIEW REQUIRED, unit/product evidence with page references, source PDF links, issue filtering/search, downloadable HTML report and browser Print/Save PDF. Session-only manual correction of Javelin quantities/grade/row inclusion (no source file edits or DB writes).
+- Test fixtures from all four supplied PDFs: standard pair 16 matches + definite **353 vs 352 LF rim shortage**; annotated Aria pair 24 matches, 0 definite mismatches, 1 unresolved rim stock conversion review; six crossed PSL P6 rows (10 pieces) omitted; all TJI on Level 4 treated as TJI 230.
+
+## Files added / modified
+
+- New `ewp-tools/javelin-spruce-checker/{index.html,app.mjs,logic.mjs,checker.css,README.md}`.
+- `ewp-tools/index.html` adds fourth card. Existing three tools unmodified except page version/cache credits.
+- All 11 HTML pages updated to `V1.30 WEB · Developed by Samuel Chung` with `?v=1.30` cache stamps, including main Portal and subtools.
+- New `tests/v1_30_pdf_fixtures.json`, `tests/generate_v130_fixture.py`, `tests/v1_30_smoke.mjs`, `tests/browser_smoke_v1_30.py`, `tests/V1_30_TEST_RESULTS.md`, V1.30 adapted regression tests; updated root/tool documentation.
+
+## Deployment and limitations
+
+- Deploy complete ZIP to the GitHub Pages repository root; hard-refresh; no SQL migrations, Edge Function deployments or native app build changes.
+- Verify both source pairs with **real browser PDF.js** and annotations after deployment. The offline test substitutes PDF.js with a controlled fixture reader; it does **not** validate live CDN or all native PDF viewers. No OCR/AI: flattened and handwritten annotations cannot be guaranteed; reviews remain unresolved rather than silently approved.
+- Maintain pre-existing caveat: Snow Load Calculator starter city data still require full BCBC 2024 row audit.
+
+---
+
+# EWP Management Portal — V1.29 WEB: Multi-PDF live material consolidation
+
+**Canonical input:** complete `EWP_Management_Portal_V1_28_WEB_FULL.zip` (142 files). **Release:** `EWP_Management_Portal_V1_29_WEB_FULL.zip` (October 30, 2026). **Next:** V1.30 WEB. **Scope:** WEB only. EWP Connect iOS untouched.
+
+## Approved V1.29 change
+
+- **EWP Tools → Consolidate Material List** supports choosing **multiple PDFs at once** with the file picker (`multiple`) and dropping one or more PDFs; subsequent browsing/dropping **adds to** the existing list instead of replacing it. Each file retains the existing 200 MB individual size limit. No new limit is imposed on total file count; browser memory/processing time are practical limits.
+- **Automatic, incremental processing** replaces the explicit Consolidate button. A serial queue processes each file separately using the same PDF.js source and column-aware `extractPdfPages` → `consolidatePages` pipeline. As each successfully parses, both combined tables, stats, optional per-level view, HTML email copy, Excel TSV and download-PDF content update immediately. Failed documents never overwrite successful results.
+- A file list shows **Queued / Processing (page N/M) / Included / Review / Duplicate / Failed**. **Remove** works on each file, including an active file (cancelled at the next cancellable page boundary); **Clear All** cancels active work and resets totals. Successful files retain only their parsed material summaries in browser memory: removing one subtracts its totals **without re-reading** the other PDFs. Failed files may be retried. A **View this PDF's materials** disclosure shows individual connector and length totals and the optional per-level columns.
+- **SHA-256 content duplicate check** (browser Web Crypto, available on GitHub Pages HTTPS) prevents adding *identical PDF bytes* twice, even if the filename differs. Duplicates remain visibly excluded until removed. If the reports expose a `PROJECT #:` in their text and a newly added PDF overlaps a framing level already included from that same project (or has the same filename and overlapping levels when project IDs are unavailable), it pauses as **Review before including**; the user may explicitly **Include anyway** or Remove. This is a caution, not a guaranteed detector of all revisions or separate areas. PDFs without parseable project identifiers cannot be matched this way. Overlapping level names among different projects can still be aggregated under the same level heading in combined per-level columns; the separate per-file details retain provenance.
+- **All existing connector rules preserved:** PDF actual Qty/Product columns only (nailing / Filler / Web Stiff / `Not Required` excluded), general INVERTED hanger merging, distinct model identity, valid Total Lengths parsing across page breaks, and no manufacturer column. The real 12-page Sherman Road positioned-text fixture still consolidates to **HUC610 = 50 pcs** across L3/L4/L5 when combined. Output HTML/TSV and PDF generator remain browser-side and unchanged in data semantics; generated PDF header credit updated to V1.29.
+- Existing EWP Tools navigation, Steel Beam Lookup, Snow Load Calculator, Project Tracking, Forecast/Purchasing/Inventory, Requests, Orders, Sales Project Tracking, settings, themes, auth, RLS, Edge Functions and Resend preserved. **No database queries/writes, migrations, RLS or Edge Function deployment required** for this change. Ten HTML pages use `V1.29 WEB · Developed by Samuel Chung` and `?v=1.29` cache busting. Both GitHub Pages `/ewp/` and older `/EWP-Forecast/` relative routes supported.
+
+## Source changes
+
+- `ewp-tools/consolidate-material-list/app.mjs` — file queue, controls, progress, failure/review/duplicate handling, integrated live aggregate and exports.
+- `ewp-tools/consolidate-material-list/multi-file.mjs` — pure combination of successful per-file material data, project-reference detection, overlapping-level warning rules.
+- `ewp-tools/consolidate-material-list/parser.mjs` — optional AbortSignal to stop reading a removed PDF; column extraction/calculation unchanged.
+- `ewp-tools/consolidate-material-list/index.html` — multi-file picker, file list, automatic-processing UX; old Consolidate button removed.
+- `ewp-tools/consolidate-material-list/export-pdf.mjs` — current credit/cache path.
+- `ewp-tools/tools.css` — per-file status, responsive list and per-file breakdown.
+- New `ewp-tools/consolidate-material-list/README.md`, V1.29 tests, updated root/Tools handoffs, all ten page version credits.
+
+## Verification and deployment
+
+- `tests/v1_29_smoke.mjs`: 32 focused unit/source assertions covering four-file 12-page aggregation, live subtraction, skipped/review entries, project/level collision detection, exact HUC610 and page-break lengths, no `Not Required`, report exports and cancel plumbing.
+- `tests/browser_smoke_v1_29.py`: 4 offline Chromium viewports/themes, with the actual UI, parser and aggregator and **stubbed PDF.js** over the positioned-text fixture derived from the supplied Sherman Road PDF. Desktop verifies bulk picker, added drag/drop, exact-duplicate exclusion, overlapping-revision approval, removal, error isolation, per-file details, Clear All, HTML/TSV clipboard with mocked clipboard APIs, and PDF generation logic with a stub jsPDF renderer. Other viewports verify responsive layout and no page errors. **The test does not prove the live PDF.js CDN or browser's native PDF export/clipboard permissions.** Offline insecure-origin browser test uses deterministic digest replacement for `crypto.subtle` while GitHub Pages uses native SHA-256.
+- Prior independent tests: `tests/v1_21_smoke.mjs` (31 checks), `tests/v1_22_smoke.mjs` (23 checks), `tests/v1_29_beam_regression.mjs` (29 checks, adapted page version expectations), `tests/v1_29_snow_regression.mjs` (40 checks, adapted version expectations). See `tests/V1_29_TEST_RESULTS.md` for release checks and known limitations.
+- **Deployment:** Upload the **entire ZIP** to the existing GitHub Pages repository root (now `/ewp/` if renamed), commit/push and hard-refresh. Confirm 2+ real PDF reports, add third later, remove one, exact duplicates, different revisions, downloaded PDF and Outlook/Excel clipboard. Test all Portal workspaces and auth/purchasing after deployment. **No SQL migration or Supabase production action.**
+
+## Existing limitations and precautions
+
+- Browser has to retrieve PDF.js 6.3.289 from one of the existing CDNs before parsing; offline use requires bundling the library in a future release. Scanned/image-only PDFs lack selectable text and are unsupported. In practice many large PDFs together can exhaust browser memory even though each can be up to 200 MB.
+- Suspected revisions are detected using available Project # and overlapping level names, not an authoritative revision/structural-area classifier; users must review cumulative totals before procurement. Identical PDF bytes can be reliably excluded via native SHA-256 on HTTPS; edited/split files need separate review.
+- The existing **Snow Load Calculator's 113-city BC dataset** originated from BCBC 2018 and still has not been audited completely row by row against BCBC 2024. This release does not resolve that pre-existing accuracy limitation.
+- Static and controlled offline browser tests were performed; **no production GitHub Pages, Supabase login, native Outlook, CDN, or real-browser PDF.js test has been performed**.
+
+---
+
 # EWP Management Portal — V1.28 WEB: Integrated kPa/psf snow-load inputs
 
 **Canonical input:** complete `EWP_Management_Portal_V1_27_WEB_FULL.zip`. **Release:** `EWP_Management_Portal_V1_28_WEB_FULL.zip` (October 28, 2026). **Next:** V1.29 WEB. **WEB only:** EWP Connect iOS unchanged.

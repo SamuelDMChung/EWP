@@ -195,8 +195,10 @@ export function combinedEmailHtml(result,showLevels=false){
   return '<div>'+toEmailHtml(result.connectors,result.levels,'connectors',showLevels)+separator+toEmailHtml(result.lengths,result.levels,'lengths',showLevels)+'</div>';
 }
 
-export async function extractPdfPages(file,pdfjsLib,onPage=()=>{}){
+export async function extractPdfPages(file,pdfjsLib,onPage=()=>{},signal=null){
+  if(signal?.aborted)throw new DOMException('PDF processing cancelled','AbortError');
   const array=new Uint8Array(await file.arrayBuffer());
+  if(signal?.aborted)throw new DOMException('PDF processing cancelled','AbortError');
   const task=pdfjsLib.getDocument({data:array});
   // Cleanup belongs to the PDFDocumentLoadingTask. PDFDocumentProxy.destroy()
   // is not consistently available in the browser PDF.js build.
@@ -206,7 +208,9 @@ export async function extractPdfPages(file,pdfjsLib,onPage=()=>{}){
   try{
     doc=await task.promise;
     for(let i=1;i<=doc.numPages;i++){
+      if(signal?.aborted)throw new DOMException('PDF processing cancelled','AbortError');
       const page=await doc.getPage(i), content=await page.getTextContent();
+      if(signal?.aborted)throw new DOMException('PDF processing cancelled','AbortError');
       // Rebuild physical rows instead of trusting arbitrary PDF text-stream order.
       const rows=[];
       for(const item of content.items){

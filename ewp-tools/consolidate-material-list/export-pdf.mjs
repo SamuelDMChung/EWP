@@ -1,6 +1,6 @@
 /** Client-side, paginated vector PDF export for BOTH consolidated material tables.
  * No upload: source data remain in browser memory. jsPDF is loaded on demand. */
-import {formatFeet} from './parser.mjs?v=1.24';
+import {formatFeet} from './parser.mjs?v=1.29';
 let jsPdfPromise;
 async function loadJsPdf(){
  if(globalThis.jspdf?.jsPDF)return globalThis.jspdf.jsPDF;
@@ -26,7 +26,7 @@ export function getPdfGroups(result,showBreakdown){
  return chunks.length?chunks:[[]];
 }
 export async function downloadMaterialPdf(result,breakdown,fileName='material-list'){
- if(!result)throw new Error('Consolidate a PDF before exporting.');
+ if(!result)throw new Error('Add a PDF before exporting.');
  const JsPDF=await loadJsPdf();
  const doc=new JsPDF({orientation:'landscape',unit:'mm',format:'a4',compress:true});
  const width=297,height=210,left=16,right=16,top=20,bottom=17;
@@ -37,7 +37,7 @@ export async function downloadMaterialPdf(result,breakdown,fileName='material-li
   doc.setFont('helvetica','bold');doc.setFontSize(15);doc.setTextColor(...ink);
   doc.text('Consolidated Material List',left,12);
   doc.setFontSize(8);doc.setFont('helvetica','normal');doc.setTextColor(100);
-  doc.text('EWP Management Portal - V1.21 WEB',width-right,12,{align:'right'});
+  doc.text('EWP Management Portal - V1.29 WEB',width-right,12,{align:'right'});
  }
  function newPage(){doc.addPage();page++;y=top;pageHeader();}
  pageHeader();

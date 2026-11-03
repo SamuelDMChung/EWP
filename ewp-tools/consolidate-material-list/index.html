@@ -2,10 +2,10 @@
 <html lang="en">
 <head>
  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light">
- <meta name="description" content="Consolidate EWP Framing Connector Summary and Total Lengths from multi-level PDF reports.">
+ <meta name="description" content="Automatically consolidate Weyerhaeuser connector quantities and total lengths across multiple PDF reports.">
  <title>Consolidate Material List — EWP Tools</title>
- <link rel="stylesheet" href="../../portal-nav.css?v=1.28"><link rel="stylesheet" href="../../theme.css?v=1.28"><link rel="stylesheet" href="../tools.css?v=1.28">
- <script src="../../theme.js?v=1.28"></script>
+ <link rel="stylesheet" href="../../portal-nav.css?v=1.30"><link rel="stylesheet" href="../../theme.css?v=1.30"><link rel="stylesheet" href="../tools.css?v=1.30">
+ <script src="../../theme.js?v=1.30"></script>
 </head>
 <body>
  <nav class="ewp-portal-nav" aria-label="EWP Management navigation">
@@ -27,36 +27,36 @@
     </div>
     <span class="ewp-portal-nav__account" id="ewpNavAccount" aria-live="polite"></span>
   </nav>
- <header class="tools-header"><div><span class="eyebrow">EWP TOOLS</span><h1>Consolidate Material List</h1><p>V1.28 WEB · Developed by Samuel Chung</p></div><button id="ewpToolsSettings" type="button" class="tool-button ewp-settings-trigger">⚙ Settings</button></header>
+ <header class="tools-header"><div><span class="eyebrow">EWP TOOLS</span><h1>Consolidate Material List</h1><p>V1.30 WEB · Developed by Samuel Chung</p></div><button id="ewpToolsSettings" type="button" class="tool-button ewp-settings-trigger">⚙ Settings</button></header>
  <main class="tools-main">
   <div class="tools-breadcrumb"><a href="../">← All EWP Tools</a></div>
   <section class="tools-panel tool-input-panel" aria-labelledby="materialImportTitle">
-   <div><h2 id="materialImportTitle">1. Select a material list PDF</h2><p>Reads only <strong>Framing Connector Summary</strong> and <strong>Total Lengths</strong>. Includes material lines continuing across PDF page breaks.</p></div>
-   <label class="file-dropzone" id="materialDropZone" for="materialPdfFile" tabindex="0" role="button" aria-label="Browse for a material list PDF or drag and drop one here" aria-describedby="materialPdfHint">
+   <div><h2 id="materialImportTitle">1. Add material list PDFs</h2><p>Reads only <strong>Framing Connector Summary</strong> and <strong>Total Lengths</strong>. Includes material lines continuing across PDF page breaks.</p></div>
+   <label class="file-dropzone" id="materialDropZone" for="materialPdfFile" tabindex="0" role="button" aria-label="Add one or more material list PDFs by browsing or dropping files" aria-describedby="materialPdfHint">
      <span class="dropzone-icon" aria-hidden="true">⇧</span>
-     <span class="dropzone-title">Drag and drop your PDF here</span>
+     <span class="dropzone-title">Drag and drop one or more PDFs here</span>
      <span class="dropzone-subtitle">or</span>
-     <span class="file-picker">Browse PDF</span>
-     <span class="dropzone-limit">One PDF · Up to 200 MB</span>
+     <span class="file-picker">Add PDFs</span>
+     <span class="dropzone-limit">Multiple PDFs · Up to 200 MB per file</span>
    </label>
-   <input class="file-input-hidden" id="materialPdfFile" type="file" accept=".pdf,application/pdf" aria-describedby="materialPdfHint">
-   <div class="file-selection" id="materialFileSelection" hidden><span aria-hidden="true">✓</span><span id="materialPdfName" class="file-name"></span></div>
-   <p id="materialPdfHint" class="small-hint">PDF is processed locally in this browser; it is not uploaded to Supabase. Use a selectable-text Weyerhaeuser Layout Material List Report.</p>
-   <div class="tool-actions"><button id="materialParse" class="tool-primary" type="button" disabled>Consolidate</button><button id="materialReset" class="tool-button" type="button">Clear</button></div>
+   <input class="file-input-hidden" id="materialPdfFile" type="file" accept=".pdf,application/pdf" multiple aria-describedby="materialPdfHint">
+   <p id="materialPdfHint" class="small-hint">PDFs are processed locally in your browser, never uploaded to Supabase. Selectable-text Weyerhaeuser Layout Material List Reports only. Add more PDFs at any time.</p>
+   <div class="material-files-heading"><h3 id="materialFilesHeading">PDFs in this consolidation <span id="materialFileCount">(0)</span></h3><button id="materialReset" class="tool-button" type="button" disabled>Clear All</button></div>
+   <ul id="materialFileList" class="material-file-list" aria-labelledby="materialFilesHeading"><li class="material-file-empty">No PDFs added yet.</li></ul>
    <p id="materialStatus" class="material-status" role="status" aria-live="polite"></p>
   </section>
   <section id="materialOutput" class="tools-panel" hidden aria-labelledby="materialResultsHeading">
-   <div class="material-results-head"><div><h2 id="materialResultsHeading">2. Consolidated summary</h2><p id="materialStats" class="small-hint"></p></div><label class="breakdown-toggle"><input id="showMaterialBreakdown" type="checkbox"> Show quantity / length by level</label></div>
+   <div class="material-results-head"><div><h2 id="materialResultsHeading">2. Live consolidated summary</h2><p id="materialStats" class="small-hint"></p></div><label class="breakdown-toggle"><input id="showMaterialBreakdown" type="checkbox"> Show quantity / length by level</label></div>
    <div id="materialWarnings" class="material-warnings" role="alert" hidden></div>
-   <div class="tool-actions result-actions material-primary-actions"><strong>Both tables:</strong><button id="copyMaterialAllEmail" class="tool-primary" type="button">Copy for Email</button><button id="copyMaterialAllExcel" class="tool-button" type="button">Copy for Excel</button><button id="downloadMaterialAllPdf" class="tool-button" type="button">↓ Download PDF</button><span class="small-hint">Most commonly used: both tables in one email, spreadsheet, or PDF. Includes visible per-level breakdown when selected.</span></div>
+   <div class="tool-actions result-actions material-primary-actions"><strong>Both tables:</strong><button id="copyMaterialAllEmail" class="tool-primary" type="button">Copy for Email</button><button id="copyMaterialAllExcel" class="tool-button" type="button">Copy for Excel</button><button id="downloadMaterialAllPdf" class="tool-button" type="button">↓ Download PDF</button><span class="small-hint">Automatically includes every successfully processed PDF. Files requiring revision review are excluded until approved. Per-level breakdown is optional.</span></div>
    <div class="material-table-head"><h3>Framing Connector Summary <small>Pieces</small></h3><div class="material-copy-actions"><button id="copyMaterialConnectorsEmail" class="tool-primary" type="button">Copy for Email</button><button id="copyMaterialConnectorsExcel" class="tool-button" type="button">Copy for Excel</button></div></div>
    <div class="material-scroll"><table class="material-table" id="materialConnectorsTable"><thead id="materialConnectorsHead"></thead><tbody id="materialConnectorsBody"></tbody></table></div>
    <div class="material-table-head"><h3>Total Lengths <small>Linear feet</small></h3><div class="material-copy-actions"><button id="copyMaterialLengthsEmail" class="tool-primary" type="button">Copy for Email</button><button id="copyMaterialLengthsExcel" class="tool-button" type="button">Copy for Excel</button></div></div>
    <div class="material-scroll"><table class="material-table" id="materialLengthsTable"><thead id="materialLengthsHead"></thead><tbody id="materialLengthsBody"></tbody></table></div>
   </section>
  </main>
- <footer class="tools-footer"><span>EWP Management Portal</span><span>V1.28 WEB · Developed by Samuel Chung</span></footer>
- <script type="module" src="../../workspace-auth.mjs?v=1.28"></script>
- <script type="module" src="./app.mjs?v=1.28"></script>
- <script type="module" src="../../shared-settings.mjs?v=1.28"></script>
+ <footer class="tools-footer"><span>EWP Management Portal</span><span>V1.30 WEB · Developed by Samuel Chung</span></footer>
+ <script type="module" src="../../workspace-auth.mjs?v=1.30"></script>
+ <script type="module" src="./app.mjs?v=1.30"></script>
+ <script type="module" src="../../shared-settings.mjs?v=1.30"></script>
 </body></html>

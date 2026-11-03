@@ -42,3 +42,21 @@ html[data-ewp-theme=dark]{--tools-bg:#161815;--tools-paper:#242822;--tools-ink:#
 .material-primary-actions{border:1px solid var(--tools-line);border-radius:11px;padding:13px 14px;margin:5px 0 23px;background:color-mix(in srgb,var(--tools-soft) 24%,var(--tools-paper))}
 .material-primary-actions .small-hint{flex-basis:100%;margin:0!important}
 @media(max-width:650px){.material-primary-actions button{flex:1 1 130px}}
+
+/* V1.29: multi-PDF live consolidation. */
+.material-files-heading{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:16px 0 10px}
+.material-files-heading h3{margin:0;font-size:16px}.material-file-list{margin:0;padding:0;list-style:none;display:grid;gap:9px}
+.material-file-empty{border:1px dashed var(--tools-line);border-radius:10px;padding:15px;color:var(--tools-muted)}
+.material-file-row{display:flex;gap:12px;align-items:center;flex-wrap:wrap;border:1px solid var(--tools-line);background:color-mix(in srgb,var(--tools-soft) 18%,var(--tools-paper));border-radius:10px;padding:12px 14px;min-width:0}
+.material-file-info{min-width:180px;flex:1}.material-file-name{display:block;overflow-wrap:anywhere;font-size:13px}
+.material-file-state{font-size:12px;color:var(--tools-muted);margin-top:3px;overflow-wrap:anywhere}.material-file-actions{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.material-file-actions button{padding:7px 10px;font-size:12px}.material-remove-button{background:transparent}
+.material-file-breakdown{flex:0 0 100%;border-top:1px solid var(--tools-line);padding-top:8px;font-size:12px}
+.material-file-breakdown summary{cursor:pointer;display:list-item;width:fit-content;color:var(--tools-accent);font-weight:750}
+.material-file-breakdown-inner{padding:6px 0 2px}.material-file-breakdown h4{margin:11px 0 5px;font-size:12px}
+.material-mini-scroll{width:100%;overflow:auto;max-height:240px;border:1px solid var(--tools-line);border-radius:8px}
+.material-mini-table{border-collapse:collapse;width:100%;min-width:350px;font-size:12px}
+.material-mini-table td,.material-mini-table th{padding:5px 8px;border-bottom:1px solid var(--tools-line);text-align:left}
+.material-mini-table th{background:var(--tools-soft)}
+.material-mini-table td:not(:first-child),.material-mini-table th:not(:first-child){text-align:right;white-space:nowrap}
+@media(max-width:740px){.material-file-row{align-items:flex-start}.material-file-actions{width:100%}.material-file-info{min-width:0}}

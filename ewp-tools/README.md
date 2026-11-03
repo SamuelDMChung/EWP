@@ -1,3 +1,17 @@
+# EWP Tools — V1.30 WEB
+
+Fourth utility: **Javelin vs. Spruce PDF Checker**. Compares unitized material cut lists with sales-order cut descriptions, automatically applying clear Javelin PDF grade notes and full-row strikeouts. **Both web stiffeners and backer blocks excluded**. Shows matches/mismatches/manual reviews with evidence and session-only overrides; no AI, Supabase, or native uploads. For annotated sample and limitations see `javelin-spruce-checker/README.md` and `tests/V1_30_TEST_RESULTS.md`.
+
+---
+
+# EWP Tools — V1.29 WEB
+
+Consolidate Material List: The existing browser-only Weyerhaeuser PDF parser now accepts multiple files with both bulk and incremental additions, queues them automatically without a Consolidate button, and updates the combined connector/length tables after each successful PDF. Every file can be removed; parsed material details are shown per file, and a failed document does not erase successful results. Identical PDF bytes are excluded with SHA-256 on HTTPS; probable same-project overlapping levels require explicit user review. Copy for Email/Excel, combined PDF export, optional level breakdown, rotated INVERTED hanger names, real Qty/Product columns, and page-break continuity are preserved. Read `consolidate-material-list/README.md` and `tests/V1_29_TEST_RESULTS.md`.
+
+No Supabase data changes, SQL migration, email changes or iOS changes; the Snow Load Calculator and Steel Beam Lookup are unchanged.
+
+---
+
 # EWP Tools — V1.28 WEB
 
 Snow Load Calculator: Each Ss and Sr pressure can now be entered as either kPa or psf, immediately populating the opposite unit without altering the underlying calculation precision. BC Location entries fill both units read-only; returning to Custom preserves manually entered loads. The standalone Quick Unit Converter card was removed, retaining its unit conversions inside the calculator itself. All other utilities, including Consolidate Material List and Steel Beam Lookup, are unchanged. See `snow-load/README.md` and `tests/V1_28_TEST_RESULTS.md`. No SQL or Supabase changes.

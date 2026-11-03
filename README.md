@@ -1,3 +1,41 @@
+# EWP Management Portal — V1.30 WEB: Javelin vs. Spruce PDF Checker
+
+**Canonical input:** `EWP_Management_Portal_V1_29_WEB_FULL.zip` (152 files); **release:** V1.30 WEB, November 2, 2026; next development version V1.31 WEB. **WEB only.** No modifications to production Supabase, RLS, auth, DB records, Edge Functions, Resend, Purchasing, or EWP Connect iOS.
+
+## New V1.30 EWP Tools utility
+
+- Fourth EWP Tools card, `ewp-tools/javelin-spruce-checker/`; browser-only, no new external AI dependencies. Upload Javelin PDF and corresponding Spruce sales-order PDF, then compare automatically.
+- Deterministic comparison by level/unit, product grade, dimensions, cut lengths, quantity and LF, distinguishing stock-piece substitutions from exact cutting breakdowns. Reject confirmed stock shortages; sufficient LF with different stock lengths remains **manual review**, not an automatic match. Spruce `Ordered` column is used, commercial charges ignored.
+- Structured PDF FreeText, StrikeOut, Highlight: clear level-wide joist grade note overrides Javelin TJI grades only at its level; full-row PSL P6 strikeouts remove rows, partial grade strikes do not delete joists. Highlight alone never alters materials. Ambiguous marks create review warnings. Original material records and page references retained.
+- **Backer blocks and web stiffeners are both excluded entirely.** Do not compare or flag their omission.
+- Read-only evidence dashboard: three classifications MATCH / MISMATCH / MANUAL REVIEW REQUIRED, unit/product evidence with page references, source PDF links, issue filtering/search, downloadable HTML report and browser Print/Save PDF. Session-only manual correction of Javelin quantities/grade/row inclusion (no source file edits or DB writes).
+- Test fixtures from all four supplied PDFs: standard pair 16 matches + definite **353 vs 352 LF rim shortage**; annotated Aria pair 24 matches, 0 definite mismatches, 1 unresolved rim stock conversion review; six crossed PSL P6 rows (10 pieces) omitted; all TJI on Level 4 treated as TJI 230.
+
+## Files added / modified
+
+- New `ewp-tools/javelin-spruce-checker/{index.html,app.mjs,logic.mjs,checker.css,README.md}`.
+- `ewp-tools/index.html` adds fourth card. Existing three tools unmodified except page version/cache credits.
+- All 11 HTML pages updated to `V1.30 WEB · Developed by Samuel Chung` with `?v=1.30` cache stamps, including main Portal and subtools.
+- New `tests/v1_30_pdf_fixtures.json`, `tests/generate_v130_fixture.py`, `tests/v1_30_smoke.mjs`, `tests/browser_smoke_v1_30.py`, `tests/V1_30_TEST_RESULTS.md`, V1.30 adapted regression tests; updated root/tool documentation.
+
+## Deployment and limitations
+
+- Deploy complete ZIP to the GitHub Pages repository root; hard-refresh; no SQL migrations, Edge Function deployments or native app build changes.
+- Verify both source pairs with **real browser PDF.js** and annotations after deployment. The offline test substitutes PDF.js with a controlled fixture reader; it does **not** validate live CDN or all native PDF viewers. No OCR/AI: flattened and handwritten annotations cannot be guaranteed; reviews remain unresolved rather than silently approved.
+- Maintain pre-existing caveat: Snow Load Calculator starter city data still require full BCBC 2024 row audit.
+
+---
+
+# EWP Management Portal — V1.29 WEB
+
+**New:** EWP Tools → Consolidate Material List now accepts multiple PDFs simultaneously or over successive uploads. As each PDF finishes, **both material tables update automatically**; the Consolidate button is gone. Remove individual files or Clear All, inspect per-file materials, detect exact duplicates, and explicitly review overlapping project/level revisions before including them. Copy both tables for Outlook or Excel or download the PDF exactly as before. All processing remains local to the browser; no Supabase changes.
+
+All **ten HTML pages** show `V1.29 WEB · Developed by Samuel Chung`. Deploy the **complete** `EWP_Management_Portal_V1_29_WEB_FULL.zip` to the GitHub Pages repository root (`/ewp/` if renamed, or legacy `/EWP-Forecast/`), commit/push, hard-refresh. No SQL migration, Edge Function redeployment, or EWP Connect iOS rebuild is needed.
+
+Read `PORTAL_HANDOFF.md` first, then `ewp-tools/consolidate-material-list/README.md` and `tests/V1_29_TEST_RESULTS.md`. Tests are local/controlled rather than production live verification. The prior BCBC 2024 table audit issue is unchanged.
+
+---
+
 # EWP Management Portal — V1.28 WEB
 
 Snow Load Calculator now synchronizes **Ss and Sr values in both kPa and psf**: four fields in one compact block, automatically linked in either input direction. Custom values remain editable; selecting a BC code-table location fills both units as read-only reference values. The final S calculation uses the originally entered precision. Removed the redundant standalone Quick Unit Converter card. Formula, BC location search, Cb options, other tools and the complete Portal are preserved. All **ten pages** show `V1.28 WEB · Developed by Samuel Chung`.

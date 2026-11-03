@@ -3,23 +3,26 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light">
 <title>Javelin vs. Spruce PDF Checker — EWP Tools</title>
 <meta name="description" content="Compare annotated Javelin material lists with Spruce sales orders without uploading files.">
-<link rel="stylesheet" href="../../portal-nav.css?v=1.30"><link rel="stylesheet" href="../../theme.css?v=1.30"><link rel="stylesheet" href="../tools.css?v=1.30"><link rel="stylesheet" href="./checker.css?v=1.30">
-<script src="../../theme.js?v=1.30"></script></head><body>
+<link rel="stylesheet" href="../../portal-nav.css?v=1.31"><link rel="stylesheet" href="../../theme.css?v=1.31"><link rel="stylesheet" href="../tools.css?v=1.31"><link rel="stylesheet" href="./checker.css?v=1.31">
+<script src="../../theme.js?v=1.31"></script></head><body>
 <nav class="ewp-portal-nav" aria-label="EWP Management navigation">
   <a class="ewp-portal-nav__brand" href="../../?view=ewp"><img class="ewp-portal-nav__mark" src="../../assets/griff-nav-icon.png" alt="">EWP Management</a>
   <div class="ewp-portal-nav__links"><a class="ewp-portal-nav__link" href="../../?view=ewp">Portal</a>
    <div class="ewp-portal-nav__group ewp-portal-nav__group--ewp" aria-label="EWP workspaces"><span class="ewp-portal-nav__group-label">EWP</span><a class="ewp-portal-nav__link" href="../../tracker/">Project Tracking</a><a class="ewp-portal-nav__link" href="../../forecast/">EWP Forecast</a><a class="ewp-portal-nav__link" href="../../ewp-tools/" aria-current="page">EWP Tools</a></div>
    <div class="ewp-portal-nav__group ewp-portal-nav__group--sales" aria-label="Sales workspaces"><span class="ewp-portal-nav__group-label">Sales</span><a class="ewp-portal-nav__link" href="../../sales/">New EWP Requests</a><a class="ewp-portal-nav__link" href="../../orders/">EWP Order</a><a class="ewp-portal-nav__link" href="../../sales-tracking/">Sales Project Tracking</a></div>
   </div><span class="ewp-portal-nav__account" id="ewpNavAccount" aria-live="polite"></span></nav>
-<header class="tools-header"><div><span class="eyebrow">EWP TOOLS</span><h1>Javelin vs. Spruce PDF Checker</h1><p>V1.30 WEB · Developed by Samuel Chung</p></div><button id="ewpToolsSettings" class="tool-button ewp-settings-trigger" type="button">⚙ Settings</button></header>
+<header class="tools-header"><div><span class="eyebrow">EWP TOOLS</span><h1>Javelin vs. Spruce PDF Checker</h1><p>V1.31 WEB · Developed by Samuel Chung</p></div><button id="ewpToolsSettings" class="tool-button ewp-settings-trigger" type="button">⚙ Settings</button></header>
 <main class="tools-main checker-main">
  <div class="tools-breadcrumb"><a href="../">← All EWP Tools</a></div>
  <section class="tools-panel" aria-labelledby="upload-heading"><h2 id="upload-heading">Compare two documents</h2><p class="small-hint">Javelin is the reference, adjusted for explicit annotations. Both files are processed inside this browser; no Supabase upload or AI service. Web stiffeners and backer blocks are excluded.</p>
-  <div class="checker-upload-grid">
-   <div><h3>1. Javelin material list</h3><label class="checker-drop" id="jDrop" for="jFile" tabindex="0"><span class="checker-drop-icon">⇧</span><strong>Drop Javelin PDF</strong><span class="file-picker">Browse PDF</span></label><input id="jFile" type="file" accept="application/pdf,.pdf" class="file-input-hidden"><div id="jName" class="checker-file-name">No file selected</div></div>
-   <div><h3>2. Spruce sales order</h3><label class="checker-drop" id="sDrop" for="sFile" tabindex="0"><span class="checker-drop-icon">⇧</span><strong>Drop Spruce PDF</strong><span class="file-picker">Browse PDF</span></label><input id="sFile" type="file" accept="application/pdf,.pdf" class="file-input-hidden"><div id="sName" class="checker-file-name">No file selected</div></div>
+  <label class="checker-drop" id="checkerDrop" for="checkerFiles" tabindex="0"><span class="checker-drop-icon">⇧</span><strong>Drop both PDFs here</strong><span class="small-hint">Select two at once, or add the other PDF later. Document types are detected automatically.</span><span class="file-picker">Browse PDFs</span></label>
+  <input id="checkerFiles" type="file" accept="application/pdf,.pdf" class="file-input-hidden" multiple>
+  <div class="checker-upload-grid checker-file-slots">
+   <div><h3>Javelin material list</h3><div id="jSlot" class="checker-file-slot"></div></div>
+   <div><h3>Spruce sales order</h3><div id="sSlot" class="checker-file-slot"></div></div>
   </div>
-  <div class="tool-actions"><button type="button" class="tool-button" id="checkerReset">Clear both PDFs</button><span id="checkerStatus" class="material-status" role="status" aria-live="polite">Add the two matching PDFs to begin.</span></div>
+  <div id="checkerPending" class="checker-pending" hidden></div>
+  <div class="tool-actions"><button type="button" class="tool-button" id="checkerReset">Clear both PDFs</button><span id="checkerStatus" class="material-status" role="status" aria-live="polite">Drop both PDFs to begin.</span></div>
  </section>
  <section id="checkerResults" class="tools-panel" hidden aria-labelledby="results-heading">
   <div class="checker-results-heading"><div><h2 id="results-heading">Comparison results</h2><p class="small-hint" id="checkerSourceNames"></p><div class="checker-source-links"><a id="checkerJView" target="_blank" rel="noopener noreferrer" href="#">Open Javelin PDF</a><a id="checkerSView" target="_blank" rel="noopener noreferrer" href="#">Open Spruce PDF</a></div></div><div class="tool-actions"><button id="checkerDownload" class="tool-button" type="button">Download HTML report</button><button id="checkerPrint" class="tool-button" type="button">Print / Save PDF</button></div></div>
@@ -33,8 +36,8 @@
   <p class="small-hint">A match requires exact cuts and quantities where comparable. Stock pieces replacing shorter cuts are not automatically approved. Flattened/handwritten marks and unreadable PDF pages must be reviewed manually. This is a checking aid, not a substitute for ordering review.</p>
  </section>
 </main>
-<footer class="tools-footer"><span>EWP Management Portal</span><span>V1.30 WEB · Developed by Samuel Chung</span></footer>
-<script type="module" src="../../workspace-auth.mjs?v=1.30"></script>
-<script type="module" src="../../shared-settings.mjs?v=1.30"></script>
-<script type="module" src="./app.mjs?v=1.30"></script>
+<footer class="tools-footer"><span>EWP Management Portal</span><span>V1.31 WEB · Developed by Samuel Chung</span></footer>
+<script type="module" src="../../workspace-auth.mjs?v=1.31"></script>
+<script type="module" src="../../shared-settings.mjs?v=1.31"></script>
+<script type="module" src="./app.mjs?v=1.31"></script>
 </body></html>

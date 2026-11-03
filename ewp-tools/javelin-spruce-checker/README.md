@@ -1,3 +1,17 @@
+# Javelin vs. Spruce PDF Checker — V1.31 WEB
+
+**Upload:** Drop the two documents into the **same box**, select both from Browse PDFs, or add one and then the other later. The app detects Javelin versus Spruce by the PDF's actual headings and column structure, not the filenames. Each accepted file appears under Javelin or Spruce with Remove. A new PDF of an already-occupied type asks before replacing the previous file; unchanged duplicates are skipped by actual byte comparison. An ambiguous type is shown for manual Javelin/Spruce assignment rather than silently guessed. PDFs are read locally, with a serial queue and per-page cancellation checks.
+
+**Dimensional fix:** Mixed fractions, hyphenated fractions, decimal inches and Unicode vulgar fractions match properly across TJI/LSL/PSL. For instance, `1-3/4 × 9-1/2`, `1 3/4 × 9 1/2`, `1¾ × 9½` and `1.75 × 9.5` identify identical LSL dimensions. Check grade, width and depth, not just approximate LF.
+
+**Stock handling:** In Rim and Blockings, a longer stock allowance than Javelin's finished cuts is **MANUAL REVIEW REQUIRED** rather than an automatic cut mismatch. Stock shorter than the conservatively calculated minimum required LF is a definite **MISMATCH**, even when a row contains a multi-ply warning. LF sufficiency alone never certifies the cutting pattern, waste or kerf. Exact unit cut schedules still compare by piece length and quantity.
+
+**Latest three sample pairs:** Standard L3D1: 16 match, 1 mismatch (rim shortage 353 vs 352 LF). Annotated L4 East: 24 match, 0 mismatch, 1 stock review with explicit level-wide joist-grade overrides and full-row struck PSL P6 exclusions. New L3 East: 30 match, 1 mismatch (1¼ × 9½ LSL 809 vs 576 LF), 1 review (1¾ × 9½ LSL 66 vs 306 LF); corresponding individual units match. Both web stiffeners and backer blocks are ignored.
+
+**Privacy and verification:** PDF processing is browser-local. Reduced, non-commercial regression fixtures ship in tests; no original source PDFs. The Chromium UI regression mocks the external PDF.js reader, so actual browser PDF.js behavior and non-structured/handwritten annotations must be checked on deployment. No new Supabase tables, migrations or AI services.
+
+---
+
 # Javelin vs. Spruce PDF Checker — V1.30 WEB
 
 This tool is the fourth card in EWP Tools. It performs an **in-browser, deterministic** comparison of a selectable-text Weyerhaeuser Javelin Layout Material List Report and a Griff Spruce sales-order PDF. No materials, customer data or annotations are uploaded to Supabase, transmitted to AI services, or persisted. Supabase authentication is inherited from the existing EWP Tools workspace. Does **not** write to existing projects, orders, or purchasing.

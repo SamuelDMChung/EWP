@@ -1,3 +1,13 @@
+# EWP Management Portal V1.31 WEB — Complete Source
+
+**Canonical baseline:** V1.30 WEB. **Release:** V1.31 WEB (2026-11-03). **Next:** V1.32 WEB. Includes all Portal pages and existing Supabase/Auth/Forecast/Tracking/Purchasing/Resend integrations unchanged.
+
+**V1.31 PDF checker:** One multi-PDF drop zone accepts Javelin + Spruce together or separately, classifies by PDF contents, displays file roles and Remove buttons, supports explicit replacement and manual classification when needed, and compares automatically. Decimal/fraction/Unicode dimensions are correctly normalized; Rim and Blockings surplus is manual review, while provable minimum-stock shortages remain mismatches (including multi-ply rows). Both web stiffeners and backer blocks remain excluded.
+
+**Release QA:** See `tests/V1_31_TEST_RESULTS.md` and `PORTAL_HANDOFF.md`. No SQL/Edge Function/iOS changes. The included PDF-text fixtures are reduced to material-table test data; do not commit the original customer PDFs to the public GitHub Pages repo. Load the **complete ZIP** into the repository root, commit and push; hard-refresh and test with real PDFs and the actual PDF.js CDN. The previously reported BCBC 2024 snow-table audit limitation remains.
+
+---
+
 # EWP Management Portal — V1.30 WEB: Javelin vs. Spruce PDF Checker
 
 **Canonical input:** `EWP_Management_Portal_V1_29_WEB_FULL.zip` (152 files); **release:** V1.30 WEB, November 2, 2026; next development version V1.31 WEB. **WEB only.** No modifications to production Supabase, RLS, auth, DB records, Edge Functions, Resend, Purchasing, or EWP Connect iOS.

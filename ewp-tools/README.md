@@ -1,3 +1,9 @@
+# V1.31 EWP Tools update
+
+The fourth EWP Tools utility, **Javelin vs. Spruce PDF Checker**, now accepts both PDFs in a single drop zone, auto-detects document type, allows Remove/replace, and handles mixed fraction/decimal dimension text and conservative Rim/Blockings stock matching. Read `javelin-spruce-checker/README.md`, `../PORTAL_HANDOFF.md` and `../tests/V1_31_TEST_RESULTS.md`. No changes to the other three tools beyond version credits.
+
+---
+
 # EWP Tools — V1.30 WEB
 
 Fourth utility: **Javelin vs. Spruce PDF Checker**. Compares unitized material cut lists with sales-order cut descriptions, automatically applying clear Javelin PDF grade notes and full-row strikeouts. **Both web stiffeners and backer blocks excluded**. Shows matches/mismatches/manual reviews with evidence and session-only overrides; no AI, Supabase, or native uploads. For annotated sample and limitations see `javelin-spruce-checker/README.md` and `tests/V1_30_TEST_RESULTS.md`.

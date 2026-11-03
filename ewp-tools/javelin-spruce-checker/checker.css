@@ -3,3 +3,13 @@
 @media print{nav,.tools-header,.tools-footer,.checker-upload-grid,.checker-controls,.tool-actions,.checker-material-review,.tools-breadcrumb{display:none!important}.tools-main{width:100%;padding:0}.checker-item{break-inside:avoid}.checker-item:not([open])>div{display:block!important}#checkerResults{border:0}}
 
 .checker-source-links{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:10px;font-size:12px}.checker-source-links a{color:var(--tools-accent);font-weight:750}.checker-source-links a:hover{text-decoration:underline}
+
+/* V1.31: unified upload; two clearly labeled automatically detected document slots. */
+.checker-drop{width:100%;min-height:148px;text-align:center;padding:16px;box-sizing:border-box}
+.checker-drop .small-hint{max-width:550px;text-align:center}
+.checker-file-slots{margin-top:14px}
+.checker-file-slot{min-height:56px;border:1px solid var(--tools-line);border-radius:9px;padding:10px 12px;display:flex;align-items:center;justify-content:space-between;gap:10px;background:var(--tools-paper);font-size:13px}
+.checker-file-slot>div{min-width:0;display:grid;gap:3px}.checker-slot-filename{overflow-wrap:anywhere;font-weight:750}.checker-file-slot small{font-size:11px;color:var(--tools-muted)}
+.checker-pending{margin-top:14px;display:grid;gap:8px}.checker-pending[hidden]{display:none}
+.checker-pending select{font:inherit;border:1px solid var(--tools-line);color:var(--tools-ink);background:var(--tools-paper);border-radius:7px;padding:7px;max-width:160px}
+@media print{.checker-file-slots,.checker-pending,.checker-drop{display:none!important}}

@@ -1,3 +1,43 @@
+# EWP Management Portal — V1.31 WEB: Unified PDF Checker Upload + Dimension/Stock Fixes
+
+**Canonical input:** `EWP_Management_Portal_V1_30_WEB_FULL.zip` (167 files). **Release candidate:** V1.31 WEB, November 3, 2026. **Next:** V1.32 WEB. **WEB only.** No production Supabase, SQL/RLS, Auth, Resend, Edge Function, Purchasing/Inventory, Sales, Tracking, Forecast, or EWP Connect iOS modifications.
+
+## Approved V1.31 changes (Javelin vs. Spruce PDF Checker only)
+
+- **One drop zone:** Choose or drag **two PDFs together** (maximum two per batch) or one at a time. Automatically classify documents using PDF content fingerprints (`Layout Material List Report` + `Plot ID` / `Net Qty` for Javelin; Spruce's customer-copy order headings, Ordered / UM etc.). No filename-dependent classification. Show each assigned role/file with **Remove**. Subsequent PDFs can fill an empty role or explicitly replace one with confirmation. Unknown classifications wait for a manual Javelin/Spruce choice; unsupported material layouts fail visibly instead of being silently compared. Identical-byte PDFs are skipped using bounded chunk-by-chunk comparison, not filenames/timestamps. Auto-compare once both accepted documents finish reading. Reset clears session, pending files and overrides. All PDF operations remain local to the browser.
+- **Dimension normalization:** Correct fractional (`1 3/4`, `1-3/4`, `11 7/8`), decimal (`1.75`, `9.5`, `5.25`, `11.875`), Unicode fractions (`1¾`, `9½`), typographic quote marks and combinations for TJI, LSL and PSL. Before V1.31, `1.75 × 9.5` could incorrectly be parsed as `75 × 9`. Compare normalized numeric width/depth and grades, not unnormalized PDF product text. The supplied standard, Aria Level 4 annotated and Aria Level 3 pairs reconcile on these specifications.
+- **Stock vs finished cuts:** Exact non-stock per-unit cutting lists must match length/qty, as before. For **Rim and Blockings**, excess 16′ supply compared with the Javelin finished-cut schedule produces **MANUAL REVIEW REQUIRED**, not an automatic false mismatch. Actual gross stock **shortages always remain MISMATCH**, even when a Javelin entry has Plies > 1; the unmultiplied `Net Qty × cut length` provides a conservative minimum. Stock length sufficiency alone is never certified as feasible: cutting patterns, kerf and waste remain review items.
+- **Existing rules preserved:** Apply explicit level-wide joist-grade FreeText overrides and full-row P6 strikeouts, do not remove grade-only struck joists; highlighting alone does not alter records. Backer blocks and web stiffeners always excluded. Spruce Order `Ordered` field, wrapped descriptions and page continuations preserved. Export HTML, print-to-PDF, section/product evidence, source PDFs, correction panel, theme and Portal navigation preserved. Other EWP Tools untouched except global V1.31 version/cache credits.
+
+## Sample pair results — positioned-text PDF fixtures, not live PDF.js
+
+| Pair | Confirmed MATCH groups | MISMATCH | MANUAL REVIEW | Key observation |
+| --- | ---: | ---: | ---: | --- |
+| TC25280 L3D1 / 2610-C09329 | 16 | 1 | 0 | Rim: 353 LF minimum needed, 352 LF stock ordered (1 LF short) |
+| TC26203 Aria L4 East / 2610-C08021 | 24 | 0 | 1 | 6 P6 strikeouts / 10 pieces excluded; level-wide TJI 230 override; rim substitution needs review |
+| TC26203 Aria L3 East / 2610-C03464 | 30 | 1 | 1 | Rim 1¼ × 9½ LSL minimum 809 LF vs. 576 LF stock (**233 LF shortage**); rim 1¾ × 9½ LSL 66 LF cuts vs 306 LF ordered (**240 LF surplus/stock review**); unit LSL entries match |
+
+The 233 LF shortfall uses the Javelin `Net Qty` conservatively and does not account for any additional material required by multi-ply interpretation or waste. Verify exact delivery scope when reviewing an order. The 1¾ LSL stock allowance is a *review*, not certified correct.
+
+## Files changed
+
+- `ewp-tools/javelin-spruce-checker/index.html`: single multi-PDF drop zone, two identified roles with Remove; results and corrections retained.
+- `ewp-tools/javelin-spruce-checker/app.mjs`: content-based auto-detection, serial processing, add/remove/replace workflow, manual type assignment on uncertain PDFs, duplicate-byte check and cancellation protection.
+- `ewp-tools/javelin-spruce-checker/logic.mjs`: reliable dimensions, content-type classification and conservative Rim/Blocking comparison.
+- `ewp-tools/javelin-spruce-checker/checker.css`: responsive unified uploader and file-row styles.
+- All 11 HTML pages: `V1.31 WEB · Developed by Samuel Chung` and `?v=1.31`. Checker internal `logic.mjs` import updated to `?v=1.31`.
+- Tool and root docs; `tests/v1_31_*` regression/UI tests and `tests/V1_31_TEST_RESULTS.md`.
+- `tests/v1_30_pdf_fixtures.json` and `tests/v1_31_new_pdf_fixtures.json` contain only reduced positioned-text engineering fixture data, with customer details / prices removed before distribution; **the original uploaded PDFs are not bundled**.
+
+## Verification boundary
+
+- Run `node tests/v1_31_smoke.mjs`, `node tests/v1_31_prior_checker_regression.mjs`, `node tests/v1_31_beam_regression.mjs`, `node tests/v1_31_snow_regression.mjs`, `node tests/v1_29_smoke.mjs`, `node tests/v1_22_smoke.mjs`, and `python tests/browser_smoke_v1_31.py`. See `tests/V1_31_TEST_RESULTS.md` for complete static/CRC/path tests.
+- Offline Chromium uses the **actual V1.31 UI and comparison JS**, but replaces PDF.js with a controlled reader of positioned-text fixtures derived from the six sample documents. Not equivalent to testing the live PDF.js CDN, browser PDF rendering or every possible annotation. **Post-deployment:** manually upload each actual Javelin/Spruce pair into the new single box, test duplicate/removal/replacement, confirm annot and LF results against originals, and verify HTML/print export, Supabase session and unchanged workspace behavior.
+- No new migration or Edge Function deployment. Deploy **entire ZIP** to GitHub Pages repository root (`/ewp/` after rename); preserve `.nojekyll` and existing Supabase configuration, commit/push and hard-refresh.
+- **Pre-existing limitation:** BCBC Snow Load Calculator starter city table still lacks full BCBC 2024 row-by-row audit; do not present it as fully verified engineering data.
+
+---
+
 # EWP Management Portal — V1.30 WEB: Javelin vs. Spruce PDF Checker
 
 **Canonical input:** `EWP_Management_Portal_V1_29_WEB_FULL.zip` (152 files); **release:** V1.30 WEB, November 2, 2026; next development version V1.31 WEB. **WEB only.** No modifications to production Supabase, RLS, auth, DB records, Edge Functions, Resend, Purchasing, or EWP Connect iOS.

@@ -1,15 +1,20 @@
-/* V1.30: browser-only material checking. No external AI, OCR or database access.
+/* V1.31: browser-only material checking. No external AI, OCR or database access.
  * PDF.js text items are grouped geometrically; all source objects retain page/row provenance.
  */
-export const clean=s=>String(s??'').replace(/[“”]/g,'"').replace(/[’]/g,"'").replace(/\s+/g,' ').trim();
+const VULGAR_FRACTIONS={'¼':'1/4','½':'1/2','¾':'3/4','⅛':'1/8','⅜':'3/8','⅝':'5/8','⅞':'7/8','⅓':'1/3','⅔':'2/3'};
+export const clean=s=>String(s??'').replace(/([0-9])(?=[¼½¾⅛⅜⅝⅞⅓⅔])/g,'$1 ').replace(/[¼½¾⅛⅜⅝⅞⅓⅔]/g,c=>VULGAR_FRACTIONS[c]).replace(/[“”″]/g,'\"').replace(/[’′]/g,"'").replace(/\s+/g,' ').trim();
+// Dimensions can arrive as decimals, simple fractions or mixed fractions in either PDF.
+// A fraction must not be mistaken for a decimal or truncated at its first digit.
+const DIMENSION_PART=String.raw`(?:\d+(?:\.\d+)?(?:\s*[- ]\s*\d+\s*\/\s*\d+)?|\d+\s*\/\s*\d+)`;
+const DIMENSION_PAIR=new RegExp(`(${DIMENSION_PART})\\s*\"?\\s*[X×]\\s*(${DIMENSION_PART})\\s*\"?`,'i');
+const BEFORE_TJI=new RegExp(`(${DIMENSION_PART})\\s*\"?\\s*TJI`,'i');
 export function dimension(text){
- const s=clean(text).replace(/\s*-\s*/g,' ');
- const fraction=s.match(/^(\d+)\s+(\d+)\s*\/\s*(\d+)/);
- if(fraction)return +(Number(fraction[1])+Number(fraction[2])/Number(fraction[3])).toFixed(5);
- const f=s.match(/^(\d+)\s*\/\s*(\d+)/);
- if(f)return +(Number(f[1])/Number(f[2])).toFixed(5);
- const n=s.match(/^(\d+(?:\.\d+)?)/);
- return n?Number(n[1]):null;
+ const s=clean(text).replace(/(\d)\s*[-–]\s*(\d+\s*\/\s*\d+)/g,'$1 $2');
+ const mixed=s.match(/^(\d+)\s+(\d+)\s*\/\s*(\d+)$/);
+ if(mixed&&Number(mixed[3])>0)return Number(mixed[1])+Number(mixed[2])/Number(mixed[3]);
+ const fraction=s.match(/^(\d+)\s*\/\s*(\d+)$/);
+ if(fraction&&Number(fraction[2])>0)return Number(fraction[1])/Number(fraction[2]);
+ return /^\d+(?:\.\d+)?$/.test(s)?Number(s):null;
 }
 export function feet(text){
  const s=clean(text);
@@ -18,24 +23,33 @@ export function feet(text){
 }
 const normNum=n=>Number.isFinite(n)?String(Math.round(n*10000)/10000):'?';
 export function productSpec(input){
- const s=clean(input).toUpperCase().replace(/(\d)\s*-\s*(\d+\s*\/\s*\d+)/g,'$1 $2');
+ // Normalize hyphenated mixed fractions, but never erase decimal points.
+ const s=clean(input).toUpperCase().replace(/(\d)\s*[-–]\s*(\d+\s*\/\s*\d+)/g,'$1 $2');
  if(/(?:WEB\s+STIFFENER|BACKER\s+BLOCK)/.test(s))return null;
  const type=/\bTJI\b/.test(s)?'TJI':/\b(?:PARALLAM|PSL)\b/.test(s)?'PSL':/\b(?:TIMBERSTRAND|LSL)\b/.test(s)?'LSL':null;
  if(!type)return {key:null,label:clean(input),type:'UNKNOWN',ambiguous:true};
  const grade=type==='TJI'?(s.match(/\bTJI\s*(\d{2,4})\b/)?.[1]||''):(s.match(/\b(\d+(?:\.\d+)?)\s*E\b/)?.[1]||'');
  let width=null,depth=null;
+ const pair=s.match(DIMENSION_PAIR);
+ if(pair){width=dimension(pair[1]);depth=dimension(pair[2]);}
  if(type==='TJI'){
-  let m=s.match(/(\d+(?:\s+\d+\/\d+|\s*\/\s*\d+)?)\s*"?\s*X\s*(\d+(?:\s+\d+\/\d+|\s*\/\s*\d+)?)\s*"?/);
-  if(m){width=dimension(m[1]);depth=dimension(m[2]);}
-  else {const m2=s.match(/(\d+(?:\s+\d+\/\d+|\s*\/\s*\d+)?)\s*"?\s*TJI/);depth=m2?dimension(m2[1]):null;}
-  // From actual Spruce descriptions in sample PDFs; mark missing widths uncertain outside these grades.
-  if(width==null && {'230':1,'360':1,'560':1}[grade])width=grade==='560'?3.5:2+5/16;
- }else{
-  const m=s.match(/(\d+(?:\s+\d+\s*\/\s*\d+|\s*\/\s*\d+)?)\s*"?\s*[X×]\s*(\d+(?:\s+\d+\s*\/\s*\d+|\s*\/\s*\d+)?)\s*"?/);
-  if(m){width=dimension(m[1]);depth=dimension(m[2]);}
+  if(depth==null){const candidate=s.match(BEFORE_TJI);depth=candidate?dimension(candidate[1]):null;}
+  // Javelin gives nominal depth, but omits the physical flange width.
+  if(width==null&&{'230':1,'360':1,'560':1}[grade])width=grade==='560'?3.5:2+5/16;
  }
  const key=grade&&width!=null&&depth!=null?`${type}|${grade}|${normNum(width)}|${normNum(depth)}`:null;
- return {key,type,grade,width,depth,label:`${type} ${grade||'?'} · ${width??'?'}\" × ${depth??'?'}\"`,ambiguous:!key};
+ return {key,type,grade,width,depth,label:`${type} ${grade||'?'} · ${width??'?'}" × ${depth??'?'}"`,ambiguous:!key};
+}
+// Determine format from actual PDF page contents, never from the filename.
+// Low-confidence or conflicting evidence must be assigned by the user.
+export function classifyPdfPages(pages){
+ const lines=pages.slice(0,Math.min(pages.length,3)).flatMap(p=>(p.lines||[]).map(l=>clean(l.text).toUpperCase()));
+ const blob=lines.join('\n');
+ const j=(/LAYOUT MATERIAL LIST REPORT/.test(blob)?4:0)+(/PLOT\s*ID|PLOTID/.test(blob)?1:0)+(/NET\s*QTY/.test(blob)?1:0)+(/\bPLIES\b/.test(blob)?1:0);
+ const s=(/GRIFF BUILDING SUPPLIES/.test(blob)?2:0)+(/CUSTOMER COPY/.test(blob)?2:0)+(/\bORDERED\b/.test(blob)?1:0)+(/\bREMAIN\b/.test(blob)?1:0)+(/\bCOMMENT\b/.test(blob)?1:0);
+ if(j>=4&&j>=s+2)return {kind:'j',confidence:j,reason:'Javelin material-list headings'};
+ if(s>=4&&s>=j+2)return {kind:'s',confidence:s,reason:'Spruce sales-order headings'};
+ return {kind:null,confidence:Math.max(s,j),reason:'Unrecognized or ambiguous document; choose Javelin or Spruce manually'};
 }
 export function cutsFromDescription(desc){
  const text=clean(desc); const out=[];
@@ -204,18 +218,31 @@ const aggregate=records=>{
  return groups;
 };
 function lengthList(g){return [...(g?.cut||[])].sort((a,b)=>b[0]-a[0]).map(([len,qty])=>`${qty} × ${len}'`).join(', ')||'—';}
+const near=(a,b)=>Math.abs(a-b)<.05;
+function cutListsEqual(e,a){
+ if(e.cut.size!==a.cut.size)return false;
+ for(const [len,qty] of e.cut)if((a.cut.get(len)||0)!==qty)return false;
+ return true;
+}
+function isStockSection(e,a){return /rim and blockings/i.test(e?.section||a?.section||'');}
 function overlapStatus(e,a){
- if(!e)return 'MISMATCH';if(!a)return 'MISMATCH';
- if(e.notes.some(n=>/ambiguous|could not|multi-ply/i.test(n))||a.notes.some(n=>/unreadable|missing|could not|unrecognized|totals/i.test(n)))return 'REVIEW';
+ if(!e||!a)return 'MISMATCH';
+ const stockLF=a.stock.reduce((sum,x)=>sum+(x.length||0)*x.qty,0);
+ // Even when Javelin includes a multi-ply entry, the unmultiplied Net Qty
+ // provides a conservative minimum: fewer LF cannot satisfy that requirement.
+ if(a.stock.length&&a.stock.every(x=>x.length)&&stockLF+.0001<e.total)return 'MISMATCH';
+ if(isStockSection(e,a)&&!a.stock.length&&a.total+.0001<e.total)return 'MISMATCH';
+ const uncertain=e.notes.some(n=>/ambiguous|could not|multi-ply/i.test(n))||a.notes.some(n=>/unreadable|missing|could not|unrecognized|totals/i.test(n));
+ if(uncertain)return 'REVIEW';
  if(a.stock.length){
-  const available=a.stock.reduce((s,x)=>s+(x.length||0)*x.qty,0);
   if(a.stock.some(x=>!x.length))return 'REVIEW';
-  return available+0.0001<e.total?'MISMATCH':'REVIEW';
+  return 'REVIEW'; // A gross stock allowance isn't proof of a viable cutting layout.
  }
- if(e.cut.size!==a.cut.size)return 'MISMATCH';
- for(const [len,qty] of e.cut)if((a.cut.get(len)||0)!==qty)return 'MISMATCH';
- if(Math.abs(e.total-a.total)>.05)return 'MISMATCH';
- return 'MATCH';
+ if(cutListsEqual(e,a)&&near(e.total,a.total))return 'MATCH';
+ // In Rim/Blockings, 16-ft material can be ordered as cutting stock. Extra LF
+ // is not an exact cut match, but could be deliberate purchasing allowance.
+ if(isStockSection(e,a)&&a.cut.has(16)&&a.total+0.0001>=e.total)return 'REVIEW';
+ return 'MISMATCH';
 }
 export function compareMaterials(javelin,spruce,manualChanges=[]){
  // User-approved manual changes are session-only, never persisted or written to Supabase.
@@ -237,7 +264,9 @@ export function compareMaterials(javelin,spruce,manualChanges=[]){
   let reason='Exact product and cut lengths agree.';
   if(!e)reason='Extra material in Spruce (not found in Javelin).';
   else if(!a)reason='Material missing from Spruce.';
-  else if(a.stock.length){const stockLF=a.stock.reduce((s,x)=>s+(x.length||0)*x.qty,0);reason=stockLF<e.total?`Stock shortage: requires ${e.total} LF, ordered ${stockLF} LF (before kerf).`:`Stock substitution: ${stockLF} LF ordered vs ${e.total} LF required. Cutting feasibility and waste need confirmation.`;}
+  else if(a.stock.length){const stockLF=a.stock.reduce((s,x)=>s+(x.length||0)*x.qty,0);reason=stockLF<e.total?`Definite minimum-stock shortage: requires at least ${e.total} LF, ordered ${stockLF} LF (before kerf).`:`Stock substitution: ${stockLF} LF ordered vs ${e.total} LF required. Cutting feasibility and waste need confirmation.`;}
+  else if(isStockSection(e,a)&&status==='REVIEW'&&!cutListsEqual(e,a))reason=`Rim/blocking stock allowance differs: ${a.total} LF ordered vs ${e.total} LF of finished cuts. Confirm the extra stock/cutting plan.`;
+  else if(isStockSection(e,a)&&status==='MISMATCH'&&a.total<e.total)reason=`Definite shortage: ${e.total} LF of finished cuts required, ${a.total} LF ordered (before kerf).`;
   else if(status==='MISMATCH')reason='Different length/quantity breakdown or total LF.';
   else if(status==='REVIEW')reason='Uncertain specifications, quantity interpretation, or PDF extraction.';
   details.push({key,section:e?.section||a?.section,product:e?.spec?.label||a?.spec?.label,status,reason,expected:e?lengthList(e):'—',actual:a?(a.stock.length?a.stock.map(s=>`${s.qty} × ${s.length||'?'}' stock`).join(', '):lengthList(a)):'—',expectedLF:e?.total??0,actualLF:a?.total??0,javelinPages:e?.items.map(x=>x.page)||[],sprucePages:a?.items.map(x=>x.page)||[],notes:[...(e?.notes||[]),...(a?.notes||[])]});

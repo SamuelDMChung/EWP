@@ -1,3 +1,13 @@
+# V1.34 — PDF.js annotation coordinate calibration and quieter discrepancies
+
+V1.33's hosted-browser screenshot demonstrated that a full-row strikeout may be associated with the wrong source row if a PDF.js annotation `/Rect` is interpreted in the incorrect vertical coordinate orientation: Unit 201 TS3 (valid 1×11′ LSL) can be inadvertently removed while PSL P5 (2×7′) remains. V1.34 retains both raw and viewport-transformed annotation rectangles and chooses the orientation that yields more unique 2D row matches **across the full Javelin PDF**, rather than per row. If the two orientations tie and identify different source rows, **do not automatically exclude either**. Material rows are still matched by normalized product, unit, cut length and quantity. FreeText grade notes and uniquely aligned full-row StrikeOut deletion remain; ordinary highlights stay ignored.
+
+The results panel no longer shows its technical `Javelin lines · Spruce lines` statistics or yellow per-page extraction warnings. HTML exports also omit parser diagnostics. Users see real red/amber differences and only necessary stock/cut review results. Parsed warnings remain internal QA metadata (not counted as material mismatches). Invalid or unreadable uploads still show an error in the upload status.
+
+Expected L3: six PSL P5 excluded; Unit 200 PSL MATCH (21 LF each); Unit 201 LSL TS3 MATCH (11 LF each); real rim 233 LF shortage MISMATCH, separate stock feasibility REVIEW. Current QA uses original-PDF geometry through PyMuPDF/pypdf and **simulated** PDF.js Chromium; **hosted live PDF.js has not been independently checked**. `tests/V1_34_TEST_RESULTS.md` documents limitations and post-deploy test steps. No DB/SQL/Edge/iOS changes.
+
+---
+
 # Javelin vs. Spruce PDF Checker — V1.33 WEB (current)
 
 **Material source:** Original Javelin rows, adjusted only by safely interpretable structured markup: explicit `All joists 230, TYP. this level` FreeText notes (level-wide TJI grade) and uniquely geometry-associated full-row StrikeOuts (exclusion). Partial strikes/unknown notes cannot silently remove material. **Highlights are ignored completely**, including heavily highlighted pages; no `MARKED PDF AREA` labels/review items.

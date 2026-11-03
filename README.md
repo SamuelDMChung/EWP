@@ -1,3 +1,11 @@
+# EWP Management Portal V1.34 WEB — Complete Source
+
+**Canonical baseline:** V1.33 WEB. **Release:** V1.34 WEB (2026-11-03). **Next:** V1.35 WEB. WEB-only PDF Checker repair: detect annotation rectangle coordinate orientation across Javelin document before applying whole-row strikeouts, preventing exclusion of adjacent LSL TS3; hide extraction statistics and yellow diagnostic-review panel, retain only material mismatches/cut-feasibility reviews. Highlights ignored; meaningful FreeText grade notes and safe strikeouts retained. All 11 pages updated V1.34 credits/cache.
+
+**QA / deployment:** See `PORTAL_HANDOFF.md`, `ewp-tools/javelin-spruce-checker/README.md` and `tests/V1_34_TEST_RESULTS.md`. Original PDF raw-coordinate orientation variants and simulated PDF.js Chromium tests pass; live hosted PDF.js verification is still required. No production Supabase, SQL/Edge Function, Resend or iOS changes. Do not include original customer PDFs in a public Pages repository.
+
+---
+
 # EWP Management Portal V1.33 WEB — Complete Source
 
 **Canonical baseline:** V1.32 WEB. **Release:** V1.33 WEB (2026-11-03). **Next:** V1.34 WEB. This WEB-only release adjusts PDF Checker annotation handling; other workspaces and protected backend assets are unchanged.

@@ -1,3 +1,7 @@
+## V1.34 Javelin vs. Spruce PDF Checker
+
+Fixed false Unit 201 11′ LSL mismatch caused by ambiguous raw-versus-viewport PDF annotation coordinates; whole-row strikeouts now choose the document-wide correct coordinate frame or exclude nothing when unresolved. Removed developer diagnostics/statistics and yellow warning panel from comparison. Genuine cut-length mismatch highlighting, FreeText grade notes, conservative strikeouts and ignoring ordinary highlights continue. No other EWP Tools modules changed. See PDF Checker README and V1.34 QA results.
+
 # V1.33 EWP Tools — precise annotation handling, actual differences only
 
 PDF Checker once again honors explicit Javelin level-wide TJI grade FreeText notes and confident whole-row strikeouts; strikeout targets now require unambiguous text-row-geometry overlap so adjacent LSL/PSL rows remain safe. **Ordinary highlights are fully ignored** and never trigger review badges or warnings. V1.32 exact cut-shortage (red) / excess (amber) rendering is retained; uncertainties in actual stock/cutting and ambiguous meaningful annotations can still require review. All other EWP Tools are unchanged aside from all-page version credits. See `javelin-spruce-checker/README.md` and `../tests/V1_33_TEST_RESULTS.md`.

@@ -1,4 +1,4 @@
-/* V1.33: meaningful Javelin PDF annotations are interpreted conservatively.
+/* V1.34: meaningful Javelin PDF annotations are interpreted conservatively.
  * FreeText grade notes and uniquely row-aligned StrikeOuts can modify Javelin expectations.
  * Highlights are ignored outright; no annotation-only material review badges.
  */
@@ -79,8 +79,12 @@ export function pdfAnnotations(annots,pageNumber,viewport){
   const raw=a.rect||[0,0,0,0];
   const converted=viewport?.convertToViewportRectangle?viewport.convertToViewportRectangle(raw):raw;
   const rect=[Math.min(converted[0],converted[2]),Math.min(converted[1],converted[3]),Math.max(converted[0],converted[2]),Math.max(converted[1],converted[3])];
+  const rawRect=[Math.min(raw[0],raw[2]),Math.min(raw[1],raw[3]),Math.max(raw[0],raw[2]),Math.max(raw[1],raw[3])];
   const type=clean(typeof a.subtype==='string'?a.subtype:typeof a.type==='string'?a.type:ANNOTATION_TYPES[a.annotationType]||'');
-  return {type,contents:/^FreeText$/i.test(type)?clean(a.contentsObj?.str||a.contents||''):'',rect,page:pageNumber};
+  // PDF.js annotation rectangles and extracted text may be delivered in different
+  // vertical coordinate frames. Preserve BOTH candidate frames for document-wide
+  // calibration before any material is excluded. Never guess per annotation.
+  return {type,contents:/^FreeText$/i.test(type)?clean(a.contentsObj?.str||a.contents||''):'',rect,...(viewport?.convertToViewportRectangle?{alternateRect:rawRect}:{}),page:pageNumber};
  }).filter(a=>/^(?:FreeText|StrikeOut)$/i.test(a.type)); // Ignore ALL highlights, underlines, drawings, etc.
 }
 // Row geometry is derived from the actual source text, not nearest Y-baseline.
@@ -101,16 +105,55 @@ export function attachRowGeometry(line){
 }
 function overlapX(a,b){return Math.max(0,Math.min(a[2],b[2])-Math.max(a[0],b[0]));}
 function overlapY(a,b){return Math.max(0,Math.min(a[3],b[3])-Math.max(a[1],b[1]));}
+// A full-width strikeout cannot be matched by Y alone: Javelin row pitches
+// are ~13.5pt, and an inverted coordinate frame can line up with a different
+// row (including the next LSL). Use actual glyph bounds and unique 2-D overlap.
+export function strikeoutCandidates(records,annotation,box=annotation.rect){
+ if(!Array.isArray(box)||box.length!==4)return [];
+ const [x0,y0,x1,y1]=box;
+ if(![x0,y0,x1,y1].every(Number.isFinite)||x1<=x0||y1<=y0)return [];
+ return records.filter(r=>{
+  if(r.page!==annotation.page||!r.rowRect)return false;
+  const row=r.rowRect,rowHeight=Math.max(1,row[3]-row[1]);
+  return overlapY(box,row)/rowHeight>=0.65&&overlapX(box,row)>=Math.min(30,Math.max(8,(row[2]-row[0])*0.08));
+ });
+}
+function uniqueFullRowHits(records,annotations,key){
+ return annotations.reduce((count,a)=>{
+  const box=a[key];
+  return Array.isArray(box)&&box[2]-box[0]>330&&strikeoutCandidates(records,a,box).length===1?count+1:count;
+ },0);
+}
+export function orientStrikeouts(records,strikeouts){
+ // When no second coordinate frame exists, fixture coordinates are already
+ // positioned in top-left page space. Respect that older fixture contract.
+ const alternative=strikeouts.filter(a=>Array.isArray(a.alternateRect));
+ if(!alternative.length)return {annotations:strikeouts,orientation:'supplied',scores:{primary:0,alternate:0},warnings:[]};
+ // Determine orientation across the WHOLE document, not per page/annotation.
+ // On the real Aria L3 PDF, the correct frame hits all six P5 rows; the wrong
+ // frame misses pages 1/3 and can accidentally select Unit 201's TS3 LSL.
+ const primary=uniqueFullRowHits(records,alternative,'rect');
+ const alternate=uniqueFullRowHits(records,alternative,'alternateRect');
+ const orientation=primary>alternate?'primary':alternate>primary?'alternate':'ambiguous';
+ const warnings=[];
+ const selected=strikeouts.map(a=>{
+  if(!Array.isArray(a.alternateRect))return {...a};
+  if(orientation!=='ambiguous')return {...a,rect:orientation==='alternate'?a.alternateRect:a.rect};
+  // In a true tie, only a row matched by BOTH transforms can be excluded.
+  const p=strikeoutCandidates(records,a,a.rect),q=strikeoutCandidates(records,a,a.alternateRect);
+  if(p.length===1&&q.length===1&&p[0]===q[0])return {...a};
+  warnings.push(`Javelin p.${a.page}: annotation coordinates ambiguous; no automatic exclusion.`);
+  return {...a,rect:[0,0,0,0],skippedAmbiguousOrientation:true};
+ });
+ return {annotations:selected,orientation,scores:{primary,alternate},warnings};
+}
 export function associateStrikeouts(records,strikeouts,activeGrade=null){
  const warnings=[];
  for(const a of strikeouts){
-  const box=a.rect||[0,0,0,0];const bw=box[2]-box[0],bh=box[3]-box[1];
+  if(a.skippedAmbiguousOrientation)continue;
+  const box=a.rect||[0,0,0,0],bw=box[2]-box[0],bh=box[3]-box[1];
   if(bw<=0||bh<=0){warnings.push(`Javelin p.${a.page}: invalid strikeout coordinates; no material was excluded.`);continue;}
-  const hit=records.filter(r=>{
-   if(r.page!==a.page||!r.rowRect)return false;
-   const row=r.rowRect,rowHeight=Math.max(1,row[3]-row[1]);
-   return overlapY(box,row)/rowHeight>=0.65&&overlapX(box,row)>=Math.min(30,Math.max(8,(row[2]-row[0])*0.08));
-  });
+  const hit=strikeoutCandidates(records,a,box);
   if(hit.length!==1){warnings.push(`Javelin p.${a.page}: strikeout could not be uniquely linked to a material row (${hit.length} candidates); no automatic exclusion.`);continue;}
   const r=hit[0];
   if(bw>330){r.excluded=true;r.notes.push(`Full-row strikeout precisely associated to ${r.plot} on Javelin p.${a.page}.`);}
@@ -173,13 +216,16 @@ export function parseJavelin(pages){
   }
  }
  const singleGrade=appliedLevels.size===1?[...appliedLevels.values()][0]:null;
- // Only unique, substantial 2-D row overlap can delete a material. Never near-Y guessing.
- for(const a of annotations.filter(x=>/strikeout/i.test(x.type))){
+ // First resolve the document-wide annotation coordinate frame. A raw PDF
+ // /Rect Y may otherwise identify a different row after viewport conversion.
+ const orientation=orientStrikeouts(records,annotations.filter(x=>/strikeout/i.test(x.type)));
+ warnings.push(...orientation.warnings);
+ for(const a of orientation.annotations){
   warnings.push(...associateStrikeouts(records,[a],appliedLevels.get(pageLevels.get(a.page))||null));
  }
  for(const a of annotations.filter(x=>/freetext/i.test(x.type)&&!overrideAnns.includes(x)))warnings.push(`Javelin p.${a.page}: unrecognized FreeText note (${a.contents||'no text'}); review the source.`);
  const excluded=records.filter(r=>r.excluded);
- return {records:records.filter(r=>!r.excluded),excluded,annotations,warnings,gradeOverride:singleGrade,stats:{pages:pages.length,rows:records.length,excluded:excluded.length}};
+ return {records:records.filter(r=>!r.excluded),excluded,annotations,warnings,annotationOrientation:orientation.orientation,annotationScores:orientation.scores,gradeOverride:singleGrade,stats:{pages:pages.length,rows:records.length,excluded:excluded.length}};
 }
 function sectionName(text){
  let t=clean(text).replace(/^COMMENT\s*/i,'').replace(/^L\d+(?:D\d+)?\s*(?:EAST|WEST)?\s*[-–]?\s*/i,'');
@@ -333,8 +379,9 @@ export function compareMaterials(javelin,spruce,manualChanges=[]){
   details.push({key,section:e?.section||a?.section,product:e?.spec?.label||a?.spec?.label,status,baseStatus,reason,cutDeltas:cuts,diffSummary,stockComparison:Boolean(a?.stock?.length),expected:e?lengthList(e):'—',actual:a?(a.stock.length?a.stock.map(s=>`${s.qty} × ${s.length||'?'}' stock`).join(', '):lengthList(a)):'—',expectedLF:e?.total??0,actualLF:a?.total??0,javelinPages:e?.items.map(x=>x.page)||[],sprucePages:a?.items.map(x=>x.page)||[],notes:[...(e?.notes||[]),...(a?.notes||[])]});
  }
  const globalWarnings=[...javelin.warnings,...spruce.warnings];
- // Don't report a complete match if any parse/annotation warning is outstanding.
- const stats={match:details.filter(x=>x.status==='MATCH').length,mismatch:details.filter(x=>x.status==='MISMATCH').length,review:details.filter(x=>x.status==='REVIEW').length+globalWarnings.length};
+ // Parser diagnostics remain available to QA, but do not create user-facing
+ // review counts. Show only MATERIAL discrepancies/stock reviews in the UI.
+ const stats={match:details.filter(x=>x.status==='MATCH').length,mismatch:details.filter(x=>x.status==='MISMATCH').length,review:details.filter(x=>x.status==='REVIEW').length};
  const overall=stats.mismatch?'MISMATCH':stats.review?'MANUAL REVIEW REQUIRED':'MATCH';
  return {details:details.sort((a,b)=>a.section.localeCompare(b.section,{numeric:true})||a.product.localeCompare(b.product)),warnings:globalWarnings,stats,overall,excluded:javelin.excluded,gradeOverride:javelin.gradeOverride};
 }

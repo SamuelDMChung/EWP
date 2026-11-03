@@ -14,7 +14,7 @@
 .checker-pending select{font:inherit;border:1px solid var(--tools-line);color:var(--tools-ink);background:var(--tools-paper);border-radius:7px;padding:7px;max-width:160px}
 @media print{.checker-file-slots,.checker-pending,.checker-drop{display:none!important}}
 
-/* V1.33: highlight real per-cut differences only. */
+/* V1.34: highlight real per-cut differences only. */
 .checker-summary-tags{display:flex;align-items:center;flex-wrap:wrap;justify-content:flex-end;gap:5px}
 .checker-cut-list{display:grid;gap:3px}
 .checker-cut{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:3px 6px;border-radius:5px}

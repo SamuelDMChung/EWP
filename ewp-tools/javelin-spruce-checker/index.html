@@ -3,15 +3,15 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light">
 <title>Javelin vs. Spruce PDF Checker — EWP Tools</title>
 <meta name="description" content="Compare annotated Javelin material lists with Spruce sales orders without uploading files.">
-<link rel="stylesheet" href="../../portal-nav.css?v=1.33"><link rel="stylesheet" href="../../theme.css?v=1.33"><link rel="stylesheet" href="../tools.css?v=1.33"><link rel="stylesheet" href="./checker.css?v=1.33">
-<script src="../../theme.js?v=1.33"></script></head><body>
+<link rel="stylesheet" href="../../portal-nav.css?v=1.34"><link rel="stylesheet" href="../../theme.css?v=1.34"><link rel="stylesheet" href="../tools.css?v=1.34"><link rel="stylesheet" href="./checker.css?v=1.34">
+<script src="../../theme.js?v=1.34"></script></head><body>
 <nav class="ewp-portal-nav" aria-label="EWP Management navigation">
   <a class="ewp-portal-nav__brand" href="../../?view=ewp"><img class="ewp-portal-nav__mark" src="../../assets/griff-nav-icon.png" alt="">EWP Management</a>
   <div class="ewp-portal-nav__links"><a class="ewp-portal-nav__link" href="../../?view=ewp">Portal</a>
    <div class="ewp-portal-nav__group ewp-portal-nav__group--ewp" aria-label="EWP workspaces"><span class="ewp-portal-nav__group-label">EWP</span><a class="ewp-portal-nav__link" href="../../tracker/">Project Tracking</a><a class="ewp-portal-nav__link" href="../../forecast/">EWP Forecast</a><a class="ewp-portal-nav__link" href="../../ewp-tools/" aria-current="page">EWP Tools</a></div>
    <div class="ewp-portal-nav__group ewp-portal-nav__group--sales" aria-label="Sales workspaces"><span class="ewp-portal-nav__group-label">Sales</span><a class="ewp-portal-nav__link" href="../../sales/">New EWP Requests</a><a class="ewp-portal-nav__link" href="../../orders/">EWP Order</a><a class="ewp-portal-nav__link" href="../../sales-tracking/">Sales Project Tracking</a></div>
   </div><span class="ewp-portal-nav__account" id="ewpNavAccount" aria-live="polite"></span></nav>
-<header class="tools-header"><div><span class="eyebrow">EWP TOOLS</span><h1>Javelin vs. Spruce PDF Checker</h1><p>V1.33 WEB · Developed by Samuel Chung</p></div><button id="ewpToolsSettings" class="tool-button ewp-settings-trigger" type="button">⚙ Settings</button></header>
+<header class="tools-header"><div><span class="eyebrow">EWP TOOLS</span><h1>Javelin vs. Spruce PDF Checker</h1><p>V1.34 WEB · Developed by Samuel Chung</p></div><button id="ewpToolsSettings" class="tool-button ewp-settings-trigger" type="button">⚙ Settings</button></header>
 <main class="tools-main checker-main">
  <div class="tools-breadcrumb"><a href="../">← All EWP Tools</a></div>
  <section class="tools-panel" aria-labelledby="upload-heading"><h2 id="upload-heading">Compare two documents</h2><p class="small-hint">Javelin material rows are the reference. Explicit level-wide TJI grade notes and precisely aligned whole-row strikeouts are applied; ordinary highlights are ignored. Both files are processed inside this browser; no Supabase upload or AI service. Web stiffeners and backer blocks are excluded.</p>
@@ -28,16 +28,14 @@
   <div class="checker-results-heading"><div><h2 id="results-heading">Comparison results</h2><p class="small-hint" id="checkerSourceNames"></p><div class="checker-source-links"><a id="checkerJView" target="_blank" rel="noopener noreferrer" href="#">Open Javelin PDF</a><a id="checkerSView" target="_blank" rel="noopener noreferrer" href="#">Open Spruce PDF</a></div></div><div class="tool-actions"><button id="checkerDownload" class="tool-button" type="button">Download HTML report</button><button id="checkerPrint" class="tool-button" type="button">Print / Save PDF</button></div></div>
   <div class="checker-summary"><div class="checker-summary-card"><small>Confirmed matches</small><strong id="checkerMatches">—</strong></div><div class="checker-summary-card"><small>Mismatches</small><strong id="checkerMismatches">—</strong></div><div class="checker-summary-card"><small>Manual review items</small><strong id="checkerReviews">—</strong></div></div>
   <p id="checkerOverall" class="checker-overall" role="status"></p>
-  <p id="checkerStats" class="small-hint"></p>
-  <div id="checkerWarnings" class="checker-warning-list" hidden></div>
   <div class="checker-controls"><label>Show <select id="checkerFilter"><option value="issues">Mismatches &amp; reviews</option><option value="all">All items</option><option value="MATCH">Matches</option><option value="MISMATCH">Mismatches</option><option value="REVIEW">Manual review</option></select></label><label>Find <input type="search" id="checkerSearch" placeholder="Unit, product, grade..." /></label></div>
   <div id="checkerDetails" class="checker-details"></div>
   <details id="checkerJavelinReview" class="checker-material-review"><summary>Inspect or correct Javelin material lines (session only)</summary><p class="small-hint">Corrections affect this browser comparison only. Review the original PDF before changing a line. Confidently crossed-out whole rows are excluded automatically; you can restore or adjust them for this session after reviewing the original PDF.</p><div id="checkerRows" class="checker-rows"></div></details>
   <p class="small-hint">A match requires exact cuts and quantities where comparable. Stock pieces replacing shorter cuts are not automatically approved. Highlights are ignored and never create review flags. Ambiguous strikeouts and unsupported stock substitutions may need manual checking. Flattened/handwritten marks and unreadable PDF pages may not be detectable. This is a checking aid, not a substitute for ordering review.</p>
  </section>
 </main>
-<footer class="tools-footer"><span>EWP Management Portal</span><span>V1.33 WEB · Developed by Samuel Chung</span></footer>
-<script type="module" src="../../workspace-auth.mjs?v=1.33"></script>
-<script type="module" src="../../shared-settings.mjs?v=1.33"></script>
-<script type="module" src="./app.mjs?v=1.33"></script>
+<footer class="tools-footer"><span>EWP Management Portal</span><span>V1.34 WEB · Developed by Samuel Chung</span></footer>
+<script type="module" src="../../workspace-auth.mjs?v=1.34"></script>
+<script type="module" src="../../shared-settings.mjs?v=1.34"></script>
+<script type="module" src="./app.mjs?v=1.34"></script>
 </body></html>

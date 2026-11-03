@@ -1,3 +1,40 @@
+# EWP Management Portal — V1.34 WEB: Correct Annotation Coordinates; Hide Parser Diagnostics
+
+**Release:** November 3, 2026. **Canonical input:** complete V1.33 WEB ZIP. **Next:** V1.35 WEB. **Scope:** Javelin/Spruce PDF Checker only, plus V1.34 version and cache credits on all 11 pages. All other workspaces, Supabase auth/database/RLS, Edge Functions, Resend integration, settings, navigation, themes and EWP Connect iOS untouched. Production Supabase not accessed; no database writes, SQL migration or Edge Function redeployment.
+
+## Fix: Unit 201 LSL falsely missing in hosted V1.33
+
+The user-hosted V1.33 screenshot showed **3 whole-row strikeouts excluded**, Unit 201 1¾ × 9½ 1.55E LSL TS3 `1×11′` missing, and nearby PSL P5 `2×7′` incorrectly retained. Earlier offline fixtures had passed because they presented PDF annotations already in the intended top-left text coordinate frame and **did not test both raw-PDF and converted rectangle orientations**. Comparing the actual PDF's six raw `/Rect` values with original material-row positions reproduced the pattern: using the incorrect vertical orientation can exclude TS3 instead of P5 and leave annotation diagnostics on pages 1 and 3.
+
+**V1.34 change:** `pdfAnnotations` preserves both the viewport-converted rectangle and the raw rectangle as alternate coordinate candidates. `orientStrikeouts` scores unique, substantial 2D row intersections for both coordinate frames across the **whole Javelin document**. Only the better-supported global orientation is used for automatic full-row strikeouts. If the orientations tie, an annotation can exclude a row only when BOTH coordinate frames uniquely identify the **same** row; otherwise no row is excluded. Existing baseline/font-height handling, FreeText level-wide grade instructions, conservative partial-strikeout handling, and session corrections are retained. Ordinary highlights still have no effect whatsoever. This reduces the risk of deleting a neighboring LSL row if PDF.js coordinates are delivered in an unexpected frame.
+
+## Simplified results display
+
+Removed the Javelin/Spruce extracted-line statistics paragraph and the yellow parser/strikeout warnings panel below the results summary, and omitted those parser diagnostics from downloadable HTML reports. Internal parser warnings remain available for QA/debugging but are no longer counted as user-facing `MANUAL REVIEW` statuses. Material comparison cards still show actual mismatches (red missing, amber extra cuts); true stock/cutting feasibility cases retain `MANUAL REVIEW`. Fatal upload/reader errors still appear in the upload status. Users can still open source PDFs and inspect/restore individual rows.
+
+## Expected original L3 PDF pair outcomes
+
+- Six crossed-out PSL **P5** rows excluded, no adjacent LSL row excluded.
+- Unit 201 LSL 1.55E 1¾ × 9½ `TS3` Javelin `1 × 11′` vs Spruce `1 × 11′` → **MATCH**.
+- Unit 201 PSL crossed-out `P5` `2 × 7′` correctly excluded. Unit 200 PSL crossed-out `P5` `2 × 7′` excluded, adjusted Javelin 21 LF equals Spruce 21 LF → **MATCH**.
+- Genuine Rim/Blockings LSL 1¼ × 9½: **809 LF expected vs 576 LF ordered**, definite **233 LF shortage** → MISMATCH; excess stock/cut substitution remains manual review.
+- Source pair offline total: **30 MATCH, 1 MISMATCH, 1 REVIEW**. Earlier L4 annotated fixture: **24 MATCH, 0 MISMATCH, 1 REVIEW** with explicit TJI 230 note and six PSL P6 strikeouts.
+
+## Verification scope and limits
+
+- `node tests/v1_34_smoke.mjs`: **70 assertions**, including both coordinate frames for the L3 six-strikeout fixture, protecting TS3, exact Unit 201 match, L4 grade note, cut differences, no warning UI, and conservative ambiguous ties.
+- `python tests/browser_smoke_v1_34.py`: four responsive Chromium cases (1320px light/dark, 768px light, 390px dark), real application/logic JS with **fake PDF.js**, where the L3 Javelin annotation coordinates are deliberately inverted by the fixture adapter; parser recognizes the correct global orientation, shows proper match/shortage, and exports HTML without the diagnostics panel.
+- Independent raw geometry orientation check using the **original uploaded** 3-page Javelin and 5-page Spruce PDFs through PyMuPDF/pypdf: six intended PSL P5 exclusions with either candidate orientation; no neighboring TS3 exclusion. Original customer PDFs are **not shipped**.
+- Steel Beam 29 assertions, Snow Load 40, Consolidator 32, historical Material Parser 23; complete ZIP CRC, 11 page credits, all JS syntax and references and protected backend/SQL hashes verified. See `tests/V1_34_TEST_RESULTS.md`.
+
+**Important:** This verifies the coordinate-orientation **failure and fix** with actual PDF raw rectangles and controlled fixtures. It does **NOT** establish that the deployed browser's live PDF.js currently returns either specific orientation. Real PDF.js CDN/in-browser file parsing, hosted GitHub Pages, production Auth/RLS, live edge email and print-dialog flows remain untested. Confirm hosted Unit 201 TS3, all six P5 exclusions, summary outputs and warnings removal with the actual PDFs after deploying. Flattened annotations and scanned pages remain unsupported; human review required before ordering.
+
+## Deploy
+
+Back up the deployed GitHub Pages repository. Replace repository contents using the **complete V1.34 WEB ZIP**, preserving repository configuration, `.nojekyll`, SQL history and Supabase source. Commit/push; hard-refresh to load `?v=1.34`. Authenticate and open EWP Tools → Javelin vs. Spruce PDF Checker. Upload actual original Javelin/Spruce files in the hosted browser (do **not** commit PDFs to the public site), verify 6 PSL P5 exclusions, Unit 201 `TS3` LSL match, Unit 200 PSL match, one rim shortage + one stock review, no parser statistics/yellow diagnostic section, highlight ignored, row restoration and HTML/print export. Spot-check other workspaces and themes read-only. **No SQL or Edge Function deployment required.**
+
+---
+
 # EWP Management Portal — V1.33 WEB: Geometry-Safe Strikeouts, Grade Notes Restored, Highlights Ignored
 
 **Canonical input:** `EWP_Management_Portal_V1_32_WEB_FULL.zip` (188 files). **Release:** V1.33 WEB, November 3, 2026. **Next:** V1.34 WEB. **Scope:** PDF Checker only, with all 11 pages updated for V1.33 version/cache credits. No production Supabase access, no DB/SQL/RLS/Auth/Edge Function/Resend changes, and no EWP Connect iOS changes.

@@ -1,3 +1,42 @@
+# EWP Management Portal — V1.36 WEB: SharePoint File Request Handoff
+
+**Release:** November 3, 2026. **Canonical input:** V1.35 complete WEB source. **Next:** V1.37 WEB. **Approved scope:** New EWP Requests UI, an authenticated-only storage URL configuration table, documentation/tests and 11 HTML version/cache credits. All existing Supabase requests, private attachment handling, Supabase Auth/RLS, Edge Functions, Resend, Tracker/Forecast/Orders/Purchasing/EWP Tools, navigation, themes and EWP Connect iOS source remain unchanged. **Production Supabase was NOT accessed and no live SharePoint upload was performed.**
+
+## Purpose
+
+Company OneDrive/SharePoint File Request is a **separate, no-Graph upload handoff** for large architectural/structural plan files (~200 MB each). It does not upload into Supabase Storage. The existing Sales form still submits `sales_requests` through Supabase and notifies the team through the existing `sales-request-email` Edge Function. Existing small PDF/JPG/PNG Supabase attachments (10 MB each / 30 MB combined) remain optional and unchanged; teams should use SharePoint for large plans.
+
+The user supplied a link of the type `https://griffbuilding-my.sharepoint.com/:f:/g/...`. **Its capability as an upload-only File Request, its sharing settings, and recipient upload permissions were not verified;** test using a non-sensitive sample from a browser where the uploader is not signed into the owner account. Only its URL format was inspected. A SharePoint file-request link is a capability token: putting it into a public GitHub repository, JavaScript bundle, or HTML would expose the upload link to the world. This release therefore **does not embed the URL** anywhere in the public ZIP.
+
+## Deployment order — administrator only, no Microsoft 365 or IT integration needed
+
+1. Back up the Supabase schema/settings, then in the existing Supabase project's **SQL Editor** run included idempotent migration `v1_36_sharepoint_file_request.sql`. It creates only `public.ewp_sales_file_request` with RLS; authenticated employees get **SELECT only** for `id='new_ewp_requests'`. Anonymous access and browser writes are denied. No existing database tables are altered.
+2. Run the **separate private file** `EWP_V1_36_PRIVATE_SHAREPOINT_LINK_SETUP.sql` in the same Supabase SQL Editor. It stores the supplied URL as the single configuration row. **This file is purposefully NOT in the ZIP. Never commit it, paste it into public source, or publish the actual link.** If the private file is unavailable, manually insert the link using an administrator-only SQL statement that substitutes the private URL for `<YOUR_PRIVATE_SHAREPOINT_LINK>`:
+
+   ```sql
+   INSERT INTO public.ewp_sales_file_request (id, upload_url, updated_at)
+   VALUES ('new_ewp_requests', '<YOUR_PRIVATE_SHAREPOINT_LINK>', now())
+   ON CONFLICT (id) DO UPDATE SET upload_url=EXCLUDED.upload_url, updated_at=now();
+   ```
+
+3. Publish the **entire** `EWP_Management_Portal_V1_36_WEB_FULL.zip` to the GitHub Pages root, keeping `.nojekyll`. Commit/push and hard-refresh. Verify `V1.36 WEB · Developed by Samuel Chung` on all 11 pages. No Edge Function/Resend redeployment required. Do not publish the separate private SQL file.
+4. Log in as Sales → New EWP Requests. With an authenticated Supabase session, the form fetches the URL over the existing REST endpoint `ewp_sales_file_request` and reveals **Open SharePoint File Request** in a new tab. Use **Copy project label** and prefix plan filenames with `Customer - Project Name/Address`. Upload at SharePoint first, return, optionally tick **I have uploaded plans** (an uploader attestation, not a verified Microsoft receipt), then submit the request. The confirmation is appended to the existing Instructions text, so History and email show it, but the SharePoint file does **not** become an attachment in Supabase.
+5. Verify that the upload is visible in the owner's SharePoint folder and file names can be matched manually to `Customer/Project`. Check Supabase storage usage does not increase from SharePoint-only submissions. Existing 10MB/30MB small attachment workflow remains functional.
+
+## Behavior and limitations
+
+- No automatic upload API, Microsoft Graph/Entra integration, webhook, project-file association, SharePoint download link in Submission History, or proof of upload. The built-in file-request page may require users to complete a separate Microsoft flow, governed by Microsoft organization sharing policies. If the link does not permit file requests or requires IT policy changes, the portal cannot override it.
+- The external link is **not embedded in JavaScript or checked into public source**. It is retrieved only after Supabase sign-in via `public.ewp_sales_file_request`, whose RLS permits SELECT to authenticated users. Anybody who is authenticated to the EWP portal can access and share the upload token, as intended for Sales. The underlying link is still a bearer token: consider regeneration if it is exposed.
+- URL must have HTTPS and a `.sharepoint.com` host with `/:f:/` path. Unsafe URLs are not activated. Missing/broken configuration does **not** block the existing request submission or small attachments. The new table carries its own SELECT-only RLS and does not modify any existing policies.
+- Checking the SharePoint confirmation adds the exact text `Plans uploaded to company SharePoint (confirmed by requester; separate from portal attachments).` to existing Instructions. Its total remains within 5,000 characters; if too long the form blocks submission with a clear message. No schema changes to `sales_requests` or email function changes are needed.
+- The public WEB archive carries no exact private SharePoint link, no customer PDFs, and no company credentials. The private setup SQL is a *separate download* and must remain private.
+
+## Test boundaries
+
+`tests/browser_smoke_v1_36.py`: offline Chromium with mocked Supabase/Auth/SharePoint configuration, five desktop/tablet/mobile and light/dark cases including valid, missing, failed and malicious link, project label copy, confirmation recorded, and unchanged request submission. This is **not** a live Microsoft upload or production RLS test. Static file/source preflight and established V1.35 PDF/other-workspace regressions run separately; full details: `tests/V1_36_TEST_RESULTS.md`.
+
+---
+
 # EWP Management Portal — V1.35 WEB: Manual Strikeout Exclusions Only
 
 **Release:** November 3, 2026. **Canonical input:** complete V1.34 WEB ZIP. **Next:** V1.36 WEB. **Approved scope:** Javelin/Spruce PDF Checker logic, related UI text and documentation, and V1.35 version/cache credits on all 11 HTML pages. Other workspaces, Supabase authentication/database/RLS, Edge Functions, Resend integration, themes, purchasing, forecast, tracker and EWP Connect iOS are unchanged. No production project accessed; no SQL migration or backend redeployment.

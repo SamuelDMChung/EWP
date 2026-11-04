@@ -11,3 +11,23 @@
 html[data-ewp-theme="dark"]{--sales-paper:#161815;--sales-ink:#f0eee7;--sales-muted:#c0bfb3;--sales-panel:#252923;--sales-border:#525b4e;--sales-olive:#949300;--sales-soft:#373b22;}html[data-ewp-theme="dark"] .sales-masthead .ewp-header-actions :is(.ewp-account-chip,.cloud-pill){background:#292d27;color:#f0eee7;border-color:#525b4e}html[data-ewp-theme="dark"] .sales-masthead .ewp-header-actions .cloud-pill.connected{background:#1c3c2e;color:#a3e4bd}html[data-ewp-theme="dark"] .sales-masthead .ewp-header-actions .cloud-pill.error{background:#4a2726;color:#ffc1be}html[data-ewp-theme="dark"] .ewp-header-button{background:#30362c;color:#f0eee7;border-color:#566051}html[data-ewp-theme="dark"] .sales-email-state.sent{background:#1c3c2e;color:#a3e4bd}html[data-ewp-theme="dark"] .sales-email-state.failed{background:#4a2726;color:#ffc1be}html[data-ewp-theme="dark"] .sales-primary{color:#fff}html[data-ewp-theme="dark"] .sales-form-grid :is(input,select,textarea){background:#1d211c;color:#f0eee7;border-color:#66725e}
 @media(max-width:720px){.sales-form-grid{grid-template-columns:1fr}.sales-masthead{padding:22px 16px}.sales-main{padding:16px}.sales-panel{padding:17px}}
 [hidden]{display:none!important}
+
+/* V1.36: SharePoint File Request handoff; link is loaded only after Supabase authentication. */
+.sales-sharepoint{border:1px solid var(--sales-border);background:var(--sales-soft);border-radius:11px;padding:17px 18px;display:flex;flex-direction:column;gap:9px;min-width:0}
+.sales-sharepoint-heading{display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:space-between}
+.sales-sharepoint h3{font-size:15px;font-weight:850;margin:0}
+.sales-sharepoint p{font-size:12px;line-height:1.5;margin:0;font-weight:450;color:var(--sales-ink)}
+.sales-sharepoint .sales-upload-provider{font-size:11px;font-weight:800;color:var(--sales-ink);opacity:.8}
+.sales-sharepoint-actions{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
+.sales-external-link,.sales-copy-project{display:inline-flex;align-items:center;justify-content:center;min-height:39px;border:1px solid var(--sales-olive);padding:9px 13px;border-radius:9px;background:var(--sales-olive);color:white!important;text-decoration:none;font:inherit;font-size:13px;font-weight:850;cursor:pointer}
+.sales-external-link:focus-visible,.sales-copy-project:focus-visible{outline:2px solid var(--sales-ink);outline-offset:3px}
+.sales-copy-project{background:var(--sales-panel);color:var(--sales-ink)!important;border-color:var(--sales-border)}
+.sales-sharepoint .sales-sharepoint-status{font-size:12px;color:var(--sales-muted)}
+.sales-sharepoint .sales-sharepoint-status.error{color:#b5221e}
+.sales-sharepoint .sales-sharepoint-status.success{color:#177448}
+.sales-sharepoint .sales-upload-note{font-size:12px;color:var(--sales-muted)}
+.sales-sharepoint label.sales-sharepoint-confirm{display:flex;flex-direction:row;align-items:center;gap:9px;font-weight:600;cursor:pointer;line-height:1.4}
+.sales-sharepoint-confirm input[type=checkbox]{width:auto;flex:none;accent-color:var(--sales-olive);cursor:pointer}
+html[data-ewp-theme="dark"] .sales-sharepoint .sales-sharepoint-status.success{color:#a3e4bd}
+html[data-ewp-theme="dark"] .sales-sharepoint .sales-sharepoint-status.error{color:#ffc1be}
+@media(max-width:480px){.sales-sharepoint{padding:14px}.sales-external-link,.sales-copy-project{width:100%}}

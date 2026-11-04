@@ -1,3 +1,12 @@
+# V1.36 WEB — SharePoint File Request for New EWP Requests (Nov 3, 2026)
+
+- **V1.36 is the complete canonical WEB source**; next V1.37. New EWP Requests offers a SharePoint File Request button to upload large plans **outside Supabase** without Microsoft Graph/IT integration. The existing Supabase small attachments and all other modules remain unchanged.
+- **Mandatory one-time SQL:** run `v1_36_sharepoint_file_request.sql` in Supabase SQL Editor. Then run the private, separate `EWP_V1_36_PRIVATE_SHAREPOINT_LINK_SETUP.sql` to configure the actual URL. The private file must **not** be committed to a public repo; it is not included in the WEB ZIP.
+- The link is fetched after Supabase Auth via read-only authenticated RLS. Large uploads are done manually in a separate SharePoint tab, with customer/project filename labeling. Optional checkbox records only the Sales user's statement of completion in existing request Instructions and email. File upload completion is **not automatically verified**. No production access or end-to-end SharePoint testing performed.
+- No changed Edge Function, Resend, order/forecast/tracker schema, or iOS project. Read `PORTAL_HANDOFF.md` and `tests/V1_36_TEST_RESULTS.md` before deploying.
+
+---
+
 # EWP Management Portal V1.35 WEB — Complete Source
 
 **Canonical input:** V1.34 WEB complete ZIP. **Release:** V1.35 WEB (November 3, 2026). **Next:** V1.36 WEB. Fixes the recurring Javelin Unit 201 11′ LSL false mismatch by eliminating **all automatic strikeout deletions**. Recognized original Javelin rows always remain in the comparison; highlights and other visual markups are ignored. Explicit `All joists 230, TYP. this level` FreeText instructions still apply to TJI grade. To exclude genuinely crossed-out materials, use the existing session-only Javelin correction panel. Missing/excess cut highlighting and stock review rules continue. The technical statistics/yellow diagnostics panel remains absent.

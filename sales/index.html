@@ -1,8 +1,8 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>New EWP Requests — EWP Management</title>
-<link rel="stylesheet" href="../portal-nav.css?v=1.35"><link rel="stylesheet" href="../theme.css?v=1.35">
-<link rel="stylesheet" href="sales.css?v=1.35"><script src="../theme.js?v=1.35"></script></head>
+<link rel="stylesheet" href="../portal-nav.css?v=1.36"><link rel="stylesheet" href="../theme.css?v=1.36">
+<link rel="stylesheet" href="sales.css?v=1.36"><script src="../theme.js?v=1.36"></script></head>
 <body>
 <nav class="ewp-portal-nav" aria-label="EWP Management navigation">
     <a class="ewp-portal-nav__brand" href="../?view=sales"><img class="ewp-portal-nav__mark" src="../assets/griff-nav-icon.png" alt="" />EWP Management</a>
@@ -25,7 +25,7 @@
   </nav>
 <div id="salesLoading" class="sales-loading">Restoring your EWP Management session…</div>
 <div id="salesWorkspace" hidden>
-<header class="sales-masthead"><div><span class="eyebrow">EWP SALES</span><h1>New EWP Requests</h1><p class="version-line">V1.35 WEB · Developed by Samuel Chung</p></div>
+<header class="sales-masthead"><div><span class="eyebrow">EWP SALES</span><h1>New EWP Requests</h1><p class="version-line">V1.36 WEB · Developed by Samuel Chung</p></div>
 <div class="ewp-header-actions"><div class="ewp-account-chip"><span class="user-chip-label">Signed in</span><strong id="salesEmail"></strong><button type="button" id="salesSignOut" class="user-change-button">Sign out</button></div>
 <span class="cloud-pill connecting" id="salesCloudPill" role="status">Connecting to shared data…</span><button class="ewp-header-button" id="salesRefresh" type="button">↻ Refresh</button><button class="ewp-header-button ewp-settings-trigger" type="button" id="salesSettingsButton">⚙ Settings</button></div></header>
 <main class="sales-main">
@@ -38,11 +38,19 @@
 <label>Phase *<select id="salesPhase" name="phase" required><option value="">Choose phase…</option></select></label>
 <fieldset class="sales-tasks"><legend>Tasks * <span>(Select at least one)</span></legend><div id="salesTaskChoices" class="sales-task-choices"></div></fieldset>
 <label>Requested Due Date *<input type="date" name="due_date" required></label>
-<label class="sales-full"><span>Drawings / Attachments <span class="optional">(Optional)</span></span><input id="salesFiles" type="file" multiple accept=".pdf,.png,.jpg,.jpeg,application/pdf,image/png,image/jpeg"><small>PDF/JPG/PNG, up to 10 MB each and 30 MB total. Stored privately in Supabase Storage; email contains a secure portal link.</small></label>
+<section class="sales-full sales-sharepoint" aria-labelledby="salesSharePointHeading">
+  <div class="sales-sharepoint-heading"><h3 id="salesSharePointHeading">Upload drawings to company SharePoint</h3><span class="sales-upload-provider">Company storage · large plans</span></div>
+  <p>For structural/architectural plans and large PDFs, upload through our SharePoint file request. Complete the upload there, then return to submit this EWP request.</p>
+  <div class="sales-sharepoint-actions"><a id="salesSharePointUpload" class="sales-external-link" target="_blank" rel="noopener noreferrer" hidden>Open SharePoint File Request ↗</a><button type="button" id="salesCopyProjectLabel" class="sales-copy-project">Copy project label</button></div>
+  <p id="salesSharePointStatus" class="sales-sharepoint-status" role="status" aria-live="polite">Checking SharePoint upload access…</p>
+  <p class="sales-upload-note">Rename your files to include the customer and project name/address before uploading, so our design team can identify them. SharePoint uploads are stored separately and do not appear as attachments in Submission History.</p>
+  <label class="sales-sharepoint-confirm"><input type="checkbox" id="salesSharePointConfirmed"> I have uploaded the plans to the SharePoint file request (optional)</label>
+</section>
+<label class="sales-full"><span>Small attachments — Supabase <span class="optional">(Optional)</span></span><input id="salesFiles" type="file" multiple accept=".pdf,.png,.jpg,.jpeg,application/pdf,image/png,image/jpeg"><small>Only for small files: PDF/JPG/PNG, up to 10 MB each and 30 MB total. These still use limited Supabase Storage. Prefer SharePoint for plans and larger files.</small></label>
 <label class="sales-full"><span>Additional Instructions <span class="optional">(Optional)</span></span><textarea name="instructions" rows="4" maxlength="5000" placeholder="Any special requirements for the design team…"></textarea></label></div>
 <p id="salesFormMessage" class="sales-message" role="status" aria-live="polite"></p><button id="salesSubmit" class="sales-primary" type="submit">Submit Request &amp; Notify Team</button></form></section>
 <section id="historyPanel" class="sales-panel" hidden><div class="sales-panel-heading"><h2>Submission History</h2><p>All company requests. Requests are saved even if an email notification needs retrying.</p></div><div id="salesHistory"></div></section>
 </main></div>
-<script type="module" src="../shared-settings.mjs?v=1.35"></script>
-<script type="module" src="sales.mjs?v=1.35"></script>
+<script type="module" src="../shared-settings.mjs?v=1.36"></script>
+<script type="module" src="sales.mjs?v=1.36"></script>
 </body></html>

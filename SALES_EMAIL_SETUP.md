@@ -1,3 +1,9 @@
+## V1.36 SharePoint File Request — separate large-plan upload
+
+New EWP Requests has an external company SharePoint File Request upload handoff for larger plans. No change to `sales-request-email`, Resend secrets, or `sales_requests` schema; the optional "uploaded plans" confirmation is appended to the existing Instructions text and therefore included in the existing email. **One new read-only config table migration** `v1_36_sharepoint_file_request.sql` must run before WEB deployment, followed by the separately distributed **PRIVATE** URL seed in Supabase SQL Editor. No IT/Microsoft Graph authorization is required by the web code itself (subject to SharePoint tenant policies). Keep the upload token out of the public GitHub repository. The SharePoint file-request link and actual upload have not been live-verified. Full details in `PORTAL_HANDOFF.md`.
+
+---
+
 # V1.12 WEB Deployment — New EWP Requests + EWP Order
 
 This section supersedes V1.11 deployment steps when upgrading an existing V1.10 installation. **Your V1.11 SQL/email/site deployment was not confirmed**; do not assume it happened.

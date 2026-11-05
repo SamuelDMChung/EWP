@@ -1,5 +1,5 @@
 /* V1.12 WEB — standalone EWP Orders, same Supabase Auth / Resend as New EWP Requests. */
-import {restoreSession,getAccessToken,getCurrentSession,signOut,EWP_AUTH_STORAGE_KEY} from '../forecast/auth.mjs?v=1.0-p3';
+import {restoreSession,getAccessToken,getCurrentSession,signOut,EWP_AUTH_STORAGE_KEY} from '../forecast/auth.mjs?v=1.38';
 import {SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY} from '../forecast/config.mjs';
 const $=id=>document.getElementById(id);
 const BASE=SUPABASE_URL.replace(/\/$/,'');

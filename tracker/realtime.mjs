@@ -1,5 +1,5 @@
 import { SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY } from '../forecast/config.mjs';
-import { getAccessToken } from '../forecast/auth.mjs?v=1.0-p3';
+import { getAccessToken } from '../forecast/auth.mjs?v=1.38';
 
 let client = null;
 let channel = null;

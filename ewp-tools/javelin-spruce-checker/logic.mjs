@@ -1,6 +1,7 @@
-/* V1.35: Every original Javelin material row is retained regardless of StrikeOut
- * or highlight annotations. Only an explicit level-wide FreeText TJI grade note
- * can alter its product specification; row exclusions require a user correction.
+/* V1.40: Match whole-floor Javelin/Spruce reports without unit headings;
+ * preserve numbered/framing-group logic and parse thousands-separated Spruce
+ * Ordered LF values whose left edge shifts outside the narrow quantity column.
+ * All base Javelin rows retained; strikeouts/highlights ignored.
  */
 const VULGAR_FRACTIONS={'¼':'1/4','½':'1/2','¾':'3/4','⅛':'1/8','⅜':'3/8','⅝':'5/8','⅞':'7/8','⅓':'1/3','⅔':'2/3'};
 export const clean=s=>String(s??'').replace(/([0-9])(?=[¼½¾⅛⅜⅝⅞⅓⅔])/g,'$1 ').replace(/[¼½¾⅛⅜⅝⅞⅓⅔]/g,c=>VULGAR_FRACTIONS[c]).replace(/[“”″]/g,'\"').replace(/[’′]/g,"'").replace(/\s+/g,' ').trim();
@@ -27,7 +28,7 @@ export function productSpec(input){
  // Normalize hyphenated mixed fractions, but never erase decimal points.
  const s=clean(input).toUpperCase().replace(/(\d)\s*[-–]\s*(\d+\s*\/\s*\d+)/g,'$1 $2');
  if(/(?:WEB\s+STIFFENER|BACKER\s+BLOCK)/.test(s))return null;
- const type=/\bTJI\b/.test(s)?'TJI':/\b(?:PARALLAM|PSL)\b/.test(s)?'PSL':/\b(?:TIMBERSTRAND|LSL)\b/.test(s)?'LSL':null;
+ const type=/\bTJI\b/.test(s)?'TJI':/\b(?:PARALLAM|PSL)\b/.test(s)?'PSL':/\b(?:TIMBERSTRAND|LSL)\b/.test(s)?'LSL':/\b(?:MICROLLAM|LVL)\b/.test(s)?'LVL':null;
  if(!type)return {key:null,label:clean(input),type:'UNKNOWN',ambiguous:true};
  const grade=type==='TJI'?(s.match(/\bTJI\s*(\d{2,4})\b/)?.[1]||''):(s.match(/\b(\d+(?:\.\d+)?)\s*E\b/)?.[1]||'');
  let width=null,depth=null;
@@ -81,6 +82,20 @@ export function pdfAnnotations(annots,pageNumber){
  ).map(a=>({type:'FreeText',contents:clean(a.contentsObj?.str||a.contents||''),page:pageNumber}));
 }
 function cols(line,breaks){return breaks.map(([min,max])=>clean(line.tokens.filter(t=>t.x>=min&&t.x<max).map(t=>t.text).join(' ')));}
+// Floor-wide reports often have no numeric unit headings. Normalize their
+// human-readable floor labels so both sources share a comparison group.
+function floorSection(text){
+ const src=clean(text).toUpperCase();
+ const words=['FIRST','SECOND','THIRD','FOURTH','FIFTH','SIXTH','SEVENTH','EIGHTH','NINTH','TENTH'];
+ const floor=src.match(/\b(FIRST|SECOND|THIRD|FOURTH|FIFTH|SIXTH|SEVENTH|EIGHTH|NINTH|TENTH|\d{1,2}(?:ST|ND|RD|TH))\s+FLOOR\b/);
+ if(floor){let n=words.indexOf(floor[1]);if(n<0)n=Number.parseInt(floor[1],10)-1;const name=words[n]||floor[1];return `${name.slice(0,1)}${name.slice(1).toLowerCase()} Floor`;}
+ const level=src.match(/\bLEVEL\s*(\d{1,2})\b/);
+ if(level)return `Level ${Number(level[1])}`;
+ // Short Spruce floor-only comments such as "L2 EAST" are the same as Javelin's "Level: Level 2".
+ const short=src.match(/^L(\d{1,2})(?:D\d+)?(?:\s+(?:EAST|WEST))?$/);
+ if(short)return `Level ${Number(short[1])}`;
+ return null;
+}
 export function parseJavelin(pages){
  const records=[],annotations=[],warnings=[],pageLevels=new Map(),ambiguousLevelPages=new Set();
  let currentLevel='Unspecified level',unit='Unspecified section';
@@ -95,10 +110,14 @@ export function parseJavelin(pages){
    if(/\bLevel\s*:\s*(.+)/i.test(t)){
     currentLevel=t.match(/\bLevel\s*:\s*(.+)/i)[1].trim();
     if(pageLevels.has(pageNo)&&pageLevels.get(pageNo)!==currentLevel)ambiguousLevelPages.add(pageNo);
-    pageLevels.set(pageNo,currentLevel);unit='Unspecified section';continue;
+    pageLevels.set(pageNo,currentLevel);unit=floorSection(currentLevel)||'Unspecified section';continue;
    }
-   if(/^(?:(?:\d+(?:st|nd|rd|th)\s+)?rim and blockings|\d{3}(?:\s*\+\s*stair(?:s)?)?)$/i.test(t)&&line.tokens.some(x=>x.x>230&&x.x<400)){
-    unit=/rim and blockings/i.test(t)?'Rim and blockings':t.replace(/\s+/g,' ').replace(/stair$/i,'stairs').trim();continue;
+   // Javelin headers for a group of units can be 'framing 209 (110-114)'.
+   // Recognize that group as 209, rather than carrying forward the preceding 109.
+   const framing=t.match(/^FRAMING\s+(\d{3})(?:\s*\(\s*(?:UNIT\s+)?\d{3}(?:\s*[-–]\s*\d{3})?\s*\))?$/i);
+   if(line.tokens.some(x=>x.x>230&&x.x<400)&&
+      (framing||/^(?:(?:\d+(?:st|nd|rd|th)\s+)?rim and blockings|\d{3}(?:\s*\+\s*stair(?:s)?)?)$/i.test(t))){
+    unit=framing?framing[1]:/rim and blockings/i.test(t)?'Rim and blockings':t.replace(/\s+/g,' ').replace(/stair$/i,'stairs').trim();continue;
    }
    if(!line.tokens.some(x=>x.x>=535)||y<60||y>745)continue;
    const [plot,length,description,pliesText,qtyText]=cols(line,[[32,95],[95,153],[153,500],[500,532],[532,568]]);
@@ -143,11 +162,29 @@ export function parseJavelin(pages){
 function sectionName(text){
  let t=clean(text).replace(/^COMMENT\s*/i,'').replace(/^L\d+(?:D\d+)?\s*(?:EAST|WEST)?\s*[-–]?\s*/i,'');
  if(/RIM\s+AND\s+BLOCKING/i.test(t)||/BLOCKING/i.test(t)&&!/UNIT/i.test(t))return 'Rim and blockings';
+ // Main FRAMING number takes precedence over parenthetical UNIT range.
+ // Example: FRAMING 209 (UNIT 110-114) is the 209 group, not Unit 110.
+ const framing=t.match(/\bFRAMING\s+(\d{3})\b/i);if(framing)return framing[1];
  const m=t.match(/UNIT\s+(\d{3})(\s*\+\s*STAIRS?)?/i);if(m)return m[1]+(m[2]?' + stairs':'');
  const n=t.match(/\b(\d{3})\s*\+\s*STAIR/i);if(n)return n[1]+' + stairs';
- return null;
+ // A full-floor order may contain only "4626 SELKIRK ST - SECOND FLOOR",
+ // with no UNIT comment. The address is incidental; use the floor as the section.
+ return floorSection(clean(text).replace(/^COMMENT\s*/i,''));
 }
-function descOf(line){return clean(line.tokens.filter(t=>t.x>=126&&t.x<322).map(t=>t.text).join(' '));}
+function descOf(line,maxX=322){return clean(line.tokens.filter(t=>t.x>=126&&t.x<maxX).map(t=>t.text).join(' '));}
+function orderedToken(line){
+ // Spruce right-aligns Ordered quantities. 4+ digits start LEFT of x=320,
+ // so select the numeric token by its quantity-column location, not x>=320.
+ const tokens=line.tokens.filter(t=>t.x>=295&&t.x<370&&/^\d[\d,]*$/.test(t.text)).sort((a,b)=>a.x-b.x);
+ if(!tokens.length)return null;
+ const parts=[tokens[0]];
+ for(const token of tokens.slice(1)){
+  const prior=parts[parts.length-1];
+  if(token.x>(prior.x+(Number(prior.width)||0)+5))break;
+  parts.push(token);
+ }
+ return {x:parts[0].x,text:parts.map(t=>t.text).join('')};
+}
 export function parseSpruce(pages){
  const records=[],warnings=[];let section='Unspecified section',active=null,level='';
  const flush=()=>{
@@ -188,12 +225,12 @@ export function parseSpruce(pages){
     continue;
    }
    if(/^AB$/.test(c)||/^ZONE|^FUEL/.test(c)){flush();continue;}
-   if(/^(?:TJI\d+|PSL\d+|LSL\w+)$/i.test(c)){
-    flush();const qtyText=clean(line.tokens.filter(t=>t.x>=320&&t.x<370).map(t=>t.text).join(' '));
-    const ordered=Number(qtyText.replace(/,/g,''));
+   if(/^(?:TJI\d+|PSL\d+|LSL\w+|LVL\w+)$/i.test(c)){
+    flush();const qty=orderedToken(line);
+    const ordered=qty?Number(qty.text.replace(/,/g,'')):NaN;
     const um=clean(line.tokens.filter(t=>t.x>=418&&t.x<445).map(t=>t.text).join(' ')).split(' ')[0].toUpperCase();
     if(!Number.isFinite(ordered)||ordered<=0||!['LF','PC'].includes(um)){warnings.push(`Spruce p.${page.page}: cannot safely read Ordered/UM for ${c}.`);continue;}
-    active={source:'Spruce',page:page.page,y,code:c,section,level,description:d,ordered,um,notes:[],isFirstOnPage:firstMaterial};firstMaterial=false;
+    active={source:'Spruce',page:page.page,y,code:c,section,level,description:descOf(line,qty.x),ordered,um,notes:[],isFirstOnPage:firstMaterial};firstMaterial=false;
    }else if(c&&/^[A-Z][A-Z0-9/.-]{2,20}$/i.test(c)&&!['ITEM','DESCRIPTION','REMAIN','SOLD','ORDERED','ELIGIBLE','SUBTOTAL','PAYMENT'].includes(c.toUpperCase())){
     flush();warnings.push(`Spruce p.${page.page}: unrecognized order item code ${c}. Review this row.`);
    }else if(active&&d&&!(line.text||'').match(/(?:subtotal|sales tax|price|amount|eligible|signature|charge|payment)/i)){
@@ -235,7 +272,10 @@ function overlapStatus(e,a){
  // provides a conservative minimum: fewer LF cannot satisfy that requirement.
  if(a.stock.length&&a.stock.every(x=>x.length)&&stockLF+.0001<e.total)return 'MISMATCH';
  if(isStockSection(e,a)&&!a.stock.length&&a.total+.0001<e.total)return 'MISMATCH';
- const uncertain=e.notes.some(n=>/ambiguous|could not|multi-ply/i.test(n))||a.notes.some(n=>/unreadable|missing|could not|unrecognized|totals/i.test(n));
+ // Net Qty is already the number of material pieces; 'Plies' is not a
+ // quantity multiplier. Matching verified cuts must not be downgraded merely
+ // because a Javelin row says 2 plies. Retain its informational note.
+ const uncertain=e.notes.some(n=>/ambiguous|could not/i.test(n))||a.notes.some(n=>/unreadable|missing|could not|unrecognized|totals/i.test(n));
  if(uncertain)return 'REVIEW';
  if(a.stock.length){
   if(a.stock.some(x=>!x.length))return 'REVIEW';
@@ -273,7 +313,19 @@ export function compareMaterials(javelin,spruce,manualChanges=[]){
   if(c.quantity!=null&&Number.isSafeInteger(Number(c.quantity))&&Number(c.quantity)>=0)copy.qty=Number(c.quantity);
   return copy;
  }).filter(Boolean);
- const expected=aggregate(eRows),actual=aggregate(spruce.records);
+ // If one report has one floor-wide, unnumbered section while the other
+ // report provides no comparable heading, safely use that sole floor label.
+ // Never remap a numbered unit, framing group, or multiple distinct sections.
+ let expectedRows=eRows,orderedRows=spruce.records;
+ const eSections=new Set(eRows.map(r=>r.unit)),sSections=new Set(spruce.records.map(r=>r.section));
+ if(eSections.size===1&&sSections.size===1){
+  const [ej]=eSections,[sa]=sSections;
+  if(ej==='Unspecified section'&&sa!=='Unspecified section'&&floorSection(sa)===sa)
+   expectedRows=eRows.map(r=>({...r,unit:sa}));
+  else if(sa==='Unspecified section'&&ej!=='Unspecified section'&&floorSection(ej)===ej)
+   orderedRows=spruce.records.map(r=>({...r,section:ej}));
+ }
+ const expected=aggregate(expectedRows),actual=aggregate(orderedRows);
  const allKeys=new Set([...expected.keys(),...actual.keys()]);const details=[];
  for(const key of allKeys){
   const e=expected.get(key),a=actual.get(key);

@@ -1,3 +1,9 @@
+## V1.37 New EWP Requests — SharePoint option removed
+
+The WEB Sales request form no longer displays the V1.36 SharePoint upload handoff or adds an uploader attestation to Instructions. No change to `sales-request-email`, Resend, `sales_requests` database schema, the existing saved request history, or ordinary Supabase attachments. The V1.36 configuration table is unused and deliberately not dropped. No new SQL migration or Edge Function deployment required.
+
+---
+
 ## V1.36 SharePoint File Request — separate large-plan upload
 
 New EWP Requests has an external company SharePoint File Request upload handoff for larger plans. No change to `sales-request-email`, Resend secrets, or `sales_requests` schema; the optional "uploaded plans" confirmation is appended to the existing Instructions text and therefore included in the existing email. **One new read-only config table migration** `v1_36_sharepoint_file_request.sql` must run before WEB deployment, followed by the separately distributed **PRIVATE** URL seed in Supabase SQL Editor. No IT/Microsoft Graph authorization is required by the web code itself (subject to SharePoint tenant policies). Keep the upload token out of the public GitHub repository. The SharePoint file-request link and actual upload have not been live-verified. Full details in `PORTAL_HANDOFF.md`.

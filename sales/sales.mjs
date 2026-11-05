@@ -1,5 +1,5 @@
-/* V1.36 — Sales requests: existing Supabase requests, optional private small attachments, authenticated SharePoint File Request handoff. */
-import { restoreSession,getAccessToken,getCurrentSession,signOut,EWP_AUTH_STORAGE_KEY } from '../forecast/auth.mjs?v=1.0-p3';
+/* V1.37 — Sales requests: standard Supabase attachments; Full Takeoff hidden in New EWP Requests only. */
+import { restoreSession,getAccessToken,getCurrentSession,signOut,EWP_AUTH_STORAGE_KEY } from '../forecast/auth.mjs?v=1.38';
 import { SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY } from '../forecast/config.mjs';
 import { loadTrackerSettings } from '../tracker/cloud.mjs?v=1.12';
 const $=id=>document.getElementById(id);
@@ -11,6 +11,8 @@ const FUNCTIONS=`${ORIGIN}/functions/v1`;
 const MAX_FILE=10*1024*1024,MAX_TOTAL=30*1024*1024;
 let currentSettings={sales:[],tasks:[],phases:[]};
 let busy=false,authenticated=false;
+// Tracker Tasks are shared across workspaces; hide Full Takeoff only in this request form.
+const requestTasks=()=>currentSettings.tasks.filter(name=>typeof name==='string' && name.trim().toLowerCase()!=='full takeoff');
 function textStatus(message,kind=''){const el=$('salesFormMessage');el.textContent=message;el.className=`sales-message ${kind}`;}
 function cloud(message,kind='connecting'){$('salesCloudPill').textContent=message;$('salesCloudPill').className=`cloud-pill ${kind}`;}
 function switchTab(target){const history=target==='history';$('historyPanel').hidden=!history;$('newPanel').hidden=history;$('historyTab').classList.toggle('active',history);$('newTab').classList.toggle('active',!history);if(history)loadHistory().catch(e=>{cloud('Shared data error','error');$('salesHistory').textContent=e.message;});}
@@ -19,34 +21,12 @@ function renderOptions(){
   fillSelect('salesPerson',currentSettings.sales,'Choose salesperson…');
   fillSelect('salesPhase',currentSettings.phases,'Choose phase…');
   const target=$('salesTaskChoices');const selected=new Set([...target.querySelectorAll('input:checked')].map(el=>el.value));target.replaceChildren();
-  if(!currentSettings.tasks?.length){target.textContent='No tasks configured. Please add Tasks in Settings before submitting.';return;}
-  for(const name of currentSettings.tasks){const label=document.createElement('label'),check=document.createElement('input');check.type='checkbox';check.name='tasks';check.value=name;check.checked=selected.has(name);label.append(check,document.createTextNode(name));target.append(label);}
+  if(!requestTasks().length){target.textContent='No tasks available. Please configure Tasks in Settings before submitting.';return;}
+  for(const name of requestTasks()){const label=document.createElement('label'),check=document.createElement('input');check.type='checkbox';check.name='tasks';check.value=name;check.checked=selected.has(name);label.append(check,document.createTextNode(name));target.append(label);}
 }
 async function headers(json=false){const token=await getAccessToken();if(!token)throw new Error('Your session has expired. Sign in again.');return{apikey:SUPABASE_PUBLISHABLE_KEY,Authorization:`Bearer ${token}`,...(json?{'Content-Type':'application/json'}:{})};}
 async function parseResponse(response){const raw=await response.text();let data;try{data=raw?JSON.parse(raw):null;}catch{data=raw;}if(!response.ok)throw new Error(data?.message||data?.error||data?.msg||data?.details||`Request failed (${response.status}).`);return data;}
 async function loadSettings(){currentSettings=await loadTrackerSettings();renderOptions();}
-// Never embed the Microsoft file-request token in the public GitHub Pages source.
-// The authenticated-only Supabase table is read-only to browser clients.
-function sharePointStatus(message,kind=''){$('salesSharePointStatus').textContent=message;$('salesSharePointStatus').className=`sales-sharepoint-status ${kind}`;}
-function validateSharePointUrl(value){try{const url=new URL(value);if(url.protocol!=='https:'||!(/(^|\.)sharepoint\.com$/i.test(url.hostname))||!url.pathname.startsWith('/:f:/'))return null;return url.href;}catch{return null;}}
-async function loadSharePointLink(){
-  const link=$('salesSharePointUpload');link.hidden=true;link.removeAttribute('href');
-  sharePointStatus('Checking SharePoint upload access…');
-  try{
-    const response=await fetch(`${REST}/ewp_sales_file_request?select=upload_url&id=eq.new_ewp_requests&limit=1`,{headers:await headers(),cache:'no-store'});
-    const rows=await parseResponse(response);const destination=validateSharePointUrl(rows?.[0]?.upload_url);
-    if(!destination){sharePointStatus('SharePoint File Request not configured. Ask the portal administrator to complete the V1.36 Supabase setup.','error');return;}
-    link.href=destination;link.hidden=false;
-    sharePointStatus('Upload opens in a separate SharePoint tab. Return here afterward to submit your request.','success');
-  }catch(error){sharePointStatus('SharePoint upload link unavailable. Requests and existing small-file attachments still work; ask the portal administrator to check setup.','error');}
-}
-function projectUploadLabel(){const form=$('salesRequestForm');return [form.elements.customer.value.trim(),form.elements.address.value.trim()].filter(Boolean).join(' - ');}
-async function copyProjectLabel(){
-  const label=projectUploadLabel();
-  if(!label){sharePointStatus('Enter Customer and Project Name / Address first, then copy the label.','error');return;}
-  try{await navigator.clipboard.writeText(label);sharePointStatus('Project label copied. Include it in the SharePoint file names before uploading.','success');}
-  catch{sharePointStatus(`Could not copy automatically. Use this project label in your file names: ${label}`,'error');}
-}
 function safeFilename(filename){return String(filename).replace(/[^a-z0-9._-]/gi,'_').slice(0,90)||'attachment';}
 function validateFiles(files){let total=0;for(const f of files){total+=f.size;if(f.size>MAX_FILE)throw new Error(`“${f.name}” exceeds 10 MB.`);if(!/\.(pdf|png|jpe?g)$/i.test(f.name)||!['application/pdf','image/png','image/jpeg'].includes(f.type))throw new Error(`“${f.name}” must be PDF, JPG or PNG.`);}if(total>MAX_TOTAL)throw new Error('All attachments together must be 30 MB or less.');}
 async function uploadFiles(files,requestId,userId){const uploaded=[];for(const file of files){const path=`${userId}/${requestId}/${crypto.randomUUID()}-${safeFilename(file.name)}`;const response=await fetch(`${STORAGE}/object/${BUCKET}/${path}`,{method:'POST',headers:{...await headers(), 'Content-Type':file.type,'x-upsert':'false'},body:file});await parseResponse(response);uploaded.push({name:file.name,path,size:file.size,type:file.type});}return uploaded;}
@@ -58,13 +38,9 @@ async function submit(event){
   const selected=[...form.querySelectorAll('input[name="tasks"]:checked')].map(c=>c.value);
   if(!selected.length){textStatus('Select at least one Task.','error');return;}
   const sales=$('salesPerson').value,phase=$('salesPhase').value;
-  if(!currentSettings.sales.includes(sales)||!currentSettings.phases.includes(phase)||selected.some(t=>!currentSettings.tasks.includes(t))){textStatus('A selected option has changed in Settings. Refresh and choose again.','error');return;}
+  if(!currentSettings.sales.includes(sales)||!currentSettings.phases.includes(phase)||selected.some(t=>!requestTasks().includes(t))){textStatus('A selected option has changed in Settings. Refresh and choose again.','error');return;}
   const files=[...$('salesFiles').files];try{validateFiles(files);}catch(e){textStatus(e.message,'error');return;}
-  const sharePointConfirmed=$('salesSharePointConfirmed').checked;
-  const sharePointNote='Plans uploaded to company SharePoint (confirmed by requester; separate from portal attachments).';
-  const typedInstructions=form.elements.instructions.value.trim();
-  const instructions=sharePointConfirmed?[typedInstructions,sharePointNote].filter(Boolean).join('\n\n'):typedInstructions;
-  if(instructions.length>5000){textStatus('Please shorten Additional Instructions to leave room for the SharePoint upload confirmation.','error');return;}
+  const instructions=form.elements.instructions.value.trim();
   const user=getCurrentSession()?.user;
   if(!user?.id){textStatus('Sign in again before submitting.','error');return;}
   const requestId=crypto.randomUUID();busy=true;$('salesSubmit').disabled=true;
@@ -101,9 +77,9 @@ async function init(){const session=await restoreSession();if(!session?.user){lo
   $('salesSignOut').addEventListener('click',async()=>{if(!confirm('Sign out of EWP Management on this browser?'))return;await signOut();location.replace('../');});
   $('salesRefresh').addEventListener('click',refresh);$('salesSettingsButton').addEventListener('click',()=>window.EWPSharedSettings?.open());
   $('newTab').addEventListener('click',()=>switchTab('new'));$('historyTab').addEventListener('click',()=>switchTab('history'));
-  $('salesRequestForm').addEventListener('submit',submit);$('salesCopyProjectLabel').addEventListener('click',copyProjectLabel);window.addEventListener('ewp:settings-saved',refresh);
+  $('salesRequestForm').addEventListener('submit',submit);window.addEventListener('ewp:settings-saved',refresh);
   window.addEventListener('storage',e=>{if(e.key===EWP_AUTH_STORAGE_KEY&&!e.newValue)location.replace('../');else if(e.key==='ewp_tracker_settings_modified_v18')refresh();});
   if(new URLSearchParams(location.search).has('request'))switchTab('history');
-  await Promise.all([refresh(),loadSharePointLink()]);
+  await refresh();
 }
 init().catch(e=>{cloud('Could not load New EWP Requests','error');$('salesLoading').textContent=e.message;});

@@ -1,3 +1,7 @@
+# V1.38 staged MFA migration
+
+`../v1_38_mfa_staging.sql` adds private MFA tables and restricted RPC functions; already executed in the connected EWP Material Forecast Supabase project. Mandatory MFA remains OFF; no administrator privileges have been granted. Never confuse this SQL staging step with a production MFA enforcement rollout. See root handoff for identity verification, bootstrap and security audit prerequisites.
+
 # Current WEB SQL migration — V1.15
 
 Run **`../v1_15_tracker_linked_colors.sql`** in the SAME Supabase project SQL Editor **before** publishing the V1.15 website. It requires working Tracker task/Coordination schema and does not replace or re-run older migrations. It adds `tracker_active_colors` (authenticated read-only) and atomic `tracker_sync_active_colors()` (authenticated RPC), with no changes to PO, inventory, Forecast or Sales data. Check actual installation of V1.13 and V1.14 separately before deploying; read root `../PORTAL_HANDOFF.md` for required order and tests.

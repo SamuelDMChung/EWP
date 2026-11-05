@@ -1,4 +1,4 @@
-import { restoreSession, signInWithPassword, signOut, getCurrentSession, EWP_AUTH_STORAGE_KEY } from '../forecast/auth.mjs?v=1.0-p3';
+import { restoreSession, signInWithPassword, signOut, getCurrentSession, EWP_AUTH_STORAGE_KEY } from '../forecast/auth.mjs?v=1.38';
 import { startTrackerRealtime, stopTrackerRealtime } from './realtime.mjs?v=1.0-p3';
 import { loadTrackerCloud, saveTrackerProject, setTrackerProjectStatus, moveTrackerWorkItem, deleteTrackerProject, getNextTrackerNumber, saveTrackerSettings, addTrackerFilter, removeTrackerFilter } from './cloud.mjs?v=1.16';
 

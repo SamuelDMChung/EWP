@@ -1,3 +1,92 @@
+# EWP Management Portal — V1.40 WEB: Whole-floor, unnumbered PDF Checker
+
+# V1.40 WEB — Whole-Floor (No Unit Number) PDF Checker
+
+**Release:** November 5, 2026. **Baseline:** verified complete V1.39 ZIP. **Next:** V1.41 WEB. Developed by Samuel Chung.
+
+## Requested correction
+
+- The Javelin `Layout Material List Report` may have only `Level: Second Floor`, `Products`, and `Blocking` headings, with **no unit numbers**. In V1.39 all rows inherited `Unspecified section`; the new version uses the recognized floor as the comparison group. `Products`/`Blocking` remain combined at floor scope when Spruce has one floor-wide order.
+- Spruce may state only an address and floor in `COMMENT`, e.g. `... - SECOND FLOOR` instead of `UNIT XXX`. Recognize a single floor heading and normalize ordinal variants (`SECOND FLOOR`, `2nd Floor`) and `Level 2` / `L2 EAST` for matching.
+- Fix the `Ordered` LF column reader for comma-formatted four-digit quantities. A value such as `1,676` begins left of the previous x=320 threshold. Capture numeric tokens in the true right-aligned Ordered column, including adjacent split tokens; exclude Ordered tokens from the description. This change also supports other four-digit order quantities.
+- Where one report has exactly one floor and the other has a single unlabeled section, match to that floor for comparison only. Never infer numeric unit labels or merge multiple distinct sections.
+- Preserve the existing numeric unit, Framing 209/210/211, rim/blocking, material code/grade, Net Qty, cut-length, MFA staging, other tools and backend logic.
+
+## Independent original-document verification (read-only, local)
+
+Two source PDFs were supplied for a **Second Floor** project with no numbered units. Actual parser logic was replayed on PyMuPDF positional text (not live browser PDF.js).
+
+| Material group | Javelin LF | Spruce LF | Local result |
+|---|---:|---:|---|
+| TJI 230, 11⅞″ | 1,676 | 1,676 | MATCH |
+| TJI 560, 11⅞″ | 1,551 | 1,551 | MATCH |
+| LSL 1.55E, 1¾″ × 11⅞″ (products + blocking) | 677 | 677 | MATCH |
+| PSL 2.2E, 5¼″ × 9½″ | 18 (2 × 9′) | 0 | MISMATCH, missing in Spruce |
+| PSL 1.8E, 5¼″ × 7″ | 20 (2 × 10′) | 0 | MISMATCH, missing in Spruce |
+
+**Overall local results:** 39 Javelin material rows, 13 Spruce material lines, 14 product groups: **12 MATCH / 2 MISMATCH / 0 REVIEW**, with all groups under `Second Floor`. The two missing PSL products must be independently checked against actual order requirements before purchasing decisions; the tool does not change the PDF originals.
+
+**Limit:** Source PDFs' text was extracted with PyMuPDF and their geometry replayed in an offline Chromium mock PDF.js reader. Actual hosted PDF.js CDN with original PDFs, Supabase, authentication, Resend, and device browser were not tested.
+
+## Scope/safety
+
+All 11 HTML pages include `V1.40 WEB · Developed by Samuel Chung` and updated cache references. Only PDF Checker logic/application import, HTML version tokens, documentation, and regression tests changed. Existing SQL (16 files) and protected Supabase/Auth/RLS/Edge Functions/MFA staging are byte-for-byte preserved; **no SQL migration or production project access for V1.40**. EWP Connect iOS untouched. MFA enforcement remains OFF; initial admin account confirmation/approval is pending.
+
+## Deploy and test
+
+1. Extract the **full** V1.40 ZIP to your GitHub Pages repo root, preserve `.nojekyll`, then commit/push. Hard-refresh the site.
+2. Confirm `V1.40 WEB · Developed by Samuel Chung` appears in the footer on all pages.
+3. In EWP Tools → Javelin vs Spruce PDF Checker, drop both supplied original PDFs. Confirm one **Second Floor** comparison, **12 matches**, **2 mismatches**, **0 reviews**, and the exact TJI 230/TJI 560 quantities above.
+4. Confirm the two 5¼″ PSL products remain highlighted as missing. Separately regression-check the previous `109` versus `Framing 209` original PDF pair.
+5. Do not commit original customer PDFs into the public repository. No SQL/Edge Function/Resend redeployment needed.
+
+## Tests
+
+New self-contained `tests/v1_40_checker_no_unit_regression.mjs`; copy-forward regressions `tests/v1_40_checker_section_regression.mjs` and `tests/v1_40_prior_checker_regression.mjs`; `tests/browser_checker_v1_40.py` supports a synthetic offline browser case and optional externally provided positioned-text replay. Existing beams/snow/consolidator/parser/MFA UI regressions preserved. Release verifier `tests/v1_40_release_verify.py`. See `tests/V1_40_TEST_RESULTS.md`.
+
+**Do not recode again without an explicit user request.**
+
+---
+
+# EWP Management Portal — V1.39 WEB: Framing 209 section and Microllam LVL matching
+
+**Release:** November 5, 2026. **Baseline:** complete V1.38 WEB ZIP. **Next:** V1.40 WEB. The PDF Checker now recognizes Javelin `framing 209 (110-114)` as section **209**, not inherited **109**; Spruce `FRAMING 209 (UNIT 110-114)` uses the leading 209 instead of parenthetical 110. Applies identically to framing 210/211, while existing bare numeric headings remain separate. `LVL512` sales lines and `Microllam LVL 2.0E` now normalize across PDFs. Multi-ply rows with exact matched Net Qty/cuts no longer become reviews solely for having 2 plies.
+
+**Actual source check:** Javelin/Spruce Framing 209 LVL 1¾ × 5½ 2.0E is `1×12', 11×7', 2×6', 11×5', 14×4'` = **212 LF each, MATCH**. Unit 109 remains separate; framing 210/211 stay separate. This was verified using PyMuPDF text positions from the two supplied real PDFs, **not live PDF.js**; other apparent mismatch results may involve unsupported Spruce EA stock or named corridor headings. Original customer PDFs are not bundled.
+
+**Release preserved:** All other modules, login, settings, SQL, Auth/RLS, Edge Functions, Resend, EWP Tools, themes/navigation and EWP Connect iOS. The earlier V1.38 staged MFA backend remains with mandatory enforcement off and no administrator assigned; **no new SQL** or production access for V1.39. Deploy full ZIP to GitHub Pages, push/hard refresh, then test uploaded originals in live browser PDF.js. Details: `EWP_MANAGEMENT_PORTAL_V1_39_NEW_CHAT_HANDOFF.md`, `tests/V1_39_TEST_RESULTS.md` and checker README.
+
+---
+
+# EWP Management Portal — V1.38 WEB: Staged TOTP 2FA and admin approval (NOT ENFORCED)
+
+**Release:** November 4, 2026; **baseline:** complete V1.37 ZIP; **next:** V1.39 WEB. New Portal authenticator QR setup/6-digit verification; administrator-only Settings → 2FA Management with approve/reject/revoke UI, security-checked Supabase RPCs. One additive `v1_38_mfa_staging.sql` migration was executed on the connected Supabase project. **No admin has been assigned and MFA enforcement remains false**. Existing users retain their current access during enrollment, to prevent lockout. A matching account the likely existing login was found but must be explicitly confirmed as the owner before a private bootstrap grants privileges. Do not enable mandatory MFA until all protected data tables, storage policies, legacy SECURITY DEFINER functions and Edge Functions have been audited/guarded, the owner is enrolled/approved and recovery tested. No change to EWP Connect iOS or existing database records. See `EWP_MANAGEMENT_PORTAL_V1_38_NEW_CHAT_HANDOFF.md` and `tests/V1_38_TEST_RESULTS.md` for exact deployment and QA limits.
+
+---
+
+# EWP Management Portal — V1.37 WEB: New EWP Requests simplification
+
+**Release date:** November 4, 2026. **Canonical input:** V1.36 complete WEB ZIP (225 files). **Next:** V1.38 WEB. **Approved changes:** New EWP Requests interface only plus 11 HTML version/cache credits, documentation, and tests. All other app modules, Supabase Auth, existing database tables/RLS, Edge Functions, Resend, themes, navigation, iOS project, and private small-file storage are retained unchanged.
+
+## Changes
+
+1. **Remove Full Takeoff from New EWP Requests Tasks.** The Sales request UI gets its choices from the shared Tracker settings but filters case-insensitive `Full Takeoff` out of this one form. This does **not** delete the global Tracker task, rewrite shared settings, alter project tracking, or modify old submissions; historical Full Takeoff values remain in Submission History. Sales still must select at least one of the other configured tasks, and submission validation checks against the filtered list.
+2. **Remove the entire SharePoint File Request option.** The button, project-label copy, confirmation checkbox, messages, yellow panel, client link-fetch query and special Instructions augmentation are removed. The portal no longer reads `public.ewp_sales_file_request`. Old SharePoint confirmation notes already in historical requests remain untouched.
+3. **Preserve ordinary Supabase file attachments.** PDF/JPG/PNG optional, 10 MB per file, 30 MB total; private upload and signed-history-download paths unchanged. File label/description simplified without referring to SharePoint. Storage quotas still apply.
+
+## Supabase / deployment instructions
+
+- **No SQL or Edge Function migration required for V1.37.** The earlier V1.36 table `public.ewp_sales_file_request` and its private link were previously created in production; they can remain unused. We made **no production SQL modification** for this release and deliberately did not delete that table/row, revoke access, or change any existing Sales record. The previous `v1_36_sharepoint_file_request.sql` is retained solely as historical migration source: **do not run it for V1.37**.
+- Unzip the complete `EWP_Management_Portal_V1_37_WEB_FULL.zip` into the existing GitHub Pages site root. Preserve `.nojekyll`, all workspaces and existing assets. Commit and push; hard refresh cached pages; confirm the `V1.37 WEB · Developed by Samuel Chung` footer/header on all 11 HTML pages.
+- Log in and open Sales → New EWP Requests. Verify Tasks offers ATS, Dimensional Takeoff, EWP Layout and EWP Takeoff (when configured), **not** Full Takeoff. The SharePoint panel should be absent. Submit a harmless request to confirm the regular workflow, optional small attachment upload, email notifications and Submission History. Confirm Project Tracking still shows its configured Tasks if appropriate. Do not submit a live test request to production without an operational reason.
+- Validate other pages and login in the hosted environment; offline tests cannot establish live GitHub Pages, Supabase Auth, RLS, Storage or Resend operation. No EWP Connect iOS change.
+
+## Tests and limits
+
+`tests/browser_smoke_v1_37.py` covers 4 responsive desktop/tablet/mobile light/dark mocked form flows, task filtering, submission and optional storage upload. `tests/v1_37_{beam,snow}_regression.mjs`, `tests/v1_37_checker_regression.mjs`, `tests/v1_29_smoke.mjs`, `tests/v1_22_smoke.mjs` verify unchanged modules; `tests/v1_37_release_verify.py` validates syntax/imports/credits/backend hashes and diff against V1.36. See `tests/V1_37_TEST_RESULTS.md` for actual outcomes. Existing PDF Checker live browser PDF.js limitation and snow-table audit remain unchanged.
+
+---
+
 # EWP Management Portal — V1.36 WEB: SharePoint File Request Handoff
 
 **Release:** November 3, 2026. **Canonical input:** V1.35 complete WEB source. **Next:** V1.37 WEB. **Approved scope:** New EWP Requests UI, an authenticated-only storage URL configuration table, documentation/tests and 11 HTML version/cache credits. All existing Supabase requests, private attachment handling, Supabase Auth/RLS, Edge Functions, Resend, Tracker/Forecast/Orders/Purchasing/EWP Tools, navigation, themes and EWP Connect iOS source remain unchanged. **Production Supabase was NOT accessed and no live SharePoint upload was performed.**

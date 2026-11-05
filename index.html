@@ -6,10 +6,10 @@
   <meta name="color-scheme" content="light" />
   <meta name="description" content="EWP Management Portal — Project Tracking and EWP Forecast in one place." />
   <title>EWP Management Portal</title>
-  <link rel="stylesheet" href="portal.css?v=1.36" />
-  <link rel="stylesheet" href="portal-nav.css?v=1.36" />
-  <link rel="stylesheet" href="theme.css?v=1.36" />
-  <script src="theme.js?v=1.36"></script>
+  <link rel="stylesheet" href="portal.css?v=1.40" />
+  <link rel="stylesheet" href="portal-nav.css?v=1.40" />
+  <link rel="stylesheet" href="theme.css?v=1.40" />
+  <script src="theme.js?v=1.40"></script>
 </head>
 <body>
   <nav class="ewp-portal-nav" aria-label="EWP Management navigation">
@@ -36,7 +36,7 @@
       <div class="intro">
         <span class="eyebrow">EWP MANAGEMENT</span>
         <h1>EWP Management Portal</h1>
-        <p class="portal-version">V1.36 WEB · Developed by Samuel Chung</p>
+        <p class="portal-version">V1.40 WEB · Developed by Samuel Chung</p>
       </div>
       <div class="ewp-header-actions" id="portalHeaderActions" hidden>
         <div class="user-chip ewp-account-chip" title="Signed-in Supabase account">
@@ -60,7 +60,30 @@
           <button id="portalLoginButton" class="portal-primary-button" type="submit">Sign in</button>
         </form>
       </section>
+      <section id="portalMfa" class="portal-mfa-card" hidden aria-labelledby="portalMfaTitle">
+        <h2 id="portalMfaTitle">Authenticator verification</h2>
+        <p id="portalMfaMessage" role="status" aria-live="polite"></p>
+        <div id="portalMfaQr" hidden>
+          <p>Open Microsoft Authenticator (or another TOTP app), add an account using this QR code, then enter its six-digit code below. Do not share this QR code.</p>
+          <img id="portalMfaQrImage" alt="Authenticator setup QR code" width="180" height="180" />
+        </div>
+        <form id="portalMfaForm" hidden>
+          <label for="portalMfaCode">Six-digit verification code</label>
+          <input id="portalMfaCode" type="text" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" autocomplete="one-time-code" required />
+          <button type="submit" class="portal-primary-button" id="portalMfaVerify">Verify code</button>
+        </form>
+        <div class="portal-mfa-actions">
+          <button type="button" class="ewp-header-button" id="portalMfaStart" hidden>Start authenticator setup</button>
+          <button type="button" class="ewp-header-button" id="portalMfaRefresh">Check approval / Retry</button>
+          <button type="button" class="ewp-header-button" id="portalMfaBack" hidden>Return to Portal (setup period only)</button>
+          <button type="button" class="ewp-header-button" id="portalMfaSignOut">Sign out</button>
+        </div>
+      </section>
       <div id="portalWorkspace" hidden>
+        <div id="portalMfaBanner" class="portal-mfa-banner" hidden>
+          <span id="portalMfaBannerText">Set up app-based 2FA for your account.</span>
+          <button type="button" class="ewp-header-button" id="portalMfaOpen">Set up / Verify 2FA</button>
+        </div>
         <div class="workspace-choice-bar">
           <h2 class="workspace-choice-title">Workspaces</h2>
           <div class="workspace-view-toggle" role="group" aria-label="Show workspaces">
@@ -111,9 +134,9 @@
         </section>
       </div>
     </main>
-    <footer><span>EWP Management Portal</span><span>V1.36 WEB · Developed by Samuel Chung</span></footer>
+    <footer><span>EWP Management Portal</span><span>V1.40 WEB · Developed by Samuel Chung</span></footer>
   </div>
-  <script type="module" src="portal-auth.mjs?v=1.36"></script>
-  <script type="module" src="./shared-settings.mjs?v=1.36"></script>
+  <script type="module" src="portal-auth.mjs?v=1.40"></script>
+  <script type="module" src="./shared-settings.mjs?v=1.40"></script>
 </body>
 </html>

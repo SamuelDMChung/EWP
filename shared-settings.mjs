@@ -1,5 +1,6 @@
 /* V1.8: exactly one Settings interface and Supabase writer for Portal, Tracker, Forecast, Sales Project Tracking, New EWP Requests and EWP Order and EWP Tools. */
 import { loadTrackerSettings, saveTrackerSettings } from './tracker/cloud.mjs?v=1.12';
+import { mfaStatus, mfaPending, mfaDecide, mfaAdminList, mfaRevoke, currentAal } from './mfa-client.mjs?v=1.38';
 const CHANGE_SIGNAL='ewp_tracker_settings_modified_v18';
 const categories=[
   { key:'sales',title:'Sales Names',placeholder:'Add sales name',description:'Used in the Sales dropdown throughout Tracking and Forecast.' },
@@ -22,6 +23,16 @@ dialog.innerHTML=`
     <section class="ewp-settings-section ewp-settings-appearance">
       <div><h3>Appearance</h3><p>Display theme for the Portal, Project Tracking, Forecast, New EWP Requests, EWP Order and EWP Tools in this browser.</p></div>
       <label>Theme<select id="ewpSharedThemeSelect" aria-label="Theme"><option value="light">Light</option><option value="dark">Dark</option></select></label>
+    </section>
+    <section class="ewp-settings-section" id="ewpMfaManagement" hidden>
+      <h3>2FA Management — Administrator</h3>
+      <p>Approve employee authenticator registrations only after verifying their identity in person or through a trusted existing contact method. Approval is not required for ordinary logins.</p>
+      <div id="ewpMfaAdminStatus" role="status" aria-live="polite"></div>
+      <button type="button" id="ewpMfaAdminRefresh">Refresh 2FA requests</button>
+      <div id="ewpMfaRequests"></div>
+      <h4>Approved authenticators</h4>
+      <div id="ewpMfaApproved"></div>
+      <p class="small-note">Revoking approval blocks access after enforcement. To replace a lost phone, the factor must also be deleted securely through Supabase Auth Admin tools; this screen never deletes Auth factors.</p>
     </section>
     <div class="ewp-settings-status" id="ewpSettingsStatus" role="status" aria-live="polite"></div>
     <div class="ewp-settings-grid" id="ewpSettingsLists"></div>
@@ -84,6 +95,49 @@ async function update(key,raw,operation) {
   }catch(error){message(error?.message||'Could not save settings.',true);}
   finally{pending=false;dialog.classList.remove('is-saving');}
 }
+async function renderMfaAdmin(){
+  const section=$('#ewpMfaManagement'); section.hidden=true;
+  let adminConfirmed=false;
+  try{
+    const state=await mfaStatus();
+    if(!state?.is_admin || state.status!=='approved' || state.verified_factor_count!==1 || currentAal()!=='aal2')return;
+    adminConfirmed=true;section.hidden=false;
+    $('#ewpMfaAdminStatus').textContent='Loading enrollment approvals…';
+    const [pending,approved]=await Promise.all([mfaPending(),mfaAdminList()]);
+    const requestRoot=$('#ewpMfaRequests');requestRoot.replaceChildren();
+    const approvedRoot=$('#ewpMfaApproved');approvedRoot.replaceChildren();
+    if(!pending?.length){const p=document.createElement('p');p.textContent='No pending 2FA enrollment requests.';requestRoot.append(p);}
+    for(const item of pending||[]){
+      const row=document.createElement('div');row.className='ewp-mfa-admin-row';
+      const label=document.createElement('span');label.textContent=item.email||'Employee';
+      const approve=document.createElement('button');approve.type='button';approve.textContent='Approve';
+      const reject=document.createElement('button');reject.type='button';reject.textContent='Reject';
+      approve.addEventListener('click',()=>decide(item,true));reject.addEventListener('click',()=>decide(item,false));
+      row.append(label,approve,reject);requestRoot.append(row);
+    }
+    for(const item of approved||[]){
+      const row=document.createElement('div');row.className='ewp-mfa-admin-row';
+      const label=document.createElement('span');label.textContent=`${item.email||'Employee'} — ${item.status}`;
+      row.append(label);
+      if(item.status==='approved'){
+        const revoke=document.createElement('button');revoke.type='button';revoke.textContent='Revoke approval';
+        revoke.addEventListener('click',async()=>{
+          if(!confirm(`Revoke authenticator approval for ${item.email}? This is only the FIRST reset step; the Auth factor must also be deleted by the authorized account administrator.`))return;
+          try{await mfaRevoke(item.user_id,item.factor_id);await renderMfaAdmin();}catch(error){$('#ewpMfaAdminStatus').textContent=error.message;}
+        });row.append(revoke);
+      }
+      approvedRoot.append(row);
+    }
+    $('#ewpMfaAdminStatus').textContent='Only administrator-approved, uniquely verified authenticators qualify for protected access.';
+  }catch(error){section.hidden=!adminConfirmed;$('#ewpMfaAdminStatus').textContent=error?.message||'Cannot retrieve 2FA approvals.';}
+}
+async function decide(item,approved){
+  if(!confirm(`${approved?'Approve':'Reject'} ${item.email} authenticator registration? ${approved?'Approve only after verifying the employee identity independently.':''}`))return;
+  $('#ewpMfaAdminStatus').textContent='Recording administrator decision…';
+  try{await mfaDecide(item.user_id,item.factor_id,approved);await renderMfaAdmin();}
+  catch(error){$('#ewpMfaAdminStatus').textContent=error?.message||'Approval action failed.';}
+}
+$('#ewpMfaAdminRefresh').addEventListener('click',renderMfaAdmin);
 async function open(){
   if(dialog.open)return;
   $('#ewpSharedThemeSelect').value=document.documentElement.getAttribute('data-ewp-theme')==='dark'?'dark':'light';
@@ -100,3 +154,6 @@ for(const id of ['portalSettingsButton','forecastSettingsButton','salesTrackerSe
   document.getElementById(id)?.addEventListener('click',open);
 }
 window.addEventListener('storage',event=>{if(event.key===CHANGE_SIGNAL&&dialog.open)reload().catch(error=>message(error.message,true));});
+
+/* V1.38 administrator-only MFA panel styles. */
+const mfaStyle=document.createElement('style');mfaStyle.textContent='.ewp-mfa-admin-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:9px 0;border-bottom:1px solid var(--ewp-border,#ddd)}.ewp-mfa-admin-row span{flex:1;min-width:180px}#ewpMfaManagement[hidden]{display:none!important}';document.head.append(mfaStyle);

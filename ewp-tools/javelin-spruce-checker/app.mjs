@@ -1,4 +1,4 @@
-import {pdfLinesFromItems,pdfAnnotations,parseJavelin,parseSpruce,compareMaterials,classifyPdfPages} from './logic.mjs?v=1.35';
+import {pdfLinesFromItems,pdfAnnotations,parseJavelin,parseSpruce,compareMaterials,classifyPdfPages} from './logic.mjs?v=1.40';
 const $=id=>document.getElementById(id);
 const state={pdfjs:null,jFile:null,sFile:null,j:null,s:null,result:null,overrides:[],jUrl:null,sUrl:null,jEntry:null,sEntry:null,generation:0,queue:Promise.resolve(),entries:[],nextId:1};
 const MAX_BYTES=200*1024*1024;

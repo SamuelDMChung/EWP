@@ -1,5 +1,5 @@
 import { SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY } from "./config.mjs";
-import { getAccessToken } from "./auth.mjs?v=1.0-p3";
+import { getAccessToken } from "./auth.mjs?v=1.38";
 
 const REST_URL = `${SUPABASE_URL.replace(/\/$/, "")}/rest/v1`;
 

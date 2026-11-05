@@ -2,7 +2,7 @@ import { extractPdfLines, parseMaterialReportLines, normalizeSpaces } from "./pa
 import { parsePurchaseWorkbook, normalizePoMaterialDescription } from "./purchase_parser.mjs";
 import { parseDeliveryMaterialReportLines } from "./delivery_parser.mjs";
 import { loadCloudRows, loadActivityRows, findSharedProjectByNumber, insertRows, updateRows, deleteRows, logActivity, rpc } from "./db.mjs?v=1.14";
-import { restoreSession, signInWithPassword, signOut, getCurrentUser, getLastEmail } from "./auth.mjs?v=1.0-p3";
+import { restoreSession, signInWithPassword, signOut, getCurrentUser, getLastEmail } from "./auth.mjs?v=1.38";
 import { startRealtime, stopRealtime, refreshRealtimeAuth } from "./realtime.mjs?v=1.0-p3";
 
 const LEGACY_STORAGE_KEY = "ewp_forecast_v2";

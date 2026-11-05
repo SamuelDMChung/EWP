@@ -1,3 +1,12 @@
+# V1.37 — New EWP Requests task and upload simplification (November 4, 2026)
+
+- `Full Takeoff` is filtered from **New EWP Requests** Task checkboxes only. This does not change the shared Tracker Tasks configuration, project tracking or existing history.
+- The V1.36 SharePoint File Request panel/button, project-label copy, confirmation, link fetch and automatic SharePoint note in new requests are removed. Previously saved instructions/history remain unchanged.
+- Existing private Supabase PDF/JPG/PNG attachments (10 MB each, 30 MB total), request submission, email notification and signed downloads remain.
+- No SQL migration required. The historical V1.36 configuration table may remain in Supabase unused. Do not run historical SharePoint setup SQL for V1.37.
+
+---
+
 # V1.36 — SharePoint upload handoff (Nov 3, 2026)
 
 The New EWP Requests form now includes a large-plan **Open SharePoint File Request** link loaded from an authenticated Supabase configuration row. It deliberately does not expose the bearer URL in public HTML/JS. Sales copies the customer/project label, renames plan files before uploading, performs the upload at SharePoint, then returns to submit the form. An optional checkbox records the salesperson's statement that plans were uploaded; this is appended to the existing Instructions field for history/email. It is not a verified SharePoint upload status. There is no automatic linking or downloading via Submission History.

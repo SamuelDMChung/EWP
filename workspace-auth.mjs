@@ -1,4 +1,4 @@
-import { restoreSession, EWP_AUTH_STORAGE_KEY } from "./forecast/auth.mjs?v=1.0-p3";
+import { restoreSession, EWP_AUTH_STORAGE_KEY } from "./forecast/auth.mjs?v=1.38";
 const label = document.getElementById("ewpNavAccount");
 // Resolve from this root-level module URL; pages may be nested two directories deep.
 const portalUrl=new URL('./',import.meta.url);

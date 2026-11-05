@@ -68,6 +68,13 @@ async function authRequest(path, { method = "POST", body, accessToken } = {}) {
   return data;
 }
 
+// Supabase MFA Verify issues a fresh AAL2 access/refresh token pair.
+export function acceptMfaSession(data) {
+  if (!data?.access_token || !data?.refresh_token) throw new Error('Missing verified MFA session.');
+  const previous=session||loadStoredSession();
+  return saveSession({ ...previous, ...data, user:data.user||previous?.user });
+}
+
 export function getCurrentSession() {
   return session;
 }

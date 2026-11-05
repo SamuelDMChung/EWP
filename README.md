@@ -1,3 +1,33 @@
+# V1.40 WEB — Complete source release
+
+V1.40 supports Javelin/Spruce checker comparisons for reports with no unit numbers and fixes Spruce four-digit Ordered LF extraction. All modules, database authentication and MFA staging remain intact. No SQL required. Read `PORTAL_HANDOFF.md` and `EWP_MANAGEMENT_PORTAL_V1_40_NEW_CHAT_HANDOFF.md`; tests in `tests/V1_40_TEST_RESULTS.md`. Next V1.41.
+
+---
+
+# EWP Management Portal — V1.39 WEB: Framing 209 section and Microllam LVL matching
+
+**Release:** November 5, 2026. **Baseline:** complete V1.38 WEB ZIP. **Next:** V1.40 WEB. The PDF Checker now recognizes Javelin `framing 209 (110-114)` as section **209**, not inherited **109**; Spruce `FRAMING 209 (UNIT 110-114)` uses the leading 209 instead of parenthetical 110. Applies identically to framing 210/211, while existing bare numeric headings remain separate. `LVL512` sales lines and `Microllam LVL 2.0E` now normalize across PDFs. Multi-ply rows with exact matched Net Qty/cuts no longer become reviews solely for having 2 plies.
+
+**Actual source check:** Javelin/Spruce Framing 209 LVL 1¾ × 5½ 2.0E is `1×12', 11×7', 2×6', 11×5', 14×4'` = **212 LF each, MATCH**. Unit 109 remains separate; framing 210/211 stay separate. This was verified using PyMuPDF text positions from the two supplied real PDFs, **not live PDF.js**; other apparent mismatch results may involve unsupported Spruce EA stock or named corridor headings. Original customer PDFs are not bundled.
+
+**Release preserved:** All other modules, login, settings, SQL, Auth/RLS, Edge Functions, Resend, EWP Tools, themes/navigation and EWP Connect iOS. The earlier V1.38 staged MFA backend remains with mandatory enforcement off and no administrator assigned; **no new SQL** or production access for V1.39. Deploy full ZIP to GitHub Pages, push/hard refresh, then test uploaded originals in live browser PDF.js. Details: `EWP_MANAGEMENT_PORTAL_V1_39_NEW_CHAT_HANDOFF.md`, `tests/V1_39_TEST_RESULTS.md` and checker README.
+
+---
+
+# EWP Management Portal — V1.38 WEB: Staged TOTP 2FA and admin approval (NOT ENFORCED)
+
+**Release:** November 4, 2026; **baseline:** complete V1.37 ZIP; **next:** V1.39 WEB. New Portal authenticator QR setup/6-digit verification; administrator-only Settings → 2FA Management with approve/reject/revoke UI, security-checked Supabase RPCs. One additive `v1_38_mfa_staging.sql` migration was executed on the connected Supabase project. **No admin has been assigned and MFA enforcement remains false**. Existing users retain their current access during enrollment, to prevent lockout. A matching account the likely existing login was found but must be explicitly confirmed as the owner before a private bootstrap grants privileges. Do not enable mandatory MFA until all protected data tables, storage policies, legacy SECURITY DEFINER functions and Edge Functions have been audited/guarded, the owner is enrolled/approved and recovery tested. No change to EWP Connect iOS or existing database records. See `EWP_MANAGEMENT_PORTAL_V1_38_NEW_CHAT_HANDOFF.md` and `tests/V1_38_TEST_RESULTS.md` for exact deployment and QA limits.
+
+---
+
+# EWP Management Portal V1.37 WEB — Complete Source (November 4, 2026)
+
+**Latest source baseline V1.37; next V1.38.** New EWP Requests no longer displays Full Takeoff, even when it remains in shared Tracker settings; Tracker data and past submissions are preserved. The SharePoint File Request panel, config read and upload attestation are removed entirely from the WEB UI. Existing optional private Supabase PDF/JPG/PNG attachments (10 MB each, 30 MB combined), normal request submission/email and history all remain. No backend/SQL change and no change to EWP Connect iOS. The V1.36 SharePoint config table remains unused in production; it was not deleted. **Do not re-run its SQL migration.** All 11 WEB HTML credits/cache stamps updated.
+
+**Deploy:** replace the full GitHub Pages repo root using `EWP_Management_Portal_V1_37_WEB_FULL.zip`, commit/push, hard refresh. Check New EWP Requests task list and absence of SharePoint panel; test the standard request and existing attachment flows. See `PORTAL_HANDOFF.md` and `tests/V1_37_TEST_RESULTS.md` for test scope. Offline mocked browsers do not verify live Supabase or hosted email/attachments.
+
+---
+
 # V1.36 WEB — SharePoint File Request for New EWP Requests (Nov 3, 2026)
 
 - **V1.36 is the complete canonical WEB source**; next V1.37. New EWP Requests offers a SharePoint File Request button to upload large plans **outside Supabase** without Microsoft Graph/IT integration. The existing Supabase small attachments and all other modules remain unchanged.

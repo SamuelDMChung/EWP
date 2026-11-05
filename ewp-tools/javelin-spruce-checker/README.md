@@ -1,3 +1,13 @@
+# V1.40 — No Unit Number / Whole-Floor reports
+
+Javelin `Level: Second Floor` with `Products`/`Blocking` now compares under `Second Floor`, as does Spruce `COMMENT ... - SECOND FLOOR`. Ordinal/numeric floor names normalize, while existing explicitly numbered and Framing sections remain separate. Spruce `Ordered` quantities (e.g., 1,676 and 1,551 LF) are detected even when their left edge is below x=320; the numeric order quantity is never appended to the material description. Original attached floor-wide PDF pair: 12 match / 2 mismatch, both missing 5¼″ PSL cuts. Tested using actual PDF text geometry and offline/mock PDF.js only; live browser must be checked. No other workspaces/backend changed.
+
+# V1.39 — Framing-group headings / Microllam LVL
+
+Fix wrong section assignment on L2 East PDFs: Javelin `framing 209 (110-114)` no longer inherits preceding Unit 109. Spruce `FRAMING 209 (UNIT 110-114)` resolves to 209, not parenthetical 110; also applies to 210/211. `LVL512` is now parsed and `2.0E Microllam LVL` normalized by type, grade, width, depth. Plies is not multiplied into Net Qty; exact matching cuts are MATCH, while multi-ply context remains informative. Original 209 LVL 1¾ × 5½: Javelin 212 LF = Spruce 212 LF, same 1×12', 11×7', 2×6', 11×5', 14×4' cuts. User-uploaded original PDFs were inspected by PyMuPDF geometry, but not by the live browser PDF.js CDN. Existing markups behavior, correction UI and cut discrepancy highlighting stay unchanged. Named corridor/stair headings and EA-priced 20-foot stocks are still limitations and may lead to other false mismatches in this pair. Full scope/QA: `../../EWP_MANAGEMENT_PORTAL_V1_39_NEW_CHAT_HANDOFF.md`, `../../tests/V1_39_TEST_RESULTS.md`.
+
+---
+
 # V1.35 — Base Javelin rows retained; manual strikeout exclusion only
 
 **Current behavior (supersedes V1.34 and V1.33):** The PDF Checker compares **every recognized original Javelin material row**. It ignores StrikeOuts, highlights, underlines, drawing decorations and other visual markup. Strikeout annotations can never remove an LSL (or PSL) row. Only explicit structured FreeText grade instructions (`All joists 230, TYP. this level`) may alter TJI grade for that level. No markup creates its own discrepancy or manual-review badge.

@@ -1,0 +1,13 @@
+PASS V1.41 MFA client regression (23 assertions), correct Auth /user GET and enrollment POST/challenge/verify chain.
+PASS V1.41 browser 1280px: real MFA client -> mock Auth REST, TOTP pending, no 405. 10 requests
+PASS V1.41 browser 390px: real MFA client -> mock Auth REST, TOTP pending, no 405. 10 requests
+PASS V1.40 unnumbered floor/large-order regression: 24 assertions
+V1.40 retained section/LVL regression PASSED: 24 assertions; 109 and 209 are distinct, 209 LVL 212 LF matched.
+V1.35 PDF Checker tests PASSED: 54 assertions. L3: { match: 27, mismatch: 7, review: 1 } L4: { match: 21, mismatch: 6, review: 1 }
+V1.28 previous beam regression: 29 assertions passed
+V1.28 smoke: 40 assertions passed
+V1.29 smoke: 32 assertions passed
+PASS checker 1320 light source synthetic fixture
+PASS checker 1320 dark source synthetic fixture
+PASS checker 768 light source synthetic fixture
+PASS checker 390 dark source synthetic fixture

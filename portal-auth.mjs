@@ -1,8 +1,8 @@
-/* V1.38: staged native Supabase TOTP verification and administrator approval. */
-import { restoreSession, signInWithPassword, signOut, getLastEmail, getAccessToken, EWP_AUTH_STORAGE_KEY } from './forecast/auth.mjs?v=1.38';
+/* V1.41: staged native Supabase TOTP verification and administrator approval. */
+import { restoreSession, signInWithPassword, signOut, getLastEmail, getAccessToken, EWP_AUTH_STORAGE_KEY } from './forecast/auth.mjs?v=1.41';
 import { SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY } from './forecast/config.mjs';
 import { portalViewFromUrl, setWorkspaceView } from './portal-views.mjs?v=1.24';
-import { mfaStatus,mfaList,mfaEnroll,mfaVerify,mfaSubmit,currentAal } from './mfa-client.mjs?v=1.38';
+import { mfaStatus,mfaList,mfaEnroll,mfaVerify,mfaSubmit,currentAal } from './mfa-client.mjs?v=1.41';
 const $=id=>document.getElementById(id);
 let authenticated=false, connectionAttempt=0, mfaInfo=null, activeFactorId=null, setupFactorId=null;
 let mfaOpenExplicitly=false, mfaStatusError='';
@@ -24,9 +24,12 @@ async function showMfaPanel(){
  $('portalMfaCode').value='';activeFactorId=null;setupFactorId=null;
  if(mfaStatusError){notice('2FA configuration is not available: '+mfaStatusError);return;}
  try{
-  const factors=await mfaList();const verified=(factors?.totp||factors?.all||[]).filter(f=>f.factor_type==='totp'&&f.status==='verified');
+  const factors=await mfaList();const verified=(factors?.totp||[]).filter(f=>f.factor_type==='totp'&&f.status==='verified');
   if(!verified.length){
-    notice('Set up an authenticator app. Your administrator must verify your identity before approving the new device.');
+    if(Number(mfaInfo?.verified_factor_count||0)>0){
+      notice('Your account has a verified authenticator, but Supabase did not return it. Do not enroll another device; contact the portal administrator.');return;
+    }
+    notice('Set up Google Authenticator or another TOTP app. Your administrator must independently verify your identity before approving this device.');
     $('portalMfaStart').hidden=false;return;
   }
   if(verified.length!==1){notice('Multiple verified authenticators detected. Contact the administrator for a secure account reset.');return;}
@@ -81,7 +84,7 @@ async function init(){
   if(!data?.totp?.qr_code||!setupFactorId)throw new Error('No enrollment QR code was returned.');
   const svg=data.totp.qr_code;$('portalMfaQrImage').src='data:image/svg+xml;base64,'+btoa(unescape(encodeURIComponent(svg)));
   $('portalMfaQr').hidden=false;$('portalMfaForm').hidden=false;$('portalMfaCode').value='';
-  notice('Scan the QR with your authenticator, then enter its code. Never share the QR code.');btn.hidden=true;
+  notice('Scan the QR with Google Authenticator, then enter its six-digit code. Never share the QR or setup secret.');btn.hidden=true;
  }catch(e){notice(e?.message||'Authenticator setup failed.');}finally{btn.disabled=false;}});
  $('portalMfaForm').addEventListener('submit',async ev=>{ev.preventDefault();const code=$('portalMfaCode').value.trim();if(!/^\d{6}$/.test(code))return;
  const btn=$('portalMfaVerify');btn.disabled=true;try{

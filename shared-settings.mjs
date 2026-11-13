@@ -1,6 +1,6 @@
 /* V1.8: exactly one Settings interface and Supabase writer for Portal, Tracker, Forecast, Sales Project Tracking, New EWP Requests and EWP Order and EWP Tools. */
 import { loadTrackerSettings, saveTrackerSettings } from './tracker/cloud.mjs?v=1.12';
-import { mfaStatus, mfaPending, mfaDecide, mfaAdminList, mfaRevoke, currentAal } from './mfa-client.mjs?v=1.38';
+import { mfaStatus, mfaPending, mfaDecide, mfaAdminList, mfaRevoke, currentAal } from './mfa-client.mjs?v=1.41';
 const CHANGE_SIGNAL='ewp_tracker_settings_modified_v18';
 const categories=[
   { key:'sales',title:'Sales Names',placeholder:'Add sales name',description:'Used in the Sales dropdown throughout Tracking and Forecast.' },

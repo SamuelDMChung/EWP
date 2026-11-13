@@ -1,0 +1,45 @@
+-- V1.41 — INITIAL ADMINISTRATOR BOOTSTRAP (TEMPLATE, NOT AUTOMATIC MIGRATION)
+-- DO NOT COMMIT A FILLED VERSION TO A PUBLIC GITHUB REPO.
+-- DO NOT RUN UNTIL:
+--   (1) Portal account owner has confirmed exact login email AND UUID out of band.
+--   (2) Account owner enrolled and verified Google Authenticator; factor is status 'verified'.
+--   (3) Identity was independently verified with an established channel (not a new email/phone).
+--   (4) Supabase project owner explicitly authorizes live administrator assignment.
+--   (5) Run using a trusted Supabase SQL Editor session (NOT browser client).
+-- Intentionally fails when placeholders have not been replaced.
+BEGIN;
+DO $bootstrap$
+DECLARE
+  expected_user_id uuid := '00000000-0000-0000-0000-000000000000'; -- REPLACE AFTER IDENTITY CONFIRMATION
+  expected_email text := 'REPLACE_WITH_CONFIRMED_PORTAL_LOGIN_EMAIL';
+  verified_factor uuid;
+  factor_count integer;
+BEGIN
+  IF expected_user_id='00000000-0000-0000-0000-000000000000'::uuid OR expected_email='REPLACE_WITH_CONFIRMED_PORTAL_LOGIN_EMAIL' THEN
+    RAISE EXCEPTION 'Confirmation placeholders must be replaced; no changes made';
+  END IF;
+  IF EXISTS (SELECT 1 FROM ewp_private.mfa_admins) THEN
+    RAISE EXCEPTION 'Administrator already exists; do not use the first-admin bootstrap procedure';
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM auth.users u WHERE u.id=expected_user_id AND lower(u.email)=lower(expected_email) AND u.email_confirmed_at IS NOT NULL) THEN
+    RAISE EXCEPTION 'The confirmed account UUID, email or verification state does not match';
+  END IF;
+  SELECT count(*) INTO factor_count
+  FROM auth.mfa_factors f WHERE f.user_id=expected_user_id AND f.status='verified' AND f.factor_type='totp';
+  SELECT f.id INTO verified_factor
+  FROM auth.mfa_factors f WHERE f.user_id=expected_user_id AND f.status='verified' AND f.factor_type='totp'
+  LIMIT 1;
+  IF factor_count<>1 OR
+     (SELECT count(*) FROM auth.mfa_factors f WHERE f.user_id=expected_user_id AND f.status='verified')<>1 THEN
+    RAISE EXCEPTION 'Exactly one verified authenticator factor is required';
+  END IF;
+  INSERT INTO ewp_private.mfa_admins(user_id) VALUES(expected_user_id);
+  INSERT INTO ewp_private.mfa_enrollments(user_id,factor_id,status,submitted_at,reviewed_by,reviewed_at)
+  VALUES(expected_user_id,verified_factor,'approved',now(),NULL,now())
+  ON CONFLICT(user_id) DO UPDATE SET factor_id=EXCLUDED.factor_id,status='approved',reviewed_by=NULL,reviewed_at=now();
+  RAISE NOTICE 'First administrator staged with exactly one approved TOTP factor. Mandatory MFA remains OFF.';
+END;
+$bootstrap$;
+COMMIT;
+-- Follow-up: confirm MFA status, admin factor and aal2 in a fresh login.
+-- NEVER enable enforcement_enabled until all public RLS/Storage/Edge Function routes are independently audited.

@@ -1,3 +1,12 @@
+# Javelin vs Spruce Checker — V1.42 WEB: page-break continuity
+
+- **Spruce page breaks:** Carry unfinished item records across page transitions, including a grade and cuts on the following page; accept a repeated code header only when it clearly belongs to the incomplete prior item. Do not double-count identical completed repeated rows, or merge genuinely separate rows with different cuts. Guard against buyer/footer metadata contaminating material descriptions. Keep cut-total vs Ordered validation and source links to both pages.
+- **Unnumbered floor:** Recognize Main Floor in both Javelin and Spruce. Earlier numerical unit and Framing 209 grouping unchanged.
+- **Triplex example:** Javelin PSL 2.2E 3½×9½ `4 × 7′` 28 LF; Spruce `PSL3912` p1 quantity and grade/cuts p2 now MATCH. 7 matches, 0 mismatches, 1 rim-stock manual review (1056 LF stock vs 1042 LF required).
+- **QA boundaries:** Original PDF bytes examined using PyMuPDF; JavaScript parser and browser UI exercised with positional replay and mock PDF.js. **Native live PDF.js CDN not verified**; run the original two PDFs after deployment. No production Supabase or SQL changes.
+
+---
+
 # V1.40 — No Unit Number / Whole-Floor reports
 
 Javelin `Level: Second Floor` with `Products`/`Blocking` now compares under `Second Floor`, as does Spruce `COMMENT ... - SECOND FLOOR`. Ordinal/numeric floor names normalize, while existing explicitly numbered and Framing sections remain separate. Spruce `Ordered` quantities (e.g., 1,676 and 1,551 LF) are detected even when their left edge is below x=320; the numeric order quantity is never appended to the material description. Original attached floor-wide PDF pair: 12 match / 2 mismatch, both missing 5¼″ PSL cuts. Tested using actual PDF text geometry and offline/mock PDF.js only; live browser must be checked. No other workspaces/backend changed.

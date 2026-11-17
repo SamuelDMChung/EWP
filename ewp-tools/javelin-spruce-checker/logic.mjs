@@ -1,4 +1,5 @@
-/* V1.40: Match whole-floor Javelin/Spruce reports without unit headings;
+/* V1.42: Match Spruce items spanning PDF page breaks without splitting or double counting;
+ * retain whole-floor Javelin/Spruce reports without unit headings;
  * preserve numbered/framing-group logic and parse thousands-separated Spruce
  * Ordered LF values whose left edge shifts outside the narrow quantity column.
  * All base Javelin rows retained; strikeouts/highlights ignored.
@@ -89,6 +90,8 @@ function floorSection(text){
  const words=['FIRST','SECOND','THIRD','FOURTH','FIFTH','SIXTH','SEVENTH','EIGHTH','NINTH','TENTH'];
  const floor=src.match(/\b(FIRST|SECOND|THIRD|FOURTH|FIFTH|SIXTH|SEVENTH|EIGHTH|NINTH|TENTH|\d{1,2}(?:ST|ND|RD|TH))\s+FLOOR\b/);
  if(floor){let n=words.indexOf(floor[1]);if(n<0)n=Number.parseInt(floor[1],10)-1;const name=words[n]||floor[1];return `${name.slice(0,1)}${name.slice(1).toLowerCase()} Floor`;}
+ const namedFloor=src.match(/\b(MAIN|GROUND|BASEMENT)\s+FLOOR\b/);
+ if(namedFloor)return `${namedFloor[1][0]}${namedFloor[1].slice(1).toLowerCase()} Floor`;
  const level=src.match(/\bLEVEL\s*(\d{1,2})\b/);
  if(level)return `Level ${Number(level[1])}`;
  // Short Spruce floor-only comments such as "L2 EAST" are the same as Javelin's "Level: Level 2".
@@ -187,6 +190,15 @@ function orderedToken(line){
 }
 export function parseSpruce(pages){
  const records=[],warnings=[];let section='Unspecified section',active=null,level='';
+ const isProductCode=c=>/^(?:TJI\d+|PSL\d+|LSL\w+|LVL\w+)$/i.test(c);
+ const isGradeText=d=>/^(?:(?:LSL|LVL|PSL|TJI|RIM)\s+)?\d+(?:\.\d+)?\s*E$/i.test(d);
+ const cutsLF=text=>cutsFromDescription(text).reduce((sum,c)=>sum+c.qty*c.length,0);
+ const incomplete=r=>r?.um==='LF'&&(!cutsFromDescription(r.description).length||Math.abs(cutsLF(r.description)-r.ordered)>0.05);
+ const pagesOf=r=>r.pages||(r.pages=[r.page]);
+ const addContinuation=(r,text,pageNo)=>{
+  if(text){r.description+=' '+text;}
+  if(!pagesOf(r).includes(pageNo))r.pages.push(pageNo);
+ };
  const flush=()=>{
   if(!active)return;
   active.description=clean(active.description);
@@ -200,22 +212,37 @@ export function parseSpruce(pages){
    else if(Math.abs(total-active.ordered)>0.05)active.notes.push(`Cut breakdown totals ${total} LF, but Ordered is ${active.ordered} LF.`);
   }
   if(active.um==='PC'){
-   // Standard Spruce rim code suffix 16 or explicit 16' in description.
    const match=active.description.match(/\b(\d+(?:\.\d+)?)\s*'\s*(?:TIMBERSTRAND|LSL|PARALLAM|PSL)/i);
    active.stockLength=match?Number(match[1]):(/16$/.test(active.code)?16:null);
    if(active.stockLength===null)active.notes.push('Stock length not identified.');
   }
-  // PDF repeats an identical last item at next-page top in some Spruce prints.
+  // The same completed row can be printed at both sides of a page boundary.
+  // Suppress it ONLY when the product, quantity and complete cuts are identical.
   const last=records[records.length-1];
-  if(last&&last.page===active.page-1&&active.isFirstOnPage&&last.code===active.code&&last.section===active.section&&last.ordered===active.ordered&&last.um===active.um&&clean(last.description)===active.description){
-   warnings.push(`Spruce page ${active.page}: repeated continuation row ${active.code} excluded to avoid double-counting.`);
+  const same=last&&active.isFirstOnPage&&active.page===last.page+1&&
+   last.code===active.code&&last.section===active.section&&
+   last.ordered===active.ordered&&last.um===active.um&&
+   last.spec?.key&&last.spec.key===active.spec?.key&&
+   clean(last.description)===active.description;
+  if(same){
+   pagesOf(last);for(const p of pagesOf(active))if(!last.pages.includes(p))last.pages.push(p);
+   warnings.push(`Spruce page ${active.page}: exact repeated material ${active.code} not counted twice.`);
   }else records.push(active);
   active=null;
  };
- for(const page of pages){let firstMaterial=true;
-  const lines=page.lines||[];if(!lines.length)warnings.push(`Spruce p.${page.page}: no selectable text; page may be scanned.`);
+ for(const page of pages){
+  let firstMaterial=true,footer=false;
+  const lines=page.lines||[];
+  if(!lines.length)warnings.push(`Spruce p.${page.page}: no selectable text; page may be scanned.`);
   for(const line of lines){
    const y=line.y;if(y<295||y>630)continue;
+   const text=clean(line.text);
+   // Do not treat buyer names, totals or payment details as continuation text.
+   // Header/footer order can vary between PDF.js exports.
+   if(/\b(?:Sub\s*Total|Payment\s+Method\s*\(?s\)?|Eligible\s+for\s+discount)\b/i.test(text)){
+    footer=true;continue;
+   }
+   if(footer)continue;
    const c=clean(line.tokens.filter(t=>t.x>=18&&t.x<117).map(t=>t.text).join(' '));
    const d=descOf(line);
    if(/^COMMENT\b/i.test(c)){
@@ -224,25 +251,63 @@ export function parseSpruce(pages){
     else if(/^L\d/i.test(d))level=d;
     continue;
    }
-   if(/^AB$/.test(c)||/^ZONE|^FUEL/.test(c)){flush();continue;}
-   if(/^(?:TJI\d+|PSL\d+|LSL\w+|LVL\w+)$/i.test(c)){
-    flush();const qty=orderedToken(line);
+   if(/^AB$/.test(c)||/^(?:ZONE|FUEL)/.test(c)){flush();continue;}
+   if(isProductCode(c)){
+    const qty=orderedToken(line);
     const ordered=qty?Number(qty.text.replace(/,/g,'')):NaN;
     const um=clean(line.tokens.filter(t=>t.x>=418&&t.x<445).map(t=>t.text).join(' ')).split(' ')[0].toUpperCase();
-    if(!Number.isFinite(ordered)||ordered<=0||!['LF','PC'].includes(um)){warnings.push(`Spruce p.${page.page}: cannot safely read Ordered/UM for ${c}.`);continue;}
-    active={source:'Spruce',page:page.page,y,code:c,section,level,description:descOf(line,qty.x),ordered,um,notes:[],isFirstOnPage:firstMaterial};firstMaterial=false;
+    const headingText=qty?descOf(line,qty.x):d;
+    // A repeated product code at the start of the next page is often the
+    // *same* unfinished material, not a new order. Require matching code,
+    // Ordered quantity, UM and section and an incomplete previous cut list.
+    const prior=active||records[records.length-1];
+    const canRejoin=firstMaterial&&prior&&pagesOf(prior).at(-1)===page.page-1&&
+      incomplete(prior)&&prior.code===c&&prior.section===section&&
+      (Number.isFinite(ordered)?prior.ordered===ordered&&prior.um===um:true)&&
+      (!headingText||prior.description.includes(headingText)||isGradeText(headingText));
+    if(canRejoin){
+     if(!active){active=records.pop();}
+     addContinuation(active,headingText&&!active.description.includes(headingText)?headingText:'',page.page);
+     firstMaterial=false;continue;
+    }
+    // A heading without an ordered quantity is not enough to invent a row.
+    if(!Number.isFinite(ordered)||ordered<=0||!['LF','PC'].includes(um)){
+     flush(); // Never attach an unreadable new product's cut list to the prior material.
+     warnings.push(`Spruce p.${page.page}: cannot safely read Ordered/UM for ${c}.`);
+     continue;
+    }
+    flush();
+    active={source:'Spruce',page:page.page,pages:[page.page],y,code:c,section,level,description:headingText,ordered,um,notes:[],isFirstOnPage:firstMaterial};
+    firstMaterial=false;
    }else if(c&&/^[A-Z][A-Z0-9/.-]{2,20}$/i.test(c)&&!['ITEM','DESCRIPTION','REMAIN','SOLD','ORDERED','ELIGIBLE','SUBTOTAL','PAYMENT'].includes(c.toUpperCase())){
-    flush();warnings.push(`Spruce p.${page.page}: unrecognized order item code ${c}. Review this row.`);
-   }else if(active&&d&&!(line.text||'').match(/(?:subtotal|sales tax|price|amount|eligible|signature|charge|payment)/i)){
-    // Only description-column continuation, even when it crosses page breaks.
-    active.description+=' '+d;
+    // Unknown non-material labels can occur in a footer or across columns.
+    // Only a row with a genuine order quantity and UM closes the material.
+    const qty=orderedToken(line);
+    const um=clean(line.tokens.filter(t=>t.x>=418&&t.x<445).map(t=>t.text).join(' ')).split(' ')[0].toUpperCase();
+    if(qty&&['LF','PC','EA','EACH','SH'].includes(um)){
+     flush();warnings.push(`Spruce p.${page.page}: unrecognized order item code ${c}. Review this row.`);
+    }
+   }else if(d&&!(text.match(/(?:subtotal|sales tax|price|amount|eligible|signature|charge|payment)/i))){
+    if(!active&&firstMaterial){
+     // A missing/reflowed repeated code must not orphan the next-page grade
+     // and cut list. Reopen only an incomplete material from the prior page.
+     const last=records[records.length-1];
+     if(last&&pagesOf(last).at(-1)===page.page-1&&incomplete(last)&&
+        (isGradeText(d)||cutsFromDescription(d).length))active=records.pop();
+    }
+    if(active&&(!c||c.length===0)&&(pagesOf(active).at(-1)===page.page||incomplete(active)))
+     addContinuation(active,d,page.page);
+    else if(!active&&firstMaterial&&(isGradeText(d)||cutsFromDescription(d).length))
+     warnings.push(`Spruce p.${page.page}: continuation text could not be safely linked to a preceding material row.`);
    }
   }
-  // Preserve active record across pages when its cut list continues onto next page.
+  // Keep the last unfinished material open through the page boundary.
+  // A later material heading will flush it after parsing its continuation.
  }
  flush();
  return {records,warnings,stats:{pages:pages.length,rows:records.length}};
 }
+
 const aggregate=records=>{
  const groups=new Map();
  for(const r of records){if(r.spec===null)continue;
@@ -341,7 +406,7 @@ export function compareMaterials(javelin,spruce,manualChanges=[]){
   else if(isStockSection(e,a)&&baseStatus==='MISMATCH'&&a.total<e.total)reason=`Definite shortage: ${e.total} LF of finished cuts required, ${a.total} LF ordered (before kerf).`;
   else if(baseStatus==='MISMATCH')reason=diffSummary||'Different length/quantity breakdown or total LF.';
   else if(baseStatus==='REVIEW')reason='Uncertain specifications, quantity interpretation, or PDF extraction.';
-  details.push({key,section:e?.section||a?.section,product:e?.spec?.label||a?.spec?.label,status,baseStatus,reason,cutDeltas:cuts,diffSummary,stockComparison:Boolean(a?.stock?.length),expected:e?lengthList(e):'—',actual:a?(a.stock.length?a.stock.map(s=>`${s.qty} × ${s.length||'?'}' stock`).join(', '):lengthList(a)):'—',expectedLF:e?.total??0,actualLF:a?.total??0,javelinPages:e?.items.map(x=>x.page)||[],sprucePages:a?.items.map(x=>x.page)||[],notes:[...(e?.notes||[]),...(a?.notes||[])]});
+  details.push({key,section:e?.section||a?.section,product:e?.spec?.label||a?.spec?.label,status,baseStatus,reason,cutDeltas:cuts,diffSummary,stockComparison:Boolean(a?.stock?.length),expected:e?lengthList(e):'—',actual:a?(a.stock.length?a.stock.map(s=>`${s.qty} × ${s.length||'?'}' stock`).join(', '):lengthList(a)):'—',expectedLF:e?.total??0,actualLF:a?.total??0,javelinPages:e?.items.map(x=>x.page)||[],sprucePages:a?[...new Set(a.items.flatMap(x=>x.pages||[x.page]))].sort((x,y)=>x-y):[],notes:[...(e?.notes||[]),...(a?.notes||[])]});
  }
  const globalWarnings=[...javelin.warnings,...spruce.warnings];
  // Parser diagnostics remain available to QA, but do not create user-facing

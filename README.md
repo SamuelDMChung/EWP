@@ -1,3 +1,11 @@
+# EWP Management Portal — V1.42 WEB: PDF page-break repair
+
+**Latest complete source:** V1.42 WEB; next V1.43. Developed by Samuel Chung.
+
+The Javelin vs Spruce PDF Checker now carries incomplete Spruce materials across page breaks and safely combines their grade and cut details without duplicating quantities; skips footer/buyer fields and supports the `Main Floor` section label. In the submitted Triplex sample, 4×7′ 2.2E PSL is **MATCH**, with 7 matches / 0 mismatches / 1 stock-feasibility review overall in offline testing. No SQL update needed; MFA/Auth/RLS/Resend unchanged. Read `PORTAL_HANDOFF.md` then `EWP_MANAGEMENT_PORTAL_V1_42_NEW_CHAT_HANDOFF.md`, `tests/V1_42_TEST_RESULTS.md`, and `docs/V1_42_DEPLOYMENT.md`. Hosted live PDF.js still needs checking.
+
+---
+
 # EWP Management Portal — V1.41 WEB: Google Authenticator / MFA HTTP 405 repair
 
 **Release date:** November 13, 2026. **Canonical source:** complete V1.40 WEB ZIP. **Next version:** V1.42 WEB. Developed by Samuel Chung.

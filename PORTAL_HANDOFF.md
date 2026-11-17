@@ -1,3 +1,17 @@
+# EWP Management Portal — V1.42 WEB: Cross-page Spruce material continuation
+
+**Release date:** November 17, 2026. **Canonical source:** complete V1.41 WEB ZIP. **Next version:** V1.43 WEB. Developed by Samuel Chung.
+
+The V1.41 PDF Checker split a Spruce material near a page break in a two-page Triplex order: page 1 `PSL3912 — 3½″ × 9½″ PARALLAM PSL`, **28 LF**, and page 2 grade `2.2E` / **4 × 7′**. Depending on PDF.js text tokenization, this produced false “extra 28 LF” and “missing 28 LF” discrepancies. V1.42 carries unfinished material records across page breaks, skips footers, safely reattaches grade/cuts (including repeated item-code headings), prevents exact duplicate order quantities, preserves page 1 & 2 links and still flags truly incomplete records. Clear `Main Floor` labels are now normalized for no-unit reports.
+
+**Original PDF local verification:** Triplex Javelin (one page) vs Spruce (two pages) produces **7 MATCH, 0 MISMATCH, 1 MANUAL REVIEW**; the PSL 4×7′ **28 LF** matches, and LSL rim stock remains **1,056 LF ordered vs 1,042 LF listed**, requiring manual cutting-feasibility review. Independent PyMuPDF geometry extraction and offline Chromium replay passed; **native live PDF.js CDN with the original PDFs was not verified**. Run the hosted live acceptance test before relying on results.
+
+**Scope:** Only Javelin/Spruce checker parser, module version import, 11 HTML version credits/cache links, regression tests and docs. All 16 SQL files and existing protected backend/Auth/RLS/Resend/Edge files unchanged; no production Supabase actions in V1.42. The first Google Authenticator administrator was approved after the historical V1.41 handoff; mandatory 2FA enforcement remains OFF and must not be enabled until separate complete security audit. EWP Connect iOS untouched. Details in `EWP_MANAGEMENT_PORTAL_V1_42_NEW_CHAT_HANDOFF.md`, `tests/V1_42_TEST_RESULTS.md`, `docs/V1_42_DEPLOYMENT.md`.
+
+**Do not recode without an explicit user request.**
+
+---
+
 # EWP Management Portal — V1.41 WEB: Google Authenticator / MFA HTTP 405 repair
 
 **Release date:** November 13, 2026. **Canonical source:** complete V1.40 WEB ZIP. **Next version:** V1.42 WEB. Developed by Samuel Chung.

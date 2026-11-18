@@ -1,4 +1,6 @@
-/* V1.42: Match Spruce items spanning PDF page breaks without splitting or double counting;
+/* V1.43: Normalize LVL grades such as Spruce `MICROLLAM LVL 2` to Javelin 2.0E;
+ * preserve grade distinctions and fractional / decimal dimensions.
+ * V1.42: Match Spruce items spanning PDF page breaks without splitting or double counting;
  * retain whole-floor Javelin/Spruce reports without unit headings;
  * preserve numbered/framing-group logic and parse thousands-separated Spruce
  * Ordered LF values whose left edge shifts outside the narrow quantity column.
@@ -31,7 +33,19 @@ export function productSpec(input){
  if(/(?:WEB\s+STIFFENER|BACKER\s+BLOCK)/.test(s))return null;
  const type=/\bTJI\b/.test(s)?'TJI':/\b(?:PARALLAM|PSL)\b/.test(s)?'PSL':/\b(?:TIMBERSTRAND|LSL)\b/.test(s)?'LSL':/\b(?:MICROLLAM|LVL)\b/.test(s)?'LVL':null;
  if(!type)return {key:null,label:clean(input),type:'UNKNOWN',ambiguous:true};
- const grade=type==='TJI'?(s.match(/\bTJI\s*(\d{2,4})\b/)?.[1]||''):(s.match(/\b(\d+(?:\.\d+)?)\s*E\b/)?.[1]||'');
+ // Microllam LVL is sometimes printed as "LVL 2" in Spruce, while Javelin
+ // writes "2.0E Microllam LVL". These are the same explicit grade (2.0E).
+ // Do not drop grade distinctions: LVL 1.9E and 2.0E remain different products.
+ const explicitGrade=s.match(/\b(\d+(?:\.\d+)?)\s*E\b/)?.[1]||'';
+ const tjiGrade=s.match(/\bTJI\s*(\d{2,4})\b/)?.[1]||'';
+ const lvlTrailingGrades=type==='LVL'?[...s.matchAll(/\bLVL\s+(\d+(?:\.\d+)?)(?:\s*E)?\b/g)].map(m=>m[1]):[];
+ const lvlTrailingGrade=lvlTrailingGrades[0]||'';
+ const gradeConflict=type==='LVL'&&new Set([explicitGrade,...lvlTrailingGrades].filter(Boolean).map(Number)).size>1;
+ const rawGrade=type==='TJI'?tjiGrade:(explicitGrade||lvlTrailingGrade);
+ // Keep the historic `2.0` grade in product keys, so prior saved/grouped
+ // LVL keys and older Framing/whole-floor regressions remain compatible.
+ const lvlNumber=Number(rawGrade);
+ const grade=(type==='LVL'&&rawGrade)?(Number.isInteger(lvlNumber)?lvlNumber.toFixed(1):normNum(lvlNumber)):rawGrade;
  let width=null,depth=null;
  const pair=s.match(DIMENSION_PAIR);
  if(pair){width=dimension(pair[1]);depth=dimension(pair[2]);}
@@ -40,8 +54,9 @@ export function productSpec(input){
   // Javelin gives nominal depth, but omits the physical flange width.
   if(width==null&&{'230':1,'360':1,'560':1}[grade])width=grade==='560'?3.5:2+5/16;
  }
- const key=grade&&width!=null&&depth!=null?`${type}|${grade}|${normNum(width)}|${normNum(depth)}`:null;
- return {key,type,grade,width,depth,label:`${type} ${grade||'?'} · ${width??'?'}" × ${depth??'?'}"`,ambiguous:!key};
+ const key=!gradeConflict&&grade&&width!=null&&depth!=null?`${type}|${grade}|${normNum(width)}|${normNum(depth)}`:null;
+ const gradeLabel=type==='LVL'&&grade?`${grade}E`:grade||'?';
+ return {key,type,grade,width,depth,label:`${type} ${gradeLabel} · ${width??'?'}" × ${depth??'?'}"`,ambiguous:!key};
 }
 // Determine format from actual PDF page contents, never from the filename.
 // Low-confidence or conflicting evidence must be assigned by the user.

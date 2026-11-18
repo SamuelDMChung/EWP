@@ -1,3 +1,19 @@
+# V1.43 WEB — Microllam LVL grade abbreviation (November 17, 2026)
+
+**Canonical complete source:** `EWP_Management_Portal_V1_43_WEB_FULL.zip` (built from the complete V1.42 ZIP). **Next:** V1.44 WEB. Developed by Samuel Chung.
+
+**Correction:** Spruce often abbreviates the 2.0E LVL grade as `MICROLLAM LVL 2`. Javelin prints `2.0E Microllam LVL`; V1.42 required an explicit `E` suffix, so Spruce material normalized to `LVL ?` and falsely showed an extra 11×9′ / missing 11×9′. V1.43 recognizes numeric LVL grade suffixes and canonicalizes `LVL 2`, `LVL 2.0`, `LVL 2.0E` to the **same 2.0E key**. It preserves 1¾″ × 7¼″ dimensions (fraction/decimal) and does NOT generally ignore different explicit grades or silently treat completely missing grades as 2.0E. Only one PDF Checker normalizer changes; no quantity, source-page, stock or other tool logic is rewritten.
+
+**Original uploaded Goat Ridge Main Floor PDF pair:** Javelin p.1 plot M2 `11 × 9′` 1¾″ × 7¼″ 2.0E Microllam LVL = **99 LF**; Spruce p.3 code LVL714 `11 × 9′`, `MICROLLAM LVL 2` = **99 LF**. Local PyMuPDF-coordinate parser replay and Chromium UI both return `LVL 2.0E · 1.75″ × 7.25″ — MATCH`. Overall local replay: 11 MATCH, 1 MISMATCH (other 1¼″ × 9½″ LSL blocking), 1 MANUAL REVIEW (1¼″ × 11⅞″ LSL stock allowance). These other findings were not changed or verified as ordering decisions.
+
+**Scope / safety:** Source baseline V1.42, update 11 HTML version/developer credits and cache URLs, `logic.mjs` productSpec grade normalization, checker app import token, tests/docs. Keep all 16 SQL files and protected Supabase/Auth/RLS/Edge/Resend code unchanged. No production database access; staged Google Authenticator MFA behavior unaffected. EWP Connect iOS untouched.
+
+**Verification limit:** The original PDFs were read via PyMuPDF text geometry and used in an offline Chromium test with a simulated PDF.js reader, **not** the live hosted PDF.js CDN. Test the original two files on GitHub Pages after deploying. See `tests/V1_43_TEST_RESULTS.md`, `docs/V1_43_DEPLOYMENT.md` and `EWP_MANAGEMENT_PORTAL_V1_43_NEW_CHAT_HANDOFF.md`.
+
+**Do not recode again without an explicit user request.**
+
+---
+
 # Javelin vs Spruce Checker — V1.42 WEB: page-break continuity
 
 - **Spruce page breaks:** Carry unfinished item records across page transitions, including a grade and cuts on the following page; accept a repeated code header only when it clearly belongs to the incomplete prior item. Do not double-count identical completed repeated rows, or merge genuinely separate rows with different cuts. Guard against buyer/footer metadata contaminating material descriptions. Keep cut-total vs Ordered validation and source links to both pages.
